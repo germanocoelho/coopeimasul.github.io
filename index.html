@@ -1044,6 +1044,89 @@ footer .friso-rodape::after{
   .secao-foto-banner::before{ background:linear-gradient(180deg, rgba(11,29,25,.38) 0%, rgba(11,29,25,.46) 100%) }
 }
 
+/* ---------- documentação obrigatória dos cooperados ---------- */
+.docs-resumo-geral{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;
+  margin:18px 0 22px;
+}
+.docs-resumo-item{
+  background:var(--areia); border:1px solid var(--linha); border-radius:10px;
+  padding:14px 16px; text-align:center;
+}
+.docs-resumo-item .num{font-family:var(--disp);font-size:26px;font-weight:800;color:var(--pinho)}
+.docs-resumo-item .rot{font-size:11.5px;color:#5B736C;margin-top:2px}
+.docs-resumo-item.alerta .num{color:#B23A2E}
+.docs-resumo-item.ok .num{color:var(--verde)}
+
+.doc-status-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.doc-status-tag.pendente{background:#F3E4C8;color:#8A5A17}
+.doc-status-tag.recebido{background:#DCEAFB;color:#1E5FA8}
+.doc-status-tag.aprovado{background:#DCF2E3;color:#146C3F}
+.doc-status-tag.rejeitado{background:#FBE0DC;color:#B23A2E}
+
+.btn.mini.whats{background:#25D366;color:#fff}
+.btn.mini.whats:hover{background:#1EBE5A}
+.btn.mini.mail{background:#4A6FA5;color:#fff}
+.btn.mini.mail:hover{background:#3C5C8A}
+.link-copiavel{display:flex;gap:6px;align-items:center}
+.link-copiavel input{flex:1;font-family:var(--mono);font-size:11px;padding:6px 8px;border:1px solid var(--linha);border-radius:6px;background:var(--areia)}
+
+.modal-doc-audit{
+  position:fixed; inset:0; z-index:400; background:rgba(11,29,25,.6);
+  display:flex; align-items:flex-start; justify-content:center; padding:40px 18px; overflow-y:auto;
+}
+.modal-doc-audit-caixa{
+  background:#fff; border-radius:14px; padding:32px 30px; max-width:720px; width:100%;
+  position:relative; box-shadow:0 30px 70px rgba(0,0,0,.35);
+}
+.modal-doc-audit-fechar{
+  position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%;
+  border:none; background:var(--areia); cursor:pointer; font-size:15px; color:var(--pinho);
+}
+.doc-audit-item{
+  border:1px solid var(--linha); border-radius:10px; padding:14px 16px; margin-bottom:12px;
+}
+.doc-audit-item h4{font-size:14px; margin-bottom:2px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.doc-audit-item .fundamento{font-size:11.5px; color:#7A9088; margin-bottom:10px; font-style:italic}
+.doc-audit-grade{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:8px}
+.doc-audit-grade label{font-size:11px; color:#5B736C; display:block; margin-bottom:3px}
+.doc-audit-grade input, .doc-audit-grade select, .doc-audit-grade textarea{
+  width:100%; padding:6px 8px; border:1px solid var(--linha); border-radius:6px; font-size:12.5px;
+}
+.doc-audit-checkrow{display:flex; gap:16px; margin-top:8px; flex-wrap:wrap}
+.doc-audit-checkrow label{display:flex; align-items:center; gap:5px; font-size:12px; color:var(--pinho)}
+
+/* ---------- Minha Ficha (tela pessoal do cooperado) ---------- */
+.ficha-pessoal-overlay{
+  position:fixed; inset:0; z-index:900; background:var(--areia);
+  overflow-y:auto; padding:32px 18px 60px;
+}
+body.modo-ficha-pessoal{ overflow:hidden }
+.ficha-pessoal-caixa{ max-width:720px; margin:0 auto }
+.fp-cabecalho{
+  background:linear-gradient(140deg,#0F231F,#16302B); border-radius:16px; padding:30px 28px;
+  color:#fff; margin-bottom:24px; text-align:center;
+}
+.fp-cabecalho img{ height:56px; margin-bottom:14px }
+.fp-cabecalho h2{ color:#fff; font-size:22px; margin-bottom:6px }
+.fp-cabecalho p{ color:#B9D6CB; font-size:13.5px }
+.fp-bloco{ background:#fff; border:1px solid var(--linha); border-radius:12px; padding:22px 24px; margin-bottom:18px }
+.fp-bloco h3{ font-size:15px; margin-bottom:12px; display:flex; align-items:center; gap:8px }
+.fp-progresso-barra{ height:8px; background:var(--linha); border-radius:5px; overflow:hidden; margin:10px 0 18px }
+.fp-progresso-fill{ height:100%; background:linear-gradient(90deg,var(--verde),var(--ouro)); transition:width .6s ease }
+.fp-item{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--linha); font-size:13.5px }
+.fp-item:last-child{ border-bottom:none }
+.fp-item .icone{ flex:none; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700 }
+.fp-item.falta .icone{ background:#F3E4C8; color:#8A5A17 }
+.fp-item.ok .icone{ background:#DCF2E3; color:#146C3F }
+.fp-envio{ background:#EAF7F0; border:1px dashed var(--verde); border-radius:10px; padding:16px 18px; font-size:13px; color:#2C4A40; margin-top:6px }
+.fp-envio .btn{ margin-top:10px }
+.fp-rodape-msg{ text-align:center; font-size:12px; color:#7A9088; margin-top:24px }
+@media (max-width:600px){
+  .fp-cabecalho{ padding:24px 18px }
+  .fp-bloco{ padding:18px 16px }
+}
+
 /* ---------- rodapé ---------- */
 footer{background:var(--pinho);color:#CDE8DA;margin-top:0}
 footer .friso-rodape{height:26px;background-repeat:repeat-x;background-size:auto 26px}
@@ -2077,6 +2160,13 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
     e pelo <strong>Instituto Cacique Enir Terena — ICET</strong> (<strong>Maria Auxiliadora Bezerra</strong>, Presidente)
   </div>
 </footer>
+
+<!-- MINHA FICHA — tela pessoal, só abre com o link único do cooperado -->
+<div id="fichaPessoalView" class="ficha-pessoal-overlay" style="display:none">
+  <div class="ficha-pessoal-caixa">
+    <div id="fichaPessoalConteudo"></div>
+  </div>
+</div>
 <!-- ===================== ÁREA ADM ===================== -->
 <section id="admArea" class="adm-panel">
   <div class="wrap">
@@ -2085,6 +2175,7 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
 
     <div class="abas" role="tablist">
       <button class="on" data-aba="paCoop" type="button">Cooperados</button>
+      <button data-aba="paDocsCoop" type="button">Documentação <span id="badgeDocsCoop" class="badge-prop" style="display:none">0</span></button>
       <button data-aba="paRel" type="button">Relatórios</button>
       <button data-aba="paDocs" type="button">Atas &amp; Documentos</button>
       <button data-aba="paNot" type="button">Notícias</button>
@@ -2128,7 +2219,6 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
         <input id="cPastaDocs" placeholder="https://drive.google.com/drive/folders/...">
         <p class="ficha-nota" style="margin-top:4px">Crie a pasta da pessoa no Drive, compartilhe o link e cole aqui. Documentos sensíveis nunca ficam salvos dentro do site — só o link fica guardado.</p>
       </div>
-      <div class="fgrid">
       <div class="fcol" id="blocoSucessao" style="display:none">
         <div class="aviso">Sucessão (Estatuto, arts. 16 e 17 · Regimento, art. 7º-A): registre o herdeiro indicado. Prazo de 90 dias a contar do falecimento, com certidão de óbito e prova da condição de herdeiro. Herdeiros indígenas têm prioridade de ingresso.</div>
         <div class="fgrid" style="margin-top:12px">
@@ -2157,6 +2247,29 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
         <thead><tr><th>Matrícula</th><th>Nome</th><th>Etnia</th><th>Município</th><th>Atividade</th><th>Quotas</th><th>Situação</th><th>Pendências</th><th>Documentos</th><th>Ações</th></tr></thead>
         <tbody></tbody>
       </table></div>
+    </div>
+
+    <!-- DOCUMENTAÇÃO DOS COOPERADOS -->
+    <div class="painel" id="paDocsCoop">
+      <h3>Documentação obrigatória — auditoria por cooperado</h3>
+      <p class="ficha-nota">Checklist normatizado dos documentos exigidos de cada cooperado (veja a base legal de cada item ao abrir a auditoria). Gere o link pessoal da "Minha Ficha" e envie por WhatsApp ou e-mail — a pessoa vê o que falta e como enviar, sem acesso a mais nada do sistema.</p>
+
+      <div class="docs-resumo-geral" id="docsResumoGeral"></div>
+
+      <div class="tabela-scroll"><table class="adm-t" id="tabDocsCoop">
+        <thead><tr><th>Cooperado</th><th>Documentos obrigatórios</th><th>WhatsApp</th><th>E-mail</th><th>Link pessoal</th><th>Ações</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+
+    <!-- MODAL: auditoria de documentos de um cooperado -->
+    <div class="modal-doc-audit" id="modalDocAudit" style="display:none">
+      <div class="modal-doc-audit-caixa">
+        <button class="modal-doc-audit-fechar" id="btnFecharDocAudit" type="button">✕</button>
+        <h3 id="docAuditNome">Documentos de</h3>
+        <p class="ficha-nota" id="docAuditSub"></p>
+        <div id="docAuditLista"></div>
+      </div>
     </div>
 
     <!-- RELATÓRIOS -->
@@ -2615,7 +2728,48 @@ function aplicarSeedAtos(){
 var SEED_ATOS_V1 = [{"id": "ato001", "categoria": "Fundação (até 60 dias)", "nome": "Aprovação das minutas de Estatuto e Regimento pela Diretoria", "baseLegal": "Disposições transitórias", "responsavel": "Diretoria Executiva", "prazo": "Dia 0", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato002", "categoria": "Fundação (até 60 dias)", "nome": "Elaboração do planejamento estratégico e do site institucional", "baseLegal": "Disposições transitórias", "responsavel": "Diretoria Executiva", "prazo": "Dia 0", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato003", "categoria": "Fundação (até 60 dias)", "nome": "Convocação da Assembleia Geral de Constituição (edital afixado)", "baseLegal": "Estatuto, art. 35", "responsavel": "Diretoria Executiva", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato004", "categoria": "Fundação (até 60 dias)", "nome": "Realização da Assembleia Geral de Constituição e aprovação do Estatuto", "baseLegal": "Estatuto, art. 61", "responsavel": "Assembleia Geral", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato005", "categoria": "Fundação (até 60 dias)", "nome": "Lavratura e assinatura da Ata de Fundação", "baseLegal": "Estatuto, art. 61", "responsavel": "Secretário(a) da Mesa", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato006", "categoria": "Fundação (até 60 dias)", "nome": "Assinatura do Estatuto por todos os cooperados fundadores", "baseLegal": "Estatuto, preâmbulo", "responsavel": "Cooperados fundadores", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato007", "categoria": "Fundação (até 60 dias)", "nome": "Lista de presença dos fundadores na Assembleia", "baseLegal": "Regimento, art. 41", "responsavel": "Diretoria Executiva", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato008", "categoria": "Fundação (até 60 dias)", "nome": "Eleição inicial do Conselho de Administração e Diretoria Executiva", "baseLegal": "Estatuto, art. 39", "responsavel": "Assembleia Geral", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato009", "categoria": "Fundação (até 60 dias)", "nome": "Eleição inicial do Conselho Fiscal", "baseLegal": "Estatuto, art. 44", "responsavel": "Assembleia Geral", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato010", "categoria": "Fundação (até 60 dias)", "nome": "Registro do Estatuto na JUCEMS", "baseLegal": "Estatuto, art. 60", "responsavel": "Diretoria Executiva", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato011", "categoria": "Fundação (até 60 dias)", "nome": "Inscrição no CNPJ (Receita Federal)", "baseLegal": "Estatuto, art. 60", "responsavel": "Diretoria Executiva", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato012", "categoria": "Fundação (até 60 dias)", "nome": "Abertura de conta bancária ou conta em instituição de pagamento", "baseLegal": "Regimento, art. 24, II", "responsavel": "Tesoureiro(a)", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato013", "categoria": "Fundação (até 60 dias)", "nome": "Contratação de contabilista habilitado", "baseLegal": "Estatuto, art. 24", "responsavel": "Diretoria Executiva", "prazo": "Até 60 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato014", "categoria": "Disposições transitórias (até 90 dias)", "nome": "Elaboração e aprovação do Regimento Interno definitivo", "baseLegal": "Estatuto, art. 59", "responsavel": "Diretoria Executiva", "prazo": "Até 90 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato015", "categoria": "Disposições transitórias (até 90 dias)", "nome": "Elaboração do projeto âncora (atividade e área prioritária)", "baseLegal": "Estatuto, art. 59, §único", "responsavel": "Diretoria Executiva", "prazo": "Até 90 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato016", "categoria": "Disposições transitórias (até 90 dias)", "nome": "Modelo de escrituração financeira por atividade produtiva", "baseLegal": "Estatuto, art. 59", "responsavel": "Tesoureiro(a)", "prazo": "Até 90 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato017", "categoria": "Disposições transitórias (até 90 dias)", "nome": "Plano de capacitação técnica para o primeiro ano", "baseLegal": "Estatuto, art. 59", "responsavel": "Diretoria Executiva", "prazo": "Até 90 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato018", "categoria": "Disposições transitórias (até 90 dias)", "nome": "Constituição do Conselho Consultivo de Lideranças Tradicionais", "baseLegal": "Estatuto, art. 49", "responsavel": "Diretoria Executiva", "prazo": "Até 90 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato019", "categoria": "Disposições transitórias (até 90 dias)", "nome": "Filiação à OCEMS / Sistema OCB-MS", "baseLegal": "Estatuto, art. 60, §único", "responsavel": "Diretoria Executiva", "prazo": "Até 90 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato020", "categoria": "Disposições transitórias (até 90 dias)", "nome": "Cadastro Nacional da Agricultura Familiar (CAF)", "baseLegal": "Nota Técnica de Revisão", "responsavel": "Diretoria Executiva", "prazo": "Até 90 dias", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato021", "categoria": "Governança contínua", "nome": "Livro de Matrícula dos cooperados atualizado", "baseLegal": "Estatuto, art. 8º", "responsavel": "Diretoria Executiva", "prazo": "Permanente", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato022", "categoria": "Governança contínua", "nome": "Assembleia Geral Ordinária (contas, sobras, eleição do Conselho Fiscal)", "baseLegal": "Estatuto, arts. 33 e 44", "responsavel": "Assembleia Geral", "prazo": "Ciclo anual", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato023", "categoria": "Governança contínua", "nome": "Balancete semestral simplificado aos cooperados", "baseLegal": "Estatuto, art. 24, IV", "responsavel": "Tesoureiro(a)", "prazo": "Semestral", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato024", "categoria": "Governança contínua", "nome": "Renovação de mandato do Conselho de Administração e Diretoria", "baseLegal": "Estatuto, arts. 39 e 42", "responsavel": "Assembleia Geral", "prazo": "Ciclo trienal", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato025", "categoria": "Atos condicionais", "nome": "Registro no SisGen (acesso a conhecimento tradicional/patrimônio genético)", "baseLegal": "Estatuto, art. 28 · Lei 13.123/2015", "responsavel": "Conselho de Administração", "prazo": "Sob demanda", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato026", "categoria": "Atos condicionais", "nome": "Registro na Agência Nacional de Mineração (ANM)", "baseLegal": "Estatuto, art. 7º, V, 'd'", "responsavel": "Diretoria Executiva", "prazo": "Condicional", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}, {"id": "ato027", "categoria": "Atos condicionais", "nome": "Requerimento de Indicação Geográfica ou Marca Coletiva no INPI", "baseLegal": "Estatuto, art. 29", "responsavel": "Assembleia Geral", "prazo": "Sob decisão", "status": "pendente", "docNome": "", "docUrl": "", "dataConclusao": "", "obs": ""}]
 ;
 
+/* E-mail oficial da cooperativa para recebimento de documentos (ver LEIA-ME_publicacao.md,
+   seção 6 — troque para a conta dedicada da COOPEIMASUL assim que for criada). */
+var COOP_EMAIL_DOCUMENTOS = 'arquivos.coopeimasul@gmail.com';
+
 var SEED_VERSAO = 'v5-tres-etnias-somente';
+
+/* ======================================================================
+   DOCUMENTAÇÃO OBRIGATÓRIA DO COOPERADO — lista normatizada
+   Fundamentada na Lei 5.764/1971 (cooperativismo), no Estatuto Social da
+   COOPEIMASUL e nas exigências específicas de uma cooperativa de produtores
+   indígenas (comprovação de pertencimento étnico e de atividade produtiva).
+   ====================================================================== */
+var DOCUMENTOS_COOPERADO = [
+  { id:'rg', nome:'RG — Carteira de Identidade', obrigatorio:true,
+    fundamento:'Qualificação civil exigida na Ata e no livro de matrícula (Lei 5.764/1971, art. 24).' },
+  { id:'cpf', nome:'CPF', obrigatorio:true,
+    fundamento:'Cadastro obrigatório perante a Receita Federal e a JUCEMS.' },
+  { id:'comprovante_residencia', nome:'Comprovante de residência (até 90 dias)', obrigatorio:true,
+    fundamento:'Comprovação do domicílio do cooperado, exigida no cadastro social.' },
+  { id:'foto', nome:'Foto de rosto recente', obrigatorio:true,
+    fundamento:'Identificação visual para carteirinha de cooperado e cadastro no site.' },
+  { id:'termo_adesao', nome:'Termo de Adesão / Proposta de Admissão assinada', obrigatorio:true,
+    fundamento:'Formaliza a adesão livre e voluntária (Estatuto Social, princípio da livre adesão).' },
+  { id:'declaracao_etnica', nome:'Declaração de pertencimento étnico-indígena', obrigatorio:true,
+    fundamento:'Emitida pela liderança/associação da aldeia ou pela FUNAI — comprova o requisito de ser produtor indígena, condição de admissão na COOPEIMASUL.' },
+  { id:'comprovante_atividade', nome:'Comprovante de atividade produtiva (CAF ou declaração da liderança)', obrigatorio:true,
+    fundamento:'Cadastro Nacional da Agricultura Familiar (CAF, ex-DAP) ou equivalente, comprova a atividade rural do cooperado.' },
+  { id:'dados_bancarios', nome:'Comprovante de dados bancários (conta ou chave Pix)', obrigatorio:true,
+    fundamento:'Necessário para eventual repasse de sobras e pagamentos da cooperativa.' },
+  { id:'certidao_civil', nome:'Certidão de casamento ou nascimento', obrigatorio:false,
+    fundamento:'Complementar — confirma o estado civil declarado na qualificação.' },
+  { id:'titulo_eleitor', nome:'Título de eleitor', obrigatorio:false,
+    fundamento:'Complementar — não obrigatório para a admissão, mas útil para outros cadastros.' }
+];
+function documentosObrigatoriosLista(){ return DOCUMENTOS_COOPERADO.filter(function(d){ return d.obrigatorio; }); }
+function statusDocumentosCoop(c){
+  var docs = c.documentos || {};
+  var obrig = documentosObrigatoriosLista();
+  var completos = obrig.filter(function(d){ var reg = docs[d.id]; return reg && reg.status === 'aprovado'; });
+  return { total: obrig.length, completos: completos.length, docs: docs };
+}
+
 function aplicarSeedCooperados(){
   if (typeof SEED_COOPERADOS_V1 === 'undefined') return;
   var mudou = false;
@@ -3867,6 +4021,11 @@ function novaMatricula(){
 
 /* ---------- cooperados ---------- */
 function lerFormCoop(){
+  var idAtual = $('cId').value;
+  var existente = null;
+  if (idAtual){
+    for (var k=0;k<db.cooperados.length;k++){ if (db.cooperados[k].id === idAtual){ existente = db.cooperados[k]; break; } }
+  }
   return {
     id: $('cId').value || String(Date.now()),
     matricula: $('cMat').value || novaMatricula(),
@@ -3892,7 +4051,9 @@ function lerFormCoop(){
     foto: _fotoCoopAtual || '',
     herdeiro: $('cHerdeiro').value.trim(),
     obito: $('cObito').value,
-    obs: $('cObs').value.trim()
+    obs: $('cObs').value.trim(),
+    documentos: existente ? (existente.documentos || {}) : {},
+    linkFichaToken: existente ? (existente.linkFichaToken || '') : ''
   };
 }
 var _fotoCoopAtual = '';
@@ -3968,6 +4129,155 @@ function pendenciasCoop(c){
   if (!c.admissao) faltando.push('data de admissão');
   return faltando;
 }
+/* ---------- documentação obrigatória: link pessoal, WhatsApp/e-mail, auditoria ---------- */
+function gerarTokenFicha(){
+  var chars = 'abcdefghijkmnpqrstuvwxyz23456789';
+  var t = '';
+  for (var i=0;i<10;i++) t += chars.charAt(Math.floor(Math.random()*chars.length));
+  return t;
+}
+function garantirTokenFicha(c){
+  if (!c.linkFichaToken){
+    c.linkFichaToken = gerarTokenFicha();
+    salvarLocal();
+  }
+  return c.linkFichaToken;
+}
+function urlFichaPessoal(c){
+  var token = garantirTokenFicha(c);
+  var base = window.location.origin + window.location.pathname;
+  return base + '?ficha=' + token;
+}
+function pendenciasDocumentosTexto(c){
+  var st = statusDocumentosCoop(c);
+  var faltando = documentosObrigatoriosLista().filter(function(d){
+    var reg = st.docs[d.id];
+    return !reg || reg.status !== 'aprovado';
+  }).map(function(d){ return d.nome; });
+  return faltando;
+}
+function linkWhatsappCoop(c){
+  if (!c.fone) return '';
+  var numeros = c.fone.replace(/\D/g,'');
+  if (numeros.length < 10) return '';
+  if (numeros.charAt(0) !== '5' || numeros.length < 12) numeros = '55' + numeros;
+  var url = urlFichaPessoal(c);
+  var msgTxt = 'Olá, ' + c.nome.split(' ')[0] + '! Aqui é da COOPEIMASUL. Para completar seu cadastro de cooperado, acesse sua ficha pessoal e veja o que ainda falta enviar: ' + url;
+  return 'https://wa.me/' + numeros + '?text=' + encodeURIComponent(msgTxt);
+}
+function linkEmailCoop(c){
+  if (!c.email) return '';
+  var url = urlFichaPessoal(c);
+  var assunto = 'COOPEIMASUL — Complete seu cadastro de cooperado';
+  var corpo = 'Olá, ' + c.nome.split(' ')[0] + '!\n\nPara completar seu cadastro de cooperado da COOPEIMASUL, acesse sua ficha pessoal no link abaixo. Nela você vê exatamente o que falta enviar (dados e documentos) e como enviar.\n\n' + url + '\n\nQualquer dúvida, é só responder este e-mail.\n\nCOOPEIMASUL';
+  return 'mailto:' + encodeURIComponent(c.email) + '?subject=' + encodeURIComponent(assunto) + '&body=' + encodeURIComponent(corpo);
+}
+function renderDocsCoop(){
+  var resumo = $('docsResumoGeral');
+  var tb = $('tabDocsCoop');
+  if (!resumo || !tb) return;
+  tb = tb.querySelector('tbody');
+  var ativos = db.cooperados.filter(function(c){ return c.status === 'ativo'; });
+  var totalObrig = documentosObrigatoriosLista().length;
+  var completos = 0, comPendencia = 0;
+  ativos.forEach(function(c){
+    var st = statusDocumentosCoop(c);
+    if (st.completos === st.total) completos++; else comPendencia++;
+  });
+
+  resumo.innerHTML =
+    '<div class="docs-resumo-item"><div class="num">' + ativos.length + '</div><div class="rot">cooperados ativos</div></div>' +
+    '<div class="docs-resumo-item ok"><div class="num">' + completos + '</div><div class="rot">com documentação completa</div></div>' +
+    '<div class="docs-resumo-item alerta"><div class="num">' + comPendencia + '</div><div class="rot">com pendência de documento</div></div>' +
+    '<div class="docs-resumo-item"><div class="num">' + totalObrig + '</div><div class="rot">documentos obrigatórios exigidos</div></div>';
+
+  var linhas = ativos.slice().sort(function(a,b){ return a.nome.localeCompare(b.nome,'pt-BR'); }).map(function(c){
+    var st = statusDocumentosCoop(c);
+    var corTag = st.completos === st.total ? 'aprovado' : (st.completos > 0 ? 'recebido' : 'pendente');
+    var whatsUrl = linkWhatsappCoop(c);
+    var emailUrl = linkEmailCoop(c);
+    return '<tr>'
+      + '<td>' + esc(c.nome) + '</td>'
+      + '<td><span class="doc-status-tag ' + corTag + '">' + st.completos + ' de ' + st.total + '</span></td>'
+      + '<td>' + (whatsUrl ? '<a class="btn mini whats" href="'+whatsUrl+'" target="_blank" rel="noopener">📱 Enviar</a>' : '<span style="color:#B8C7C1;font-size:11px">sem telefone</span>') + '</td>'
+      + '<td>' + (emailUrl ? '<a class="btn mini mail" href="'+emailUrl+'">✉️ Enviar</a>' : '<span style="color:#B8C7C1;font-size:11px">sem e-mail</span>') + '</td>'
+      + '<td><div class="link-copiavel"><input type="text" readonly value="' + esc(urlFichaPessoal(c)) + '"><button class="btn mini cinza" data-copiar-link="' + esc(c.id) + '" type="button">Copiar</button></div></td>'
+      + '<td><button class="btn mini azul" data-auditar="' + esc(c.id) + '" type="button">Auditar</button></td>'
+      + '</tr>';
+  });
+  tb.innerHTML = linhas.join('') || '<tr><td colspan="6" style="text-align:center;color:#8FB4A6">Nenhum cooperado ativo cadastrado.</td></tr>';
+
+  Array.prototype.forEach.call(tb.querySelectorAll('[data-auditar]'), function(btn){
+    btn.addEventListener('click', function(){ abrirAuditoriaDoc(btn.getAttribute('data-auditar')); });
+  });
+  Array.prototype.forEach.call(tb.querySelectorAll('[data-copiar-link]'), function(btn){
+    btn.addEventListener('click', function(){
+      var input = btn.previousElementSibling;
+      input.select(); input.setSelectionRange(0,9999);
+      try { document.execCommand('copy'); btn.textContent = 'Copiado!'; setTimeout(function(){ btn.textContent = 'Copiar'; }, 1500); } catch(e){}
+    });
+  });
+}
+function abrirAuditoriaDoc(coopId){
+  var c = null;
+  for (var i=0;i<db.cooperados.length;i++){ if (db.cooperados[i].id === coopId){ c = db.cooperados[i]; break; } }
+  if (!c) return;
+  $('docAuditNome').textContent = 'Documentos de ' + c.nome;
+  $('docAuditSub').textContent = 'Marque o que foi recebido, confira legibilidade e validade, e aprove ou rejeite cada item. O status "aprovado" é o único que conta como documento completo.';
+  var lista = $('docAuditLista');
+  lista.innerHTML = DOCUMENTOS_COOPERADO.map(function(d){
+    var reg = (c.documentos && c.documentos[d.id]) || { status:'pendente', recebidoEm:'', legivel:'', validade:'', obs:'' };
+    return '<div class="doc-audit-item" data-doc-id="' + d.id + '">'
+      + '<h4>' + esc(d.nome) + (d.obrigatorio ? '' : ' <span style="font-size:10px;color:#8FB4A6;font-weight:400">(complementar)</span>') + ' <span class="doc-status-tag ' + reg.status + '">' + esc(rotuloStatusDoc(reg.status)) + '</span></h4>'
+      + '<div class="fundamento">' + esc(d.fundamento) + '</div>'
+      + '<div class="doc-audit-grade">'
+      + '<div><label>Status</label><select data-campo="status">'
+      +   ['pendente','recebido','aprovado','rejeitado'].map(function(s){ return '<option value="'+s+'"'+(reg.status===s?' selected':'')+'>'+rotuloStatusDoc(s)+'</option>'; }).join('')
+      + '</select></div>'
+      + '<div><label>Recebido em</label><input type="date" data-campo="recebidoEm" value="' + esc(reg.recebidoEm||'') + '"></div>'
+      + '</div>'
+      + '<div class="doc-audit-checkrow">'
+      + '<label><input type="checkbox" data-campo="legivel" ' + (reg.legivel ? 'checked' : '') + '> Documento legível</label>'
+      + '<label><input type="checkbox" data-campo="validade" ' + (reg.validade ? 'checked' : '') + '> Dentro da validade</label>'
+      + '</div>'
+      + '<div style="margin-top:8px"><label style="font-size:11px;color:#5B736C;display:block;margin-bottom:3px">Observações</label><textarea data-campo="obs" rows="2" style="min-height:auto">' + esc(reg.obs||'') + '</textarea></div>'
+      + '</div>';
+  }).join('');
+
+  Array.prototype.forEach.call(lista.querySelectorAll('.doc-audit-item'), function(item){
+    var docId = item.getAttribute('data-doc-id');
+    Array.prototype.forEach.call(item.querySelectorAll('[data-campo]'), function(campo){
+      var evento = (campo.tagName === 'SELECT' || campo.type === 'checkbox' || campo.type === 'date') ? 'change' : 'input';
+      campo.addEventListener(evento, function(){
+        salvarCampoDoc(c.id, docId, campo);
+        var tagAtual = item.querySelector('.doc-status-tag');
+        var statusSel = item.querySelector('[data-campo="status"]').value;
+        tagAtual.className = 'doc-status-tag ' + statusSel;
+        tagAtual.textContent = rotuloStatusDoc(statusSel);
+      });
+    });
+  });
+
+  $('modalDocAudit').style.display = 'flex';
+}
+function rotuloStatusDoc(s){
+  return { pendente:'Pendente', recebido:'Recebido', aprovado:'Aprovado', rejeitado:'Rejeitado' }[s] || 'Pendente';
+}
+function salvarCampoDoc(coopId, docId, campoEl){
+  var c = null;
+  for (var i=0;i<db.cooperados.length;i++){ if (db.cooperados[i].id === coopId){ c = db.cooperados[i]; break; } }
+  if (!c) return;
+  if (!c.documentos) c.documentos = {};
+  if (!c.documentos[docId]) c.documentos[docId] = { status:'pendente', recebidoEm:'', legivel:false, validade:false, obs:'' };
+  var campo = campoEl.getAttribute('data-campo');
+  var valor = campoEl.type === 'checkbox' ? campoEl.checked : campoEl.value;
+  c.documentos[docId][campo] = valor;
+  salvarLocal();
+  renderDocsCoop();
+  renderCoop();
+}
+
+/* ---------- listagem geral de cooperados ---------- */
 function renderCoop(){
   var tb = $('tabCoop').querySelector('tbody');
   var filtro = ($('cBusca').value || '').toLowerCase();
@@ -4155,7 +4465,7 @@ function renderPublico(){
 }
 
 function renderTudo(){
-  renderCoop(); renderRelatorios(); renderDocs(); renderNot(); renderMaq(); renderCom(); renderPublico();
+  renderCoop(); renderDocsCoop(); renderRelatorios(); renderDocs(); renderNot(); renderMaq(); renderCom(); renderPublico();
   renderDirAdm(); renderDirPublico(); renderGalAdm(); renderGalPublico(); renderProp(); renderComu(); renderMapa(); renderAtos(); renderAssembleia();
 }
 
@@ -4329,9 +4639,93 @@ function ligarTabelas(){
   });
 }
 
-/* ---------- inicialização ---------- */
+/* ---------- Minha Ficha: tela pessoal aberta só pelo link único ---------- */
+function verificarFichaPessoal(){
+  var params;
+  try { params = new URLSearchParams(window.location.search); } catch(e){ return; }
+  var token = params.get('ficha');
+  if (!token) return;
+  var c = null;
+  for (var i=0;i<db.cooperados.length;i++){ if (db.cooperados[i].linkFichaToken === token){ c = db.cooperados[i]; break; } }
+  if (c) mostrarFichaPessoal(c); else mostrarFichaPessoalErro();
+}
+function mostrarFichaPessoalErro(){
+  document.body.classList.add('modo-ficha-pessoal');
+  var el = $('fichaPessoalConteudo');
+  el.innerHTML = '<div class="fp-cabecalho"><h2>Link não encontrado</h2><p>Este link pode ter expirado ou estar incorreto. Fale com a Diretoria da COOPEIMASUL para receber um novo link.</p></div>';
+  $('fichaPessoalView').style.display = 'block';
+}
+function mostrarFichaPessoal(c){
+  document.body.classList.add('modo-ficha-pessoal');
+  var el = $('fichaPessoalConteudo');
+
+  var camposPessoais = [
+    { rot:'RG', ok: !!c.rg },
+    { rot:'Estado civil', ok: !!c.estadoCivil },
+    { rot:'Profissão', ok: !!c.profissao },
+    { rot:'Endereço completo', ok: !!c.endereco },
+    { rot:'Telefone / WhatsApp', ok: !!c.fone },
+    { rot:'E-mail', ok: !!c.email },
+    { rot:'Foto de rosto', ok: !!c.foto }
+  ];
+  var totalPessoal = camposPessoais.length;
+  var okPessoal = camposPessoais.filter(function(x){ return x.ok; }).length;
+
+  var st = statusDocumentosCoop(c);
+  var docsHtml = DOCUMENTOS_COOPERADO.filter(function(d){ return d.obrigatorio; }).map(function(d){
+    var reg = st.docs[d.id];
+    var aprovado = reg && reg.status === 'aprovado';
+    var recebido = reg && (reg.status === 'recebido' || reg.status === 'aprovado');
+    return '<div class="fp-item ' + (aprovado ? 'ok' : 'falta') + '">'
+      + '<span class="icone">' + (aprovado ? '✓' : (recebido ? '…' : '!')) + '</span>'
+      + '<span>' + esc(d.nome) + (recebido && !aprovado ? ' — recebido, em análise' : '') + '</span>'
+      + '</div>';
+  }).join('');
+
+  var pessoalHtml = camposPessoais.map(function(x){
+    return '<div class="fp-item ' + (x.ok ? 'ok' : 'falta') + '"><span class="icone">' + (x.ok ? '✓' : '!') + '</span><span>' + esc(x.rot) + '</span></div>';
+  }).join('');
+
+  var progressoTotal = totalPessoal + st.total;
+  var progressoOk = okPessoal + st.completos;
+  var progressoPct = Math.round((progressoOk / progressoTotal) * 100);
+
+  var assuntoEmail = 'Documentos — ' + c.nome + ' (matrícula ' + c.matricula + ')';
+  var corpoEmail = 'Olá! Segue em anexo meus documentos pendentes para a COOPEIMASUL.\n\nNome: ' + c.nome + '\nMatrícula: ' + c.matricula;
+  var mailtoEnvio = 'mailto:' + encodeURIComponent(COOP_EMAIL_DOCUMENTOS) + '?subject=' + encodeURIComponent(assuntoEmail) + '&body=' + encodeURIComponent(corpoEmail);
+
+  el.innerHTML =
+    '<div class="fp-cabecalho">'
+      + '<h2>Olá, ' + esc(c.nome.split(' ')[0]) + '!</h2>'
+      + '<p>Esta é a sua ficha pessoal na COOPEIMASUL — matrícula ' + esc(c.matricula) + '. Só você e a Diretoria têm acesso a esta página.</p>'
+    + '</div>'
+    + '<div class="fp-bloco">'
+      + '<h3>Seu progresso de cadastro</h3>'
+      + '<div class="fp-progresso-barra"><div class="fp-progresso-fill" style="width:' + progressoPct + '%"></div></div>'
+      + '<p style="font-size:12.5px;color:#5B736C">' + progressoOk + ' de ' + progressoTotal + ' itens completos (' + progressoPct + '%)</p>'
+    + '</div>'
+    + '<div class="fp-bloco">'
+      + '<h3>📋 Seus dados pessoais</h3>'
+      + pessoalHtml
+    + '</div>'
+    + '<div class="fp-bloco">'
+      + '<h3>📄 Seus documentos</h3>'
+      + docsHtml
+      + '<div class="fp-envio">'
+        + '<strong>Como enviar o que falta:</strong><br>'
+        + 'Tire uma foto ou escaneie os documentos e envie por e-mail. Se recebeu esta ficha por WhatsApp, também pode responder a mesma conversa com as fotos.'
+        + '<br><a class="btn mini mail" href="' + mailtoEnvio + '">✉️ Enviar por e-mail</a>'
+      + '</div>'
+    + '</div>'
+    + '<p class="fp-rodape-msg">COOPEIMASUL · Cooperativa Estadual Indígena de Mato Grosso do Sul<br>Dúvidas? Fale com a Diretoria pelo mesmo canal em que recebeu este link.</p>';
+
+  $('fichaPessoalView').style.display = 'block';
+}
+
+
 document.addEventListener('DOMContentLoaded', function(){
   carregarLocal();
+  verificarFichaPessoal();
   frisoTerena();
   $('ano').textContent = new Date().getFullYear();
   $('cAdm').value = hoje();
@@ -4359,6 +4753,8 @@ document.addEventListener('DOMContentLoaded', function(){
   $('btnGerarQualificacao').addEventListener('click', gerarFichaQualificacaoPDF);
   $('assBusca').addEventListener('input', renderAssembleia);
   $('btnAssTodos').addEventListener('click', marcarTodosAtivos);
+  $('btnFecharDocAudit').addEventListener('click', function(){ $('modalDocAudit').style.display = 'none'; });
+  $('modalDocAudit').addEventListener('click', function(ev){ if (ev.target.id === 'modalDocAudit') $('modalDocAudit').style.display = 'none'; });
   $('btnAssNenhum').addEventListener('click', desmarcarTodosAss);
   $('assData').value = hoje();
   if ($('assPauta') && !$('assPauta').value){
