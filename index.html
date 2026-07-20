@@ -1202,6 +1202,40 @@ body.modo-ficha-pessoal{ overflow:hidden }
   .fp-bloco{ padding:18px 16px }
 }
 
+/* ---------- ESG: tres pilares ---------- */
+.esg-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:34px}
+.esg-pilar{
+  background:var(--branco); border:1px solid var(--linha); border-radius:14px; padding:26px 24px;
+  border-top:4px solid var(--verde); transition:transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease;
+}
+.esg-pilar:hover{transform:translateY(-6px); box-shadow:0 22px 44px rgba(22,48,43,.14)}
+.esg-ambiental{border-top-color:#00843D}
+.esg-social{border-top-color:#3FA0D8}
+.esg-governanca{border-top-color:#F4C430}
+.esg-pilar-topo{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.esg-letra{
+  flex:none; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-family:var(--disp); font-weight:800; font-size:20px; color:#fff;
+}
+.esg-ambiental .esg-letra{background:#00843D}
+.esg-social .esg-letra{background:#3FA0D8}
+.esg-governanca .esg-letra{background:#F4C430;color:var(--pinho)}
+.esg-pilar h3{font-size:18px}
+.esg-pilar ul{list-style:none}
+.esg-pilar li{
+  position:relative; padding-left:18px; margin-bottom:11px; font-size:13.8px; line-height:1.55; color:#3E5850;
+}
+.esg-pilar li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55}
+.esg-pilar li strong{color:var(--pinho)}
+
+.esg-ods{margin-top:38px; padding-top:28px; border-top:1px solid var(--linha)}
+.esg-ods h4{font-size:14.5px; color:#5B736C; margin-bottom:14px; font-weight:600}
+.esg-ods-lista{display:flex; flex-wrap:wrap; gap:10px}
+.esg-ods-item{
+  font-family:var(--mono); font-size:11.5px; padding:7px 14px; border-radius:20px;
+  background:var(--areia); border:1px solid var(--linha); color:var(--verde-esc);
+}
+
 /* ---------- rodapé ---------- */
 footer{background:var(--pinho);color:#CDE8DA;margin-top:0}
 footer .friso-rodape{height:26px;background-repeat:repeat-x;background-size:auto 26px}
@@ -1484,6 +1518,7 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
       <li><a href="#diretoria">Diretoria</a></li>
       <li><a href="#galeria">Galeria</a></li>
       <li><a href="#transparencia">Transparência</a></li>
+      <li><a href="#esg">ESG</a></li>
       <li><a href="#legislacao">Legislação</a></li>
       <li><a href="#mapa">Mapa</a></li>
       <li><a href="#apoiadores">Apoiadores</a></li>
@@ -1962,6 +1997,70 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
     <h2 class="titulo">Documentos oficiais e atas</h2>
     <div class="prosa"><p>Estatuto Social, Regimento Interno, atas de assembleias e relatórios de gestão ficam disponíveis aqui, na versão vigente aprovada pela Assembleia Geral.</p></div>
     <div class="docs" id="pgDocs"><div class="doc"><span class="tipo">AGUARDE</span><span class="nome">Os documentos aprovados pela Assembleia serão publicados nesta seção.</span></div></div>
+  </div>
+</section>
+
+<div class="divisor" aria-hidden="true"><span class="selo"><svg width="22" height="22" viewBox="0 0 24 24"><use href="#s-estrela" fill="#F4C430"/></svg></span></div>
+
+<!-- ESG -->
+<section class="pg alt" id="esg">
+  <div class="wrap">
+    <div class="rotulo">Sustentabilidade</div>
+    <h2 class="titulo">Compromisso ESG</h2>
+    <div class="prosa"><p>A COOPEIMASUL organiza sua gestão em três frentes reconhecidas internacionalmente — Ambiental, Social e Governança (ESG) — como base para acessar mercados institucionais, editais e parcerias que exigem essas práticas. Os indicadores abaixo refletem o que já está em vigor hoje; novos indicadores (como área sob manejo sustentável e diversidade de gênero no quadro social) serão publicados assim que os dados forem consolidados a partir das fichas de filiação dos cooperados.</p></div>
+
+    <div class="esg-grade">
+      <div class="esg-pilar esg-ambiental">
+        <div class="esg-pilar-topo">
+          <span class="esg-letra">A</span>
+          <h3>Ambiental</h3>
+        </div>
+        <ul>
+          <li>Cadastro Ambiental Rural (CAR) ou croqui da área exigido na admissão de cada cooperado</li>
+          <li>Registro da prática de manejo declarada por cada cooperado (rotação de pastagem, recuperação de área degradada, preservação de mata nativa)</li>
+          <li>Conhecimento tradicional indígena aplicado ao manejo da terra, com respaldo do Conselho Consultivo de Lideranças</li>
+        </ul>
+      </div>
+
+      <div class="esg-pilar esg-social">
+        <div class="esg-pilar-topo">
+          <span class="esg-letra">S</span>
+          <h3>Social</h3>
+        </div>
+        <ul>
+          <li><strong>34 famílias fundadoras</strong> de três povos indígenas — Terena, Kadiwéu e Guarani — com renda gerada pela cooperativa</li>
+          <li>Protocolo de consentimento prévio, livre e informado para uso de conhecimento tradicional, imagens e expressões culturais</li>
+          <li>Conselho Consultivo de Lideranças Tradicionais: anciãos e caciques ouvidos antes de decisões sobre conhecimento tradicional, mineração e locais sagrados</li>
+          <li>Acesso facilitado a mercados institucionais (PNAE e PAA), com prioridade legal para produção indígena</li>
+          <li>Dados pessoais dos cooperados protegidos conforme a LGPD (Lei nº 13.709/2018)</li>
+        </ul>
+      </div>
+
+      <div class="esg-pilar esg-governanca">
+        <div class="esg-pilar-topo">
+          <span class="esg-letra">G</span>
+          <h3>Governança</h3>
+        </div>
+        <ul>
+          <li>Gestão democrática: <strong>um voto por cooperado</strong>, independente da quantidade de quotas</li>
+          <li>Conselho Fiscal independente da Diretoria, com mandato de 3 anos e uma única reeleição</li>
+          <li>Checklist de compliance com os atos exigidos pelo Estatuto Social, pelo Regimento Interno e pela legislação cooperativista</li>
+          <li>Prestação de contas anual em Assembleia Geral Ordinária</li>
+          <li>Auditoria documental de cada cooperado, com registro de quem revisou, quando e o status de cada documento</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="esg-ods">
+      <h4>Alinhamento com os Objetivos de Desenvolvimento Sustentável (ONU)</h4>
+      <div class="esg-ods-lista">
+        <span class="esg-ods-item">ODS 2 · Fome Zero</span>
+        <span class="esg-ods-item">ODS 8 · Trabalho Decente</span>
+        <span class="esg-ods-item">ODS 10 · Redução das Desigualdades</span>
+        <span class="esg-ods-item">ODS 15 · Vida Terrestre</span>
+        <span class="esg-ods-item">ODS 16 · Instituições Eficazes</span>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -2704,6 +2803,7 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
         <div class="fgrid">
           <div><label for="fNome">Nome completo *</label><input id="fNome"></div>
           <div><label for="fNasc">Data de nascimento *</label><input id="fNasc" type="date"></div>
+          <div><label for="fGenero">Gênero</label><select id="fGenero"><option value="">Prefiro não informar</option><option>Feminino</option><option>Masculino</option><option>Outro</option></select></div>
           <div><label for="fEstadoCivil">Estado civil</label><select id="fEstadoCivil"><option>Solteiro(a)</option><option>Casado(a)</option><option>União estável</option><option>Divorciado(a)</option><option>Viúvo(a)</option></select></div>
           <div><label for="fNacionalidade">Nacionalidade</label><input id="fNacionalidade" value="Brasileira"></div>
           <div><label for="fProfissao">Profissão</label><input id="fProfissao"></div>
@@ -2733,6 +2833,7 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
           <div><label for="fAreaHa">Área disponível para produção (hectares)</label><input id="fAreaHa" type="number" min="0" step="0.1"></div>
           <div><label for="fPosseTerra">Situação da área</label><select id="fPosseTerra"><option>Terra indígena homologada</option><option>Uso comunitário consentido pela liderança</option><option>Área particular regularizada</option><option>Outra</option></select></div>
           <div><label for="fAtividade">Atividade produtiva pretendida *</label><select id="fAtividade"><option>Pecuária</option><option>Agricultura</option><option>Turismo</option><option>Mais de uma</option></select></div>
+          <div><label for="fPraticaAmbiental">Prática de manejo ambiental na área</label><select id="fPraticaAmbiental"><option value="">Não sei informar</option><option>Rotação de pastagem</option><option>Recuperação de área degradada</option><option>Preservação de mata nativa</option><option>Mais de uma</option><option>Nenhuma ainda</option></select></div>
         </div>
         <div class="fcol"><label for="fInfraestrutura">Infraestrutura disponível (currais, maquinário próprio, poço, veículo...)</label><textarea id="fInfraestrutura"></textarea></div>
         <div class="fcol"><label for="fProducaoEstimada">Volume de produção estimado</label><textarea id="fProducaoEstimada"></textarea></div>
@@ -2919,8 +3020,8 @@ function fecharFicha(){ $('fichaModal').classList.remove('on'); document.body.st
 function limparFicha(){
   ['fNome','fNasc','fProfissao','fCpf','fRg','fTelefone','fEmail','fEndereco','fEtnia','fAldeia',
    'fTerraIndigena','fRani','fLideranca','fMunicipio','fAreaHa','fInfraestrutura','fProducaoEstimada'].forEach(function(id){ $(id).value=''; });
-  $('fEstadoCivil').value='Solteiro(a)'; $('fNacionalidade').value='Brasileira';
-  $('fPosseTerra').value='Terra indígena homologada'; $('fAtividade').value='Pecuária'; $('fQuotas').value=1;
+  $('fEstadoCivil').value='Solteiro(a)'; $('fNacionalidade').value='Brasileira'; $('fGenero').value='';
+  $('fPosseTerra').value='Terra indígena homologada'; $('fAtividade').value='Pecuária'; $('fPraticaAmbiental').value=''; $('fQuotas').value=1;
   ['fDocRgCpf','fDocResidencia','fDocLideranca','fDocCar','fDocGta','fDecConcorrencia','fDecVinculo','fDecLgpd','fDecConhecimento'].forEach(function(id){ $(id).checked=false; });
 }
 function salvarProposta(){
@@ -2932,14 +3033,14 @@ function salvarProposta(){
 
   var p = {
     id: String(Date.now()), data: hoje(), status: 'pendente',
-    nome: $('fNome').value.trim(), nascimento: $('fNasc').value, estadoCivil: $('fEstadoCivil').value,
+    nome: $('fNome').value.trim(), nascimento: $('fNasc').value, genero: $('fGenero').value, estadoCivil: $('fEstadoCivil').value,
     nacionalidade: $('fNacionalidade').value.trim(), profissao: $('fProfissao').value.trim(),
     cpf: $('fCpf').value.trim(), rg: $('fRg').value.trim(), telefone: $('fTelefone').value.trim(),
     email: $('fEmail').value.trim(), endereco: $('fEndereco').value.trim(),
     etnia: $('fEtnia').value.trim(), aldeia: $('fAldeia').value.trim(), terraIndigena: $('fTerraIndigena').value.trim(),
     rani: $('fRani').value.trim(), lideranca: $('fLideranca').value.trim(),
     municipio: $('fMunicipio').value.trim(), areaHa: $('fAreaHa').value, posseTerra: $('fPosseTerra').value,
-    atividade: $('fAtividade').value, infraestrutura: $('fInfraestrutura').value.trim(), producaoEstimada: $('fProducaoEstimada').value.trim(),
+    atividade: $('fAtividade').value, praticaAmbiental: $('fPraticaAmbiental').value, infraestrutura: $('fInfraestrutura').value.trim(), producaoEstimada: $('fProducaoEstimada').value.trim(),
     docs: { rgCpf:$('fDocRgCpf').checked, residencia:$('fDocResidencia').checked, lideranca:$('fDocLideranca').checked, car:$('fDocCar').checked, gta:$('fDocGta').checked },
     quotas: parseInt($('fQuotas').value,10) || 1,
     motivo: ''
@@ -2978,6 +3079,7 @@ function aprovarProposta(id){
     quotas: p.quotas, integralizadas: 0, admissao: hoje(), status: 'ativo', fone: p.telefone, email: p.email || '',
     rg: p.rg || '', estadoCivil: p.estadoCivil || '', nacionalidade: p.nacionalidade || 'Brasileira',
     profissao: p.profissao || '', endereco: p.endereco || '',
+    genero: p.genero || '', areaHa: p.areaHa || '', praticaAmbiental: p.praticaAmbiental || '',
     herdeiro:'', obito:'', obs: 'Admitido a partir da proposta de ' + dataBR(p.data) + '. Liderança: ' + p.lideranca + '.'
   };
   db.cooperados.push(c);
@@ -4161,7 +4263,10 @@ function lerFormCoop(){
     obito: $('cObito').value,
     obs: $('cObs').value.trim(),
     documentos: existente ? (existente.documentos || {}) : {},
-    linkFichaToken: existente ? (existente.linkFichaToken || '') : ''
+    linkFichaToken: existente ? (existente.linkFichaToken || '') : '',
+    genero: existente ? (existente.genero || '') : '',
+    areaHa: existente ? (existente.areaHa || '') : '',
+    praticaAmbiental: existente ? (existente.praticaAmbiental || '') : ''
   };
 }
 var _fotoCoopAtual = '';
