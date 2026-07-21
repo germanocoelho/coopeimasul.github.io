@@ -2413,8 +2413,13 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
         <div class="foto-uploader">
           <div class="preview" id="cFotoPreview">sem foto</div>
           <div class="campos">
-            <input type="file" id="cFoto" accept="image/*">
-            <div style="margin-top:8px"><label for="cFotoUrl" style="font-size:11px">ou cole uma URL de imagem</label><input id="cFotoUrl" placeholder="https://..."></div>
+            <button type="button" class="btn mini verde" id="btnEnviarFotoCoopCloud">📷 Enviar foto (upload direto)</button>
+            <input type="file" id="cFotoCloud" accept="image/*" style="display:none">
+            <div class="ficha-nota" id="statusFotoCoopCloud" style="margin-top:4px"></div>
+            <details style="margin-top:8px"><summary style="font-size:11px;cursor:pointer;color:#5B736C">outras opções</summary>
+              <input type="file" id="cFoto" accept="image/*" style="margin-top:6px">
+              <div style="margin-top:8px"><label for="cFotoUrl" style="font-size:11px">ou cole uma URL de imagem</label><input id="cFotoUrl" placeholder="https://..."></div>
+            </details>
           </div>
         </div>
       </div>
@@ -3134,6 +3139,65 @@ function ligarUploader(inputFileId, inputUrlId, previewId, callback){
 }
 var _fotoDir = '', _fotoGal = '';
 function limparPreview(previewId){ $(previewId).innerHTML = 'sem foto'; }
+
+/* ---------- upload direto de fotos para o Cloudinary (mesma rede ICET/CMDDI) ---------- */
+/* IMPORTANTE: antes de usar, crie um "Upload preset" do tipo "Unsigned" no painel do Cloudinary
+   (Settings > Upload > Upload presets > Add upload preset), e cole o nome dele abaixo.
+   Sem isso, o upload direto falha com erro de autenticação. */
+var CLOUDINARY_CLOUD_NAME = 'dn1ubybc0';
+var CLOUDINARY_UPLOAD_PRESET = 'coopeimasul_fotos';
+var CLOUDINARY_PASTA = 'coopeimasul/cooperados';
+
+function enviarParaCloudinary(arquivo, aoConcluir, aoFalhar, aoProgredir){
+  if (!arquivo) return;
+  var url = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload';
+  var dados = new FormData();
+  dados.append('file', arquivo);
+  dados.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  dados.append('folder', CLOUDINARY_PASTA);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', url, true);
+  xhr.upload.onprogress = function(ev){
+    if (aoProgredir && ev.lengthComputable) aoProgredir(Math.round((ev.loaded/ev.total)*100));
+  };
+  xhr.onload = function(){
+    try{
+      var resp = JSON.parse(xhr.responseText);
+      if (xhr.status >= 200 && xhr.status < 300 && resp.secure_url){
+        aoConcluir(resp.secure_url);
+      } else {
+        aoFalhar((resp.error && resp.error.message) || 'Falha no envio da foto.');
+      }
+    } catch(e){ aoFalhar('Falha ao entender a resposta do servidor de fotos.'); }
+  };
+  xhr.onerror = function(){ aoFalhar('Sem conexão com o servidor de fotos.'); };
+  xhr.send(dados);
+}
+
+/* liga um botao de "Enviar foto (Cloudinary)" a um input file escondido + status + preview */
+function ligarUploaderCloudinary(inputFileId, previewId, statusId, callback){
+  var arq = $(inputFileId), prev = $(previewId), status = $(statusId);
+  arq.addEventListener('change', function(){
+    var f = arq.files && arq.files[0];
+    if (!f) return;
+    if (status) status.textContent = 'Enviando foto… 0%';
+    enviarParaCloudinary(f,
+      function(secureUrl){
+        if (prev) prev.innerHTML = '<img src="' + esc(secureUrl) + '" alt="">';
+        if (status) status.textContent = 'Foto enviada com sucesso.';
+        callback(secureUrl);
+      },
+      function(msgErro){
+        if (status) status.textContent = 'Erro: ' + msgErro;
+      },
+      function(pct){
+        if (status) status.textContent = 'Enviando foto… ' + pct + '%';
+      }
+    );
+  });
+}
+
 
 /* ---------- diretoria ---------- */
 function limparFormDir(){
@@ -4939,6 +5003,15 @@ function mostrarFichaPessoal(c){
       + pessoalHtml
     + '</div>'
     + '<div class="fp-bloco">'
+      + '<h3>📸 Sua foto</h3>'
+      + (c.foto ? '<div style="text-align:center;margin-bottom:10px"><img src="' + esc(c.foto) + '" alt="" style="width:110px;height:110px;object-fit:cover;border-radius:50%;border:3px solid var(--ouro)"></div>' : '')
+      + '<p style="font-size:12.5px;color:#5B736C;margin-bottom:10px">' + (c.foto ? 'Sua foto já está cadastrada. Quer trocar?' : 'Envie uma foto do seu rosto para aparecer no mapa de cooperados e na sua ficha.') + '</p>'
+      + '<button type="button" class="btn mini verde" id="btnEnviarFotoFicha">📷 ' + (c.foto ? 'Trocar minha foto' : 'Enviar minha foto') + '</button>'
+      + '<input type="file" id="fpFotoArquivo" accept="image/*" capture="user" style="display:none">'
+      + '<div class="ficha-nota" id="fpFotoStatus" style="margin-top:6px"></div>'
+      + '<div id="fpFotoAvisoWrap"></div>'
+    + '</div>'
+    + '<div class="fp-bloco">'
       + '<h3>📄 Seus documentos</h3>'
       + docsHtml
       + '<div class="fp-envio">'
@@ -4950,6 +5023,31 @@ function mostrarFichaPessoal(c){
     + '<p class="fp-rodape-msg">COOPEIMASUL · Cooperativa Estadual Indígena de Mato Grosso do Sul<br>Dúvidas? Fale com a Diretoria pelo mesmo canal em que recebeu este link.</p>';
 
   $('fichaPessoalView').style.display = 'block';
+
+  var btnFoto = $('btnEnviarFotoFicha');
+  if (btnFoto){
+    btnFoto.addEventListener('click', function(){ $('fpFotoArquivo').click(); });
+    ligarUploaderCloudinary('fpFotoArquivo', null, 'fpFotoStatus', function(secureUrl){
+      c.foto = secureUrl;
+      salvarLocal();
+      var msgAviso = 'Olá! Sou ' + c.nome + ' (matrícula ' + c.matricula + '). Acabei de enviar minha foto pela minha ficha pessoal:\n' + secureUrl;
+      var blocoFoto = btnFoto.closest('.fp-bloco');
+      var fotoExistente = blocoFoto.querySelector('img');
+      if (fotoExistente){ fotoExistente.src = secureUrl; }
+      else {
+        var divFoto = document.createElement('div');
+        divFoto.style.cssText = 'text-align:center;margin-bottom:10px';
+        divFoto.innerHTML = '<img src="' + esc(secureUrl) + '" alt="" style="width:110px;height:110px;object-fit:cover;border-radius:50%;border:3px solid var(--ouro)">';
+        blocoFoto.insertBefore(divFoto, blocoFoto.firstChild.nextSibling);
+      }
+      btnFoto.textContent = '📷 Trocar minha foto';
+      $('fpFotoAvisoWrap').innerHTML =
+        '<div class="fp-envio" style="margin-top:10px">'
+        + '<strong>Quase lá!</strong> Agora avise a Diretoria para aprovar sua foto:'
+        + '<br><a class="btn mini whats" href="https://wa.me/?text=' + encodeURIComponent(msgAviso) + '" target="_blank" rel="noopener">📱 Avisar a Diretoria</a>'
+        + '</div>';
+    });
+  }
 }
 
 
@@ -5048,6 +5146,10 @@ document.addEventListener('DOMContentLoaded', function(){
   ligarUploader('drFoto','drFotoUrl','drPreview', function(dataUrl){ _fotoDir = dataUrl; });
   ligarUploader('glFoto','glFotoUrl','glPreview', function(dataUrl){ _fotoGalAtual = dataUrl; });
   ligarUploader('cFoto','cFotoUrl','cFotoPreview', function(dataUrl){ _fotoCoopAtual = dataUrl; });
+  $('btnEnviarFotoCoopCloud').addEventListener('click', function(){ $('cFotoCloud').click(); });
+  ligarUploaderCloudinary('cFotoCloud','cFotoPreview','statusFotoCoopCloud', function(secureUrl){
+    _fotoCoopAtual = secureUrl; $('cFotoUrl').value = secureUrl;
+  });
   ligarFiltrosGaleria();
   $('btnFecharLightbox').addEventListener('click', fecharLightbox);
   $('btnFecharCoopModal').addEventListener('click', function(){ $('coopModal').classList.remove('on'); });
