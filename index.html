@@ -2924,7 +2924,23 @@ function carregarLocal(){
   } catch(e){}
   aplicarSeedCooperados();
   aplicarSeedAtos();
+  aplicarSeedDocs();
 }
+function aplicarSeedDocs(){
+  if (typeof SEED_DOCS_V1 === 'undefined') return;
+  var mudou = false;
+  SEED_DOCS_V1.forEach(function(base){
+    var existe = false, i;
+    for (i=0;i<db.docs.length;i++){ if (db.docs[i].id === base.id){ existe = true; break; } }
+    if (!existe){ db.docs.push(JSON.parse(JSON.stringify(base))); mudou = true; }
+  });
+  if (mudou) salvarLocal();
+}
+var SEED_DOCS_V1 = [
+  {"id":"doc001","tipo":"Estatuto Social","nome":"Estatuto Social da COOPEIMASUL","data":"2026-07-20","publico":"sim","url":"https://www.coopeimasul.com.br/Estatuto_Social_COOPEIMASUL_final.pdf"},
+  {"id":"doc002","tipo":"Regimento Interno","nome":"Regimento Interno da COOPEIMASUL","data":"2026-07-20","publico":"sim","url":"https://www.coopeimasul.com.br/Regimento_Interno_COOPEIMASUL_final.pdf"}
+];
+
 function aplicarSeedAtos(){
   if (typeof SEED_ATOS_V1 === 'undefined') return;
   var mudou = false;
