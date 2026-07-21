@@ -1236,6 +1236,20 @@ body.modo-ficha-pessoal{ overflow:hidden }
   background:var(--areia); border:1px solid var(--linha); color:var(--verde-esc);
 }
 
+/* ---------- autocompletar do cadastro de cooperado ---------- */
+.autocompletar-caixa{
+  position:absolute; z-index:60; top:100%; left:0; right:0; margin-top:2px;
+  background:#fff; border:1px solid var(--linha); border-radius:8px;
+  box-shadow:0 14px 34px rgba(22,48,43,.16); max-height:230px; overflow-y:auto;
+}
+.autocompletar-item{
+  padding:9px 12px; font-size:13px; cursor:pointer; border-bottom:1px solid var(--areia);
+  display:flex; justify-content:space-between; gap:10px;
+}
+.autocompletar-item:last-child{ border-bottom:none }
+.autocompletar-item:hover{ background:var(--areia) }
+.autocompletar-item .mun{ font-size:11px; color:#8FB4A6; font-family:var(--mono); flex:none }
+
 /* ---------- rodapé ---------- */
 footer{background:var(--pinho);color:#CDE8DA;margin-top:0}
 footer .friso-rodape{height:26px;background-repeat:repeat-x;background-size:auto 26px}
@@ -2931,6 +2945,14 @@ function carregarLocal(){
   aplicarSeedAtos();
   aplicarSeedDocs();
 }
+
+/* ======================================================================
+   REFERENCIA CADASTRAL DOS FUNDADORES — documento oficial da cooperativa,
+   usada para autocompletar o formulario de cooperado no ADM. Nao sobrescreve
+   nada sozinha: apenas sugere, e quem preenche confirma antes de salvar.
+   ====================================================================== */
+var REFERENCIA_CADASTRAL_V1 = [{"nome": "Edvaldo Felix", "fone": "67 99914-6070", "cpf": "203.151.471-72", "rg": "", "etnia": "Terena", "aldeia": "Aldeia Lagoinha, Reserva Indígena de Taunay/Ipegue", "municipio": "Aquidauana", "profissao": "Enfermeiro", "estadoCivil": "Casado(a)"}, {"nome": "Levison Vicente", "fone": "67 9636-2163", "cpf": "004.548.731-66", "rg": "2084588 SSP/MS", "etnia": "Terena", "aldeia": "Aldeia Lagoinha, Reserva Indígena de Taunay/Ipegue", "municipio": "Aquidauana", "profissao": "Agricultor", "estadoCivil": "Casado(a)", "obs": "Cacique"}, {"nome": "Jader Jorge de Oliveira", "fone": "67 99838-6852", "cpf": "466.160.551-91", "rg": "097479 SSP/MS", "etnia": "Terena", "aldeia": "Instituto Bíblico Cades Barnéia", "municipio": "Anastácio", "profissao": "Pastor", "estadoCivil": "Casado(a)", "obs": "IBCB"}, {"nome": "Wanderley Dias Cardoso", "fone": "67 8453-8395", "cpf": "", "rg": "", "etnia": "Terena", "aldeia": "Reserva Indígena de Limão Verde", "municipio": "Aquidauana", "profissao": "Professor", "estadoCivil": "Casado(a)"}, {"nome": "Jerry Jerônimo de Souza", "fone": "67 8154-6347", "cpf": "024.698.881-90", "rg": "001626111 SSP/MS", "etnia": "Terena", "aldeia": "Aldeia Jaguapiru, Reserva Indígena de Dourados", "municipio": "Dourados", "profissao": "Professor", "estadoCivil": "Casado(a)", "obs": "documento original registra Guarani/Kaiowá; corrigido para Terena por decisão prévia"}, {"nome": "Vilmar Martins Machado da Silva", "fone": "", "cpf": "847.572.991-69", "rg": "1760558 SSP/MS", "etnia": "Guarani/Terena", "aldeia": "Aldeia Jaguapiru, Reserva Indígena de Dourados", "municipio": "Dourados", "profissao": "Produtor rural", "estadoCivil": "Casado(a)", "obs": "Cacique"}, {"nome": "Jorginho Soares Martins", "fone": "67 98738-788", "cpf": "057.832.881-01", "rg": "2193991 SSP/MS", "etnia": "Guarani", "aldeia": "Teyikue", "municipio": "Caarapó", "profissao": "Agricultor", "estadoCivil": "Casado(a)"}, {"nome": "Romanito Bento Medina", "fone": "67 98205-989", "cpf": "001.607.781-40", "rg": "1475461 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda 14 de Julho, Reserva Indígena Alves de Barros", "municipio": "Porto Murtinho", "profissao": "Produtor rural", "estadoCivil": ""}, {"nome": "Matias José Marcelino", "fone": "", "cpf": "053.852.431-67", "rg": "2447632 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda Marechal, Reserva Indígena Alves de Barros", "municipio": "Porto Murtinho", "profissao": "Produtor rural", "estadoCivil": ""}, {"nome": "Francisco Matchua", "fone": "67 99412-817", "cpf": "763.822.901-06", "rg": "595901 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda Água Fria, Reserva Indígena Alves de Barros", "municipio": "Porto Murtinho", "profissao": "Agricultor", "estadoCivil": "Casado(a)"}, {"nome": "Rosemiro Pereira", "fone": "67 96199-052", "cpf": "637.143.371-72", "rg": "740591 SSP/MS", "etnia": "Terena", "aldeia": "Vila Trindade", "municipio": "Aquidauana", "profissao": "Policial militar", "estadoCivil": "Casado(a)"}, {"nome": "Adeilson da Silva", "fone": "67 96887-368", "cpf": "025.262.971-09", "rg": "", "etnia": "Kadiwéu", "aldeia": "Fazenda Morro da Lenha, Reserva Indígena Alves de Barros", "municipio": "Porto Murtinho", "profissao": "Funcionário público", "estadoCivil": "Casado(a)"}, {"nome": "Damaris Mariano Pereira Rodrigues", "fone": "67 96565-543", "cpf": "015.206.321-85", "rg": "001475155 SSP/MS", "etnia": "Terena", "aldeia": "Vila Trindade", "municipio": "Aquidauana", "profissao": "Engenheira Florestal", "estadoCivil": "Casado(a)"}, {"nome": "Kali Aurélio José de Oliveira", "fone": "67 99881-586", "cpf": "031.043.871-33", "rg": "001608182 SSP/MS", "etnia": "Terena", "aldeia": "Instituto Bíblico Cades Barnéia", "municipio": "Anastácio", "profissao": "Professor", "estadoCivil": "Casado(a)"}, {"nome": "Auder Romeiro Larreia", "fone": "67 99509-453", "cpf": "940.146.471-53", "rg": "2790503 SSP/MS", "etnia": "Guarani", "aldeia": "Aldeia Urbana Água Bonita", "municipio": "Campo Grande", "profissao": "Agricultor", "estadoCivil": "Casado(a)"}, {"nome": "Mauro Vitor", "fone": "", "cpf": "010.938.841-00", "rg": "2483139 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Alves de Barros", "municipio": "Porto Murtinho", "profissao": "", "estadoCivil": "Casado(a)"}, {"nome": "Luiz Fernando Matchua", "fone": "67 96217-889", "cpf": "021.609.081-42", "rg": "1665229 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Alves de Barros", "municipio": "Porto Murtinho", "profissao": "", "estadoCivil": "Casado(a)", "obs": "Suplente no CNPI"}, {"nome": "Domingos Pedros", "fone": "67 98346-840", "cpf": "867.532.311-53", "rg": "001982721 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda Bacurizinho, Aldeia Córrego do Ouro, Reserva Indígena Kadiwéu", "municipio": "Porto Murtinho", "profissao": "Agricultor", "estadoCivil": "Casado(a)"}, {"nome": "Luiz G. Onçalo", "fone": "67 99277-961", "cpf": "421.109.981-72", "rg": "352695 SSP/MS", "etnia": "Terena", "aldeia": "", "municipio": "Aquidauana", "profissao": "Agricultor", "estadoCivil": "Casado(a)", "obs": "Associação Txane; endereço: Rua Maria Cecília de Arruda, 06, Vila Fragelli"}, {"nome": "Ademir Soares Francisco", "fone": "67 96988-655", "cpf": "959.775.201-82", "rg": "001109581 SSP/MS", "etnia": "Terena", "aldeia": "Aldeia Ipegue, Reserva Indígena de Taunay/Ipegue", "municipio": "Aquidauana", "profissao": "", "estadoCivil": "", "obs": "Cacique"}, {"nome": "Pedro Lulu", "fone": "67 99370-662", "cpf": "638.720.211-68", "rg": "558842 SSP/MS", "etnia": "Terena", "aldeia": "Aldeia Arara Azul, Reserva Indígena Taunay/Ipegue", "municipio": "Aquidauana", "profissao": "Agricultor", "estadoCivil": "Casado(a)", "obs": "Cacique"}, {"nome": "José Carlos Pacheco", "fone": "67 96261-928", "cpf": "542.644.561-34", "rg": "638728 SSP/MS", "etnia": "Terena", "aldeia": "", "municipio": "Campo Grande", "profissao": "Servidor público", "estadoCivil": "Casado(a)", "obs": "ATIMS; endereço: Avenida Rachid Neder, 1170, Bairro Monte Castelo, CEP 79010-170"}, {"nome": "Ener Reginaldo Vitorino", "fone": "67 98374-680", "cpf": "004.512.811-10", "rg": "2128728 SSP/MS", "etnia": "Terena", "aldeia": "Aldeia Aguazul, Terra Indígena Buriti", "municipio": "Dois Irmãos do Buriti", "profissao": "Pastor e professor", "estadoCivil": "Casado(a)"}, {"nome": "Eber Reginaldo Vitorino", "fone": "67 9197-2173", "cpf": "011.506.251-39", "rg": "2131193 SSP/MS", "etnia": "Terena", "aldeia": "Aldeia Aguazul, Terra Indígena Buriti", "municipio": "Dois Irmãos do Buriti", "profissao": "Professor", "estadoCivil": "Casado(a)"}, {"nome": "Aguinaldo Arruda Areco", "fone": "67 9197-0739", "cpf": "694.486.551-34", "rg": "927680 SSP/MS", "etnia": "Terena", "aldeia": "", "municipio": "Campo Grande", "profissao": "Auxiliar administrativo", "estadoCivil": "Solteiro(a)", "obs": "FOCAMS; endereço: Avenida Delegado Alfredo Hardman, 108, Condomínio Armando Tibana, Bloco 11, apto 204, Bairro Paulo Coelho Machado"}, {"nome": "Hilário da Silva", "fone": "67 98259-478", "cpf": "583.263.241-91", "rg": "1829192 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda Água Limpa, Reserva Indígena Alves de Barros", "municipio": "Porto Murtinho", "profissao": "Professor", "estadoCivil": "Casado(a)"}, {"nome": "Vanilson Farias Francisco", "fone": "", "cpf": "051.595.011-42", "rg": "2233012 SSP/MS", "etnia": "Terena", "aldeia": "Aldeia Água Branca, Reserva Indígena Taunay/Ipegue", "municipio": "Aquidauana", "profissao": "Pecuária indígena", "estadoCivil": "Solteiro(a)"}, {"nome": "Ciríaco Ferraz", "fone": "67 9615-7281", "cpf": "257.619.511-34", "rg": "001477558 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda Tarumã I", "municipio": "Porto Murtinho", "profissao": "Vaqueiro", "estadoCivil": "Casado(a)", "obs": "Cacique"}, {"nome": "Enisvaldo Ferraz Goes", "fone": "", "cpf": "076.136.331-95", "rg": "2482823 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda Tarumã II", "municipio": "Porto Murtinho", "profissao": "Funcionário público", "estadoCivil": "Casado(a)"}, {"nome": "Lourival Ferraz", "fone": "67 9615-7281", "cpf": "041.276.981-60", "rg": "2476209 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda Tarumã III", "municipio": "Porto Murtinho", "profissao": "Vaqueiro", "estadoCivil": "Casado(a)"}, {"nome": "Maciel Ferraz", "fone": "", "cpf": "106.968.471-67", "rg": "2616330 SSP/MS", "etnia": "Kadiwéu", "aldeia": "Fazenda Tarumã IV", "municipio": "Porto Murtinho", "profissao": "", "estadoCivil": ""}, {"nome": "Cleidina", "fone": "", "cpf": "", "rg": "", "etnia": "Terena", "aldeia": "", "municipio": "Campo Grande", "profissao": "", "estadoCivil": ""}, {"nome": "Wilson Matos da Silva", "fone": "67 96160-520", "cpf": "308.804.751-53", "rg": "001825 SSP/MS", "etnia": "Guarani/Terena", "aldeia": "Casa 844 A, Aldeia Jaguapiru, Reserva Indígena de Dourados", "municipio": "Dourados", "profissao": "Advogado e jornalista", "estadoCivil": "Casado(a)"}, {"nome": "Lisio Lili", "fone": "67 9219-1061", "cpf": "106.263.361-04", "rg": "351739 SSP/MS", "etnia": "Terena", "aldeia": "", "municipio": "Campo Grande", "profissao": "Agente cultural", "estadoCivil": "Casado(a)", "obs": "endereço: Rua Ferreira Viana, 1483, Bairro Jardim Noroeste"}];
+
 function aplicarSeedDocs(){
   if (typeof SEED_DOCS_V1 === 'undefined') return;
   var mudou = false;
@@ -3139,6 +3161,61 @@ function ligarUploader(inputFileId, inputUrlId, previewId, callback){
 }
 var _fotoDir = '', _fotoGal = '';
 function limparPreview(previewId){ $(previewId).innerHTML = 'sem foto'; }
+
+/* ---------- autocompletar do cadastro de cooperado, a partir da referencia cadastral ---------- */
+function normalizarBusca(txt){
+  return (txt||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+function ativarAutocompletarCoop(){
+  var campo = $('cNome');
+  if (!campo) return;
+  var caixa = document.createElement('div');
+  caixa.id = 'cNomeSugestoes';
+  caixa.className = 'autocompletar-caixa';
+  caixa.style.display = 'none';
+  campo.parentNode.style.position = 'relative';
+  campo.parentNode.appendChild(caixa);
+
+  campo.addEventListener('input', function(){
+    var termo = normalizarBusca(campo.value);
+    if (termo.length < 2){ caixa.style.display = 'none'; return; }
+    var achados = REFERENCIA_CADASTRAL_V1.filter(function(r){
+      return normalizarBusca(r.nome).indexOf(termo) !== -1;
+    }).slice(0, 6);
+    if (!achados.length){ caixa.style.display = 'none'; return; }
+    caixa.innerHTML = achados.map(function(r, i){
+      return '<div class="autocompletar-item" data-idx="' + i + '">' + esc(r.nome)
+        + (r.municipio ? ' <span class="mun">' + esc(r.municipio) + '</span>' : '') + '</div>';
+    }).join('');
+    caixa.style.display = 'block';
+    Array.prototype.forEach.call(caixa.querySelectorAll('.autocompletar-item'), function(item, i){
+      item.addEventListener('mousedown', function(ev){
+        ev.preventDefault();
+        preencherDaReferencia(achados[i]);
+        caixa.style.display = 'none';
+      });
+    });
+  });
+  campo.addEventListener('blur', function(){ setTimeout(function(){ caixa.style.display = 'none'; }, 150); });
+  document.addEventListener('click', function(ev){
+    if (ev.target !== campo && !caixa.contains(ev.target)) caixa.style.display = 'none';
+  });
+}
+function preencherDaReferencia(r){
+  $('cNome').value = r.nome;
+  if (r.cpf) $('cCpf').value = r.cpf;
+  if (r.rg) $('cRg').value = r.rg;
+  if (r.fone) $('cFone').value = r.fone;
+  if (r.etnia) $('cEtnia').value = r.etnia;
+  if (r.aldeia) $('cAldeia').value = r.aldeia;
+  if (r.municipio) $('cMun').value = r.municipio;
+  if (r.profissao) $('cProfissao').value = r.profissao;
+  if (r.estadoCivil) $('cEstadoCivil').value = r.estadoCivil;
+  $('cNacionalidade').value = 'Brasileira';
+  if (r.obs) msg('msgCoop', 'Preenchido a partir da referência cadastral. Nota: ' + r.obs, true);
+  else msg('msgCoop', 'Dados preenchidos a partir da referência cadastral. Confira antes de salvar.', true);
+}
+
 
 /* ---------- upload direto de fotos para o Cloudinary (mesma rede ICET/CMDDI) ---------- */
 /* IMPORTANTE: antes de usar, crie um "Upload preset" do tipo "Unsigned" no painel do Cloudinary
@@ -5120,6 +5197,7 @@ document.addEventListener('DOMContentLoaded', function(){
   $('btnAssTodos').addEventListener('click', marcarTodosAtivos);
   $('btnFecharDocAudit').addEventListener('click', function(){ $('modalDocAudit').style.display = 'none'; });
   iniciarCartaoVisita();
+  ativarAutocompletarCoop();
   $('modalDocAudit').addEventListener('click', function(ev){ if (ev.target.id === 'modalDocAudit') $('modalDocAudit').style.display = 'none'; });
   $('btnAssNenhum').addEventListener('click', desmarcarTodosAss);
   $('assData').value = hoje();
