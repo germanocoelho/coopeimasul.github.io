@@ -2397,7 +2397,8 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
         <div><label for="cEtnia">Etnia / povo *</label><input id="cEtnia" list="listaEtnias" placeholder="Terena, Kadiwéu, Guarani..."></div>
         <div><label for="cAldeia">Aldeia / comunidade</label><input id="cAldeia"></div>
         <div><label for="cMun">Município *</label><input id="cMun" list="listaMun"></div>
-        <div><label for="cAtiv">Atividade produtiva *</label><select id="cAtiv"><option>Pecuária</option><option>Agricultura</option><option>Turismo</option><option>Mais de uma</option></select></div>
+        <div><label for="cAtiv">Atividade produtiva *</label><select id="cAtiv"><option>Pecuária</option><option>Agricultura</option><option>Turismo</option><option>Cultura</option><option>Liderança indígena</option><option>Mais de uma</option><option value="Outras">Outras</option></select>
+          <input id="cAtivOutras" placeholder="Qual?" style="margin-top:6px;display:none"></div>
         <div><label for="cQuotas">Quotas-partes subscritas</label><input id="cQuotas" type="number" min="1" value="1"></div>
         <div><label for="cIntegral">Quotas integralizadas</label><input id="cIntegral" type="number" min="0" value="0"></div>
         <div><label for="cAdm">Data de admissão</label><input id="cAdm" type="date"></div>
@@ -2852,7 +2853,8 @@ nav.main.aberto .nav-hamburguer span:nth-child(3){transform:translateY(-7.5px) r
           <div><label for="fMunicipio">Município *</label><input id="fMunicipio" list="listaMun"></div>
           <div><label for="fAreaHa">Área disponível para produção (hectares)</label><input id="fAreaHa" type="number" min="0" step="0.1"></div>
           <div><label for="fPosseTerra">Situação da área</label><select id="fPosseTerra"><option>Terra indígena homologada</option><option>Uso comunitário consentido pela liderança</option><option>Área particular regularizada</option><option>Outra</option></select></div>
-          <div><label for="fAtividade">Atividade produtiva pretendida *</label><select id="fAtividade"><option>Pecuária</option><option>Agricultura</option><option>Turismo</option><option>Mais de uma</option></select></div>
+          <div><label for="fAtividade">Atividade produtiva pretendida *</label><select id="fAtividade"><option>Pecuária</option><option>Agricultura</option><option>Turismo</option><option>Cultura</option><option>Liderança indígena</option><option>Mais de uma</option><option value="Outras">Outras</option></select>
+            <input id="fAtividadeOutras" placeholder="Qual?" style="margin-top:6px;display:none"></div>
           <div><label for="fPraticaAmbiental">Prática de manejo ambiental na área</label><select id="fPraticaAmbiental"><option value="">Não sei informar</option><option>Rotação de pastagem</option><option>Recuperação de área degradada</option><option>Preservação de mata nativa</option><option>Mais de uma</option><option>Nenhuma ainda</option></select></div>
         </div>
         <div class="fcol"><label for="fInfraestrutura">Infraestrutura disponível (currais, maquinário próprio, poço, veículo...)</label><textarea id="fInfraestrutura"></textarea></div>
@@ -3065,7 +3067,7 @@ function limparFicha(){
   ['fNome','fNasc','fProfissao','fCpf','fRg','fTelefone','fEmail','fEndereco','fEtnia','fAldeia',
    'fTerraIndigena','fRani','fLideranca','fMunicipio','fAreaHa','fInfraestrutura','fProducaoEstimada'].forEach(function(id){ $(id).value=''; });
   $('fEstadoCivil').value='Solteiro(a)'; $('fNacionalidade').value='Brasileira'; $('fGenero').value='';
-  $('fPosseTerra').value='Terra indígena homologada'; $('fAtividade').value='Pecuária'; $('fPraticaAmbiental').value=''; $('fQuotas').value=1;
+  $('fPosseTerra').value='Terra indígena homologada'; $('fAtividade').value='Pecuária'; $('fAtividadeOutras').value=''; $('fAtividadeOutras').style.display='none'; $('fPraticaAmbiental').value=''; $('fQuotas').value=1;
   ['fDocRgCpf','fDocResidencia','fDocLideranca','fDocCar','fDocGta','fDecConcorrencia','fDecVinculo','fDecLgpd','fDecConhecimento'].forEach(function(id){ $(id).checked=false; });
 }
 function salvarProposta(){
@@ -3084,7 +3086,7 @@ function salvarProposta(){
     etnia: $('fEtnia').value.trim(), aldeia: $('fAldeia').value.trim(), terraIndigena: $('fTerraIndigena').value.trim(),
     rani: $('fRani').value.trim(), lideranca: $('fLideranca').value.trim(),
     municipio: $('fMunicipio').value.trim(), areaHa: $('fAreaHa').value, posseTerra: $('fPosseTerra').value,
-    atividade: $('fAtividade').value, praticaAmbiental: $('fPraticaAmbiental').value, infraestrutura: $('fInfraestrutura').value.trim(), producaoEstimada: $('fProducaoEstimada').value.trim(),
+    atividade: ($('fAtividade').value === 'Outras' ? $('fAtividadeOutras').value.trim() : $('fAtividade').value), praticaAmbiental: $('fPraticaAmbiental').value, infraestrutura: $('fInfraestrutura').value.trim(), producaoEstimada: $('fProducaoEstimada').value.trim(),
     docs: { rgCpf:$('fDocRgCpf').checked, residencia:$('fDocResidencia').checked, lideranca:$('fDocLideranca').checked, car:$('fDocCar').checked, gta:$('fDocGta').checked },
     quotas: parseInt($('fQuotas').value,10) || 1,
     motivo: ''
@@ -3161,6 +3163,27 @@ function ligarUploader(inputFileId, inputUrlId, previewId, callback){
 }
 var _fotoDir = '', _fotoGal = '';
 function limparPreview(previewId){ $(previewId).innerHTML = 'sem foto'; }
+
+/* ---------- atividade produtiva com opcao "Outras" (texto livre) ---------- */
+function definirAtividadeForm(idSelect, idOutras, valor){
+  var select = $(idSelect), outras = $(idOutras);
+  var opcoesFixas = ['Pecuária','Agricultura','Turismo','Cultura','Liderança indígena','Mais de uma'];
+  if (!valor || opcoesFixas.indexOf(valor) !== -1){
+    select.value = valor || 'Pecuária';
+    outras.style.display = 'none'; outras.value = '';
+  } else {
+    select.value = 'Outras';
+    outras.style.display = 'block'; outras.value = valor;
+  }
+}
+function ativarAlternanciaAtividade(idSelect, idOutras){
+  var select = $(idSelect), outras = $(idOutras);
+  select.addEventListener('change', function(){
+    outras.style.display = (select.value === 'Outras') ? 'block' : 'none';
+    if (select.value !== 'Outras') outras.value = '';
+  });
+}
+
 
 /* ---------- autocompletar do cadastro de cooperado, a partir da referencia cadastral ---------- */
 function normalizarBusca(txt){
@@ -4403,7 +4426,7 @@ function lerFormCoop(){
     etnia: $('cEtnia').value.trim(),
     aldeia: $('cAldeia').value.trim(),
     municipio: $('cMun').value.trim(),
-    atividade: $('cAtiv').value,
+    atividade: ($('cAtiv').value === 'Outras' ? $('cAtivOutras').value.trim() : $('cAtiv').value),
     quotas: parseInt($('cQuotas').value,10) || 1,
     integralizadas: parseInt($('cIntegral').value,10) || 0,
     admissao: $('cAdm').value,
@@ -4430,7 +4453,7 @@ function lerFormCoop(){
 var _fotoCoopAtual = '';
 function limparFormCoop(){
   ['cId','cMat','cNome','cCpf','cNasc','cEtnia','cAldeia','cMun','cFone','cEmail','cRg','cNacionalidade','cProfissao','cEndereco','cPastaDocs','cHerdeiro','cObito','cPrazo','cObs'].forEach(function(id){ $(id).value=''; });
-  $('cAtiv').value = 'Pecuária'; $('cStatus').value = 'ativo'; $('cEstadoCivil').value = ''; $('cNacionalidade').value = 'Brasileira';
+  $('cAtiv').value = 'Pecuária'; $('cAtivOutras').value=''; $('cAtivOutras').style.display='none'; $('cStatus').value = 'ativo'; $('cEstadoCivil').value = ''; $('cNacionalidade').value = 'Brasileira';
   $('cQuotas').value = 1; $('cIntegral').value = 0; $('cAdm').value = hoje();
   $('cFoto').value = ''; $('cFotoUrl').value = ''; $('cFotoPreview').innerHTML = 'sem foto'; _fotoCoopAtual = '';
   blocoSucessao();
@@ -4456,7 +4479,7 @@ function editarCoop(id){
   $('cId').value = c.id; $('cMat').value = c.matricula; $('cNome').value = c.nome;
   $('cCpf').value = c.cpf || ''; $('cNasc').value = c.nascimento || '';
   $('cEtnia').value = c.etnia || ''; $('cAldeia').value = c.aldeia || '';
-  $('cMun').value = c.municipio || ''; $('cAtiv').value = c.atividade || 'Pecuária';
+  $('cMun').value = c.municipio || ''; definirAtividadeForm('cAtiv','cAtivOutras', c.atividade);
   $('cQuotas').value = c.quotas || 1; $('cIntegral').value = c.integralizadas || 0;
   $('cAdm').value = c.admissao || ''; $('cStatus').value = c.status || 'ativo';
   $('cFone').value = c.fone || ''; $('cHerdeiro').value = c.herdeiro || '';
@@ -5198,6 +5221,8 @@ document.addEventListener('DOMContentLoaded', function(){
   $('btnFecharDocAudit').addEventListener('click', function(){ $('modalDocAudit').style.display = 'none'; });
   iniciarCartaoVisita();
   ativarAutocompletarCoop();
+  ativarAlternanciaAtividade('cAtiv','cAtivOutras');
+  ativarAlternanciaAtividade('fAtividade','fAtividadeOutras');
   $('modalDocAudit').addEventListener('click', function(ev){ if (ev.target.id === 'modalDocAudit') $('modalDocAudit').style.display = 'none'; });
   $('btnAssNenhum').addEventListener('click', desmarcarTodosAss);
   $('assData').value = hoje();
