@@ -747,7 +747,7 @@ table.adm-t tr.linha-clicavel{cursor:pointer}
   content:""; position:absolute; inset:0; opacity:.07; pointer-events:none;
   background-image:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 34px),repeating-linear-gradient(90deg,#fff 0 1px,transparent 1px 34px);
 }
-.mapa-svg{position:relative;z-index:1;width:100%;height:auto;aspect-ratio:520/527;display:block;max-height:640px;margin:0 auto}
+.mapa-svg{position:relative;z-index:1;width:100%;height:auto;aspect-ratio:520/527;display:block;max-height:640px;margin:0 auto;transform-style:preserve-3d;transition:transform .15s ease-out;will-change:transform}
 .mapa-estado{fill:url(#gradEstadoMS);stroke:#F4C430;stroke-width:2.5;stroke-linejoin:round;
   filter:drop-shadow(0 14px 30px rgba(0,0,0,.4));}
 .mapa-estado-textura{fill:none;stroke:#fff;stroke-width:.6;opacity:.12}
@@ -4256,7 +4256,7 @@ function ativarParalaxeHero(){
 
 function ativarTilt3D(){
   if (REDUZIR_MOVIMENTO) return;
-  var seletores = '.card, .apoiador-card, .leg-grupo, .orgao, .membro, .mapa-caixa';
+  var seletores = '.card, .apoiador-card, .leg-grupo, .orgao, .membro';
   var els = document.querySelectorAll(seletores);
   Array.prototype.forEach.call(els, function(el){
     el.classList.add('tilt-3d');
@@ -4282,6 +4282,35 @@ function ativarTilt3D(){
     }, { passive:true });
     el.addEventListener('touchend', function(){ el.style.transform = ''; });
   });
+}
+
+function ativarTilt3DMapa(){
+  // efeito 3D correto e especifico para o mapa: a inclinacao e aplicada
+  // apenas ao SVG do mapa (nao a caixa inteira, que tambem contem a legenda),
+  // para manter o ponto de rotacao centrado no mapa e a legenda sempre legivel.
+  if (REDUZIR_MOVIMENTO) return;
+  var caixa = document.querySelector('.mapa-caixa');
+  var svgMapa = document.querySelector('.mapa-svg');
+  if (!caixa || !svgMapa) return;
+  if (caixa.getAttribute('data-tilt-ativo') === '1') return; // evita duplicar listeners se o mapa for re-renderizado
+  caixa.setAttribute('data-tilt-ativo', '1');
+  var forca = 8;
+  function aplicarTilt(clientX, clientY){
+    var r = caixa.getBoundingClientRect();
+    var px = (clientX - r.left) / r.width;
+    var py = (clientY - r.top) / r.height;
+    px = Math.min(1, Math.max(0, px));
+    py = Math.min(1, Math.max(0, py));
+    var rotY = (px - 0.5) * forca * 2;
+    var rotX = (0.5 - py) * forca * 2;
+    svgMapa.style.transform = 'perspective(1400px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+  }
+  caixa.addEventListener('mousemove', function(ev){ aplicarTilt(ev.clientX, ev.clientY); });
+  caixa.addEventListener('mouseleave', function(){ svgMapa.style.transform = ''; });
+  caixa.addEventListener('touchmove', function(ev){
+    if (ev.touches && ev.touches[0]) aplicarTilt(ev.touches[0].clientX, ev.touches[0].clientY);
+  }, { passive:true });
+  caixa.addEventListener('touchend', function(){ svgMapa.style.transform = ''; });
 }
 
 function ativarMenuMobile(){
@@ -4997,6 +5026,7 @@ function renderMapaInterno(grupo, cartoes){
   }).join('') || '<p style="color:#5B736C;font-size:13px">Cadastre cooperados com município preenchido para vê-los no mapa.</p>';
 
   ativarMapa();
+  ativarTilt3DMapa();
 }
 function abrirCoopModal(el){
   var nome = el.getAttribute('data-aldeia');
