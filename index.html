@@ -4954,15 +4954,35 @@ function renderMapaInterno(grupo, cartoes){
     porMunicipio[mun].sort(function(a,b){ return mapaRotulo(a).localeCompare(mapaRotulo(b), 'pt-BR'); });
   });
 
-  // linhas conectando a sede a cada município com cooperados
+  // funcao auxiliar: encontra, dentro do leque de pontos de um municipio,
+  // o ponto real mais proximo da direcao indicada (para a linha tocar um ponto de verdade)
+  function pontoDeAncoragem(baseX, baseY, n, anguloAlvo){
+    var posicoes = calcularPosicoesCluster(baseX, baseY, n);
+    if (n === 1) return posicoes[0];
+    var melhorIdx = 0, melhorDiff = Infinity;
+    for (var i = 0; i < n; i++){
+      var angPonto = (Math.PI * 2 * i / n) - Math.PI/2;
+      var diff = Math.abs(Math.atan2(Math.sin(angPonto - anguloAlvo), Math.cos(angPonto - anguloAlvo)));
+      if (diff < melhorDiff){ melhorDiff = diff; melhorIdx = i; }
+    }
+    return posicoes[melhorIdx];
+  }
+
+  // linhas conectando a sede a cada município com cooperados, tocando pontos reais em cada ponta
+  var nSede = (porMunicipio['Campo Grande'] || []).length || 1;
   Object.keys(porMunicipio).forEach(function(mun){
     if (mun === 'Campo Grande') return;
     var base = MAPA_COORDS[mun];
-    var mx = (sede.x+base.x)/2 + (base.y > sede.y ? 14 : -14);
-    var my = (sede.y+base.y)/2;
+    var nMun = porMunicipio[mun].length;
+    var anguloSedeParaMun = Math.atan2(base.y - sede.y, base.x - sede.x);
+    var anguloMunParaSede = anguloSedeParaMun + Math.PI;
+    var pSede = pontoDeAncoragem(sede.x, sede.y, nSede, anguloSedeParaMun);
+    var pMun = pontoDeAncoragem(base.x, base.y, nMun, anguloMunParaSede);
+    var mx = (pSede[0]+pMun[0])/2 + (pMun[1] > pSede[1] ? 14 : -14);
+    var my = (pSede[1]+pMun[1])/2;
     var linha = criarSvgEl('path', {
       'class':'mapa-linha', 'data-linha-mapa':'1', 'data-municipio-linha': mun,
-      'd':'M' + sede.x + ',' + sede.y + ' Q ' + mx + ',' + my + ' ' + base.x + ',' + base.y
+      'd':'M' + pSede[0] + ',' + pSede[1] + ' Q ' + mx + ',' + my + ' ' + pMun[0] + ',' + pMun[1]
     });
     grupo.appendChild(linha);
   });
