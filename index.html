@@ -752,9 +752,12 @@ table.adm-t tr.linha-clicavel{cursor:pointer}
   filter:drop-shadow(0 14px 30px rgba(0,0,0,.4));}
 .mapa-estado-textura{fill:none;stroke:#fff;stroke-width:.6;opacity:.12}
 
-.mapa-linha{fill:none;stroke:#F4C430;stroke-width:1.6;stroke-dasharray:6 5;opacity:.55;
-  stroke-dashoffset:400;transition:stroke-dashoffset 1.6s cubic-bezier(.16,1,.3,1);}
+.mapa-linha{fill:none;stroke:#F4C430;stroke-width:1.6;stroke-dasharray:6 5;opacity:.32;
+  stroke-dashoffset:400;transition:stroke-dashoffset 1.6s cubic-bezier(.16,1,.3,1), opacity .4s ease, stroke-width .3s ease;}
 .mapa-linha.in-view{stroke-dashoffset:0}
+.mapa-linha.ativa{opacity:1; stroke-width:2.4; filter:drop-shadow(0 0 4px rgba(244,196,48,.7)); animation:mapa-linha-fluxo 1s linear infinite}
+@keyframes mapa-linha-fluxo{ to{ stroke-dashoffset:-11; } }
+@media (prefers-reduced-motion: reduce){ .mapa-linha.ativa{animation:none} }
 
 .mapa-marco{cursor:default}
 .mapa-marco circle.halo{fill:rgba(244,196,48,.22);animation:mapa-pulso 2.6s ease-in-out infinite;transform-origin:center}
@@ -4253,7 +4256,7 @@ function ativarParalaxeHero(){
 
 function ativarTilt3D(){
   if (REDUZIR_MOVIMENTO) return;
-  var seletores = '.card, .apoiador-card, .leg-grupo, .orgao, .membro';
+  var seletores = '.card, .apoiador-card, .leg-grupo, .orgao, .membro, .mapa-caixa';
   var els = document.querySelectorAll(seletores);
   Array.prototype.forEach.call(els, function(el){
     el.classList.add('tilt-3d');
@@ -4929,7 +4932,7 @@ function renderMapaInterno(grupo, cartoes){
     var mx = (sede.x+base.x)/2 + (base.y > sede.y ? 14 : -14);
     var my = (sede.y+base.y)/2;
     var linha = criarSvgEl('path', {
-      'class':'mapa-linha', 'data-linha-mapa':'1',
+      'class':'mapa-linha', 'data-linha-mapa':'1', 'data-municipio-linha': mun,
       'd':'M' + sede.x + ',' + sede.y + ' Q ' + mx + ',' + my + ' ' + base.x + ',' + base.y
     });
     grupo.appendChild(linha);
@@ -5040,9 +5043,17 @@ function ativarMapa(){
   function esconderTooltip(){ tooltip.classList.remove('on'); }
 
   Array.prototype.forEach.call(marcos, function(m){
-    m.addEventListener('mouseenter', function(ev){ mostrarTooltip(m, ev); });
+    m.addEventListener('mouseenter', function(ev){
+      mostrarTooltip(m, ev);
+      var mun = m.getAttribute('data-municipio');
+      var linhaAlvo = document.querySelector('.mapa-linha[data-municipio-linha="' + mun + '"]');
+      if (linhaAlvo) linhaAlvo.classList.add('ativa');
+    });
     m.addEventListener('mousemove', posicionarTooltip);
-    m.addEventListener('mouseleave', esconderTooltip);
+    m.addEventListener('mouseleave', function(){
+      esconderTooltip();
+      Array.prototype.forEach.call(document.querySelectorAll('.mapa-linha.ativa'), function(l){ l.classList.remove('ativa'); });
+    });
   });
 
   var botoesPessoa = document.querySelectorAll('.mapa-pessoa-btn');
@@ -5057,11 +5068,14 @@ function ativarMapa(){
       Array.prototype.forEach.call(document.querySelectorAll('.mapa-marco'), function(m){
         m.querySelector('.ponto').setAttribute('r', (m.getAttribute('data-municipio') === mun) ? '7.5' : '5.5');
       });
+      var linhaAlvo = document.querySelector('.mapa-linha[data-municipio-linha="' + mun + '"]');
+      if (linhaAlvo) linhaAlvo.classList.add('ativa');
       card.classList.add('ativo');
     });
     card.addEventListener('mouseleave', function(){
       card.classList.remove('ativo');
       Array.prototype.forEach.call(document.querySelectorAll('.mapa-marco .ponto'), function(p){ p.setAttribute('r','5.5'); });
+      Array.prototype.forEach.call(document.querySelectorAll('.mapa-linha.ativa'), function(l){ l.classList.remove('ativa'); });
     });
   });
 }
