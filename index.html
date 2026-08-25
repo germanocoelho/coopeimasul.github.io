@@ -765,7 +765,7 @@ table.adm-t tr.linha-clicavel{cursor:pointer}
 @keyframes mapa-pulso{0%{r:5.5;opacity:.75}100%{r:15;opacity:0}}
 .mapa-marco circle.ponto{fill:var(--ouro);stroke:#16302B;stroke-width:2;transition:r .3s cubic-bezier(.34,1.56,.64,1),fill .3s ease}
 .mapa-marco.capital circle.ponto{fill:#fff}
-.mapa-marco:hover circle.ponto{r:7.5;fill:#fff}
+.mapa-marco:hover circle.ponto, .mapa-marco.ativo circle.ponto{r:7.5;fill:#fff}
 .mapa-marco text{font-family:var(--mono);font-size:9.5px;fill:#EAF7F0;text-anchor:middle;pointer-events:none;font-weight:600}
 .mapa-marco .mapa-numero{font-size:10.5px;font-weight:700;fill:#16302B;text-anchor:middle;pointer-events:none}
 
@@ -2407,7 +2407,7 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
   <div class="wrap">
     <div class="rotulo" data-i18n="mapa_rotulo">Onde estamos</div>
     <h2 class="titulo" data-i18n="mapa_titulo">Mapa dos cooperados em Mato Grosso do Sul</h2>
-    <div class="prosa"><p data-i18n="mapa_p1">Contorno geográfico real do estado. Cada ponto representa um cooperado; passe o mouse para ver o nome e clique para abrir a foto e os detalhes.</p></div>
+    <div class="prosa"><p data-i18n="mapa_p1">Contorno geográfico real do estado. Cada ponto representa um município com cooperados; passe o mouse para ver quantos são, e toque em um nome na lista ao lado para abrir a foto e os detalhes.</p></div>
 
     <div class="mapa-layout">
       <div class="mapa-caixa">
@@ -4945,88 +4945,86 @@ function renderMapaInterno(grupo, cartoes){
   grupo.innerHTML = '';
   var sede = MAPA_COORDS['Campo Grande'];
 
-  var ativos = db.cooperados.filter(function(c){ return c.status === 'ativo' && c.municipio && MAPA_COORDS[c.municipio]; });
+  var ativos = db.cooperados.filter(function(c){ return c.status !== 'inativo' && c.status !== 'excluido'; });
   var porMunicipio = {};
   ativos.forEach(function(c){
-    (porMunicipio[c.municipio] = porMunicipio[c.municipio] || []).push(c);
+    var mun = c.municipio || 'Campo Grande';
+    (porMunicipio[mun] = porMunicipio[mun] || []).push(c);
   });
   Object.keys(porMunicipio).forEach(function(mun){
     porMunicipio[mun].sort(function(a,b){ return mapaRotulo(a).localeCompare(mapaRotulo(b), 'pt-BR'); });
   });
 
-  // funcao auxiliar: encontra, dentro do leque de pontos de um municipio,
-  // o ponto real mais proximo da direcao indicada (para a linha tocar um ponto de verdade)
-    // linhas conectando a sede a cada município com cooperados: partem do centro
-  // teorico de cada municipio (nao de um ponto especifico do leque, que pode ficar
-  // grande demais quando ha muitos cooperados) e sao encurtadas por uma margem fixa
-  // em cada ponta, na direcao uma da outra, para nao cobrir os marcadores
-  var MARGEM_LINHA = 22;
+  // ===== linhas de rede: um marcador por municipio, sem leque -- a linha liga
+  // diretamente o marcador da sede ao marcador do municipio, com uma margem fixa
+  // e pequena em cada ponta so para nao cobrir os circulos =====
+  var MARGEM_LINHA = 16;
   Object.keys(porMunicipio).forEach(function(mun){
-    if (mun === 'Campo Grande') return;
+    if (mun === 'Campo Grande' || !MAPA_COORDS[mun]) return;
     var base = MAPA_COORDS[mun];
     var dx = base.x - sede.x, dy = base.y - sede.y;
     var dist = Math.sqrt(dx*dx + dy*dy) || 1;
     var ux = dx/dist, uy = dy/dist;
-    var margemSede = Math.min(MARGEM_LINHA, dist*0.15);
-    var margemMun = Math.min(MARGEM_LINHA, dist*0.15);
-    var pSede = [ sede.x + ux*margemSede, sede.y + uy*margemSede ];
-    var pMun  = [ base.x - ux*margemMun, base.y - uy*margemMun ];
-    var mx = (pSede[0]+pMun[0])/2 + (pMun[1] > pSede[1] ? 14 : -14);
-    var my = (pSede[1]+pMun[1])/2;
+    var margem = Math.min(MARGEM_LINHA, dist*0.18);
+    var p1 = [ sede.x + ux*margem, sede.y + uy*margem ];
+    var p2 = [ base.x - ux*margem, base.y - uy*margem ];
+    var mx = (p1[0]+p2[0])/2 + (p2[1] > p1[1] ? 14 : -14);
+    var my = (p1[1]+p2[1])/2;
     var linha = criarSvgEl('path', {
-      'class':'mapa-linha', 'data-linha-mapa':'1', 'data-municipio-linha': mun,
-      'd':'M' + pSede[0] + ',' + pSede[1] + ' Q ' + mx + ',' + my + ' ' + pMun[0] + ',' + pMun[1]
+      'class':'mapa-linha', 'data-municipio-linha': mun,
+      'd':'M' + p1[0] + ',' + p1[1] + ' Q ' + mx + ',' + my + ' ' + p2[0] + ',' + p2[1]
     });
     grupo.appendChild(linha);
   });
 
-  // rotulo da sede
-  var rotSede = criarSvgEl('text', { 'class':'mapa-rotulo-mun capital', x:sede.x, y:sede.y-16 });
-  rotSede.textContent = 'CAMPO GRANDE (SEDE)';
-  grupo.appendChild(rotSede);
-
-  // pontos individuais por cooperado, em pequeno leque ao redor da base do município, + rotulo do municipio
+  // ===== um marcador por municipio (nao um por cooperado): posicao exata e fixa,
+  // tamanho do circulo cresce levemente com a quantidade de cooperados =====
   Object.keys(porMunicipio).forEach(function(mun){
-    var base = MAPA_COORDS[mun];
+    var coord = MAPA_COORDS[mun];
+    if (!coord) return;
     var lista = porMunicipio[mun];
     var n = lista.length;
     var ehCapital = (mun === 'Campo Grande');
+    var raioBase = ehCapital ? 8 : Math.min(9.5, 5.5 + n*0.35);
 
-    var posicoes = calcularPosicoesCluster(base.x, base.y, n);
-
-    if (!ehCapital){
-      var rot = criarSvgEl('text', { 'class':'mapa-rotulo-mun', x:base.x, y:base.y - (20 + n*3.2) - 10 });
-      rot.textContent = mun.toUpperCase();
-      grupo.appendChild(rot);
-    }
-
-    lista.forEach(function(c, i){
-      var px = posicoes[i][0], py = posicoes[i][1];
-
-      var g = criarSvgEl('g', {
-        'class':'mapa-marco reveal' + (ehCapital ? ' capital' : ''),
-        'data-id':c.id, 'data-aldeia':mapaRotulo(c), 'data-municipio':mun,
-        'data-etnia':c.etnia||'', 'data-atividade':c.atividade||'', 'data-foto':c.foto||''
-      });
-      var halo = criarSvgEl('circle', { 'class':'halo', cx:px, cy:py, r:9 });
-      var ponto = criarSvgEl('circle', { 'class':'ponto', cx:px, cy:py, r:5.5 });
-      g.appendChild(halo); g.appendChild(ponto);
-      grupo.appendChild(g);
+    var rot = criarSvgEl('text', {
+      'class':'mapa-rotulo-mun' + (ehCapital ? ' capital' : ''),
+      x:coord.x, y: ehCapital ? coord.y - 16 : coord.y - raioBase - 8
     });
+    rot.textContent = ehCapital ? (mun.toUpperCase() + ' (SEDE)') : mun.toUpperCase();
+    grupo.appendChild(rot);
+
+    var g = criarSvgEl('g', {
+      'class':'mapa-marco reveal' + (ehCapital ? ' capital' : ''),
+      'data-municipio': mun, 'data-qtd': n
+    });
+    var halo = criarSvgEl('circle', { 'class':'halo', cx:coord.x, cy:coord.y, r:raioBase+4 });
+    var ponto = criarSvgEl('circle', { 'class':'ponto', cx:coord.x, cy:coord.y, r:raioBase });
+    g.appendChild(halo); g.appendChild(ponto);
+    if (n > 1){
+      var numero = criarSvgEl('text', { 'class':'mapa-numero', x:coord.x, y:coord.y+3.5 });
+      numero.textContent = n;
+      g.appendChild(numero);
+    }
+    grupo.appendChild(g);
   });
 
-  // cartoes de resumo por municipio, ordenados do maior para o menor,
-  // agora com cada cooperado tocavel individualmente (alternativa robusta aos pontos do mapa)
-  var ordenado = Object.keys(porMunicipio).sort(function(a,b){ return porMunicipio[b].length - porMunicipio[a].length; });
+  // ===== cartoes de resumo por municipio, ordenados do maior para o menor,
+  // cada cooperado tocavel individualmente para abrir foto e detalhes =====
+  var ordenado = Object.keys(porMunicipio).sort(function(mA, mB){
+    if (mA === 'Campo Grande') return -1;
+    if (mB === 'Campo Grande') return 1;
+    return porMunicipio[mB].length - porMunicipio[mA].length;
+  });
+
   cartoes.innerHTML = ordenado.map(function(mun){
     var lista = porMunicipio[mun];
-    var ehCapital = mun === 'Campo Grande';
+    var ehCapital = (mun === 'Campo Grande');
     var pessoasHtml = lista.map(function(c){
       var rotulo = mapaRotulo(c);
-      var inicial = rotulo ? rotulo.charAt(0).toUpperCase() : '?';
-      var avatar = c.foto ? '<img src="'+esc(c.foto)+'" alt="">' : '<span>'+esc(inicial)+'</span>';
-      return '<button type="button" class="mapa-pessoa-btn" data-aldeia="'+esc(rotulo)+'" data-municipio="'+esc(mun)+'" data-etnia="'+esc(c.etnia||'')+'" data-atividade="'+esc(c.atividade||'')+'" data-foto="'+esc(c.foto||'')+'">'
-        + '<span class="mapa-pessoa-avatar">'+avatar+'</span>'
+      var inicial = (rotulo || '?').trim().charAt(0).toUpperCase();
+      return '<button type="button" class="mapa-pessoa-btn" data-id="' + esc(c.id) + '" data-aldeia="' + esc(rotulo) + '" data-municipio="' + esc(mun) + '" data-etnia="' + esc(c.etnia||'') + '" data-atividade="' + esc(c.atividade||'') + '" data-foto="' + esc(c.foto||'') + '">'
+        + '<span class="mapa-pessoa-avatar">' + esc(inicial) + '</span>'
         + '<span class="mapa-pessoa-nome">'+esc(rotulo)+'</span>'
         + '<span class="mapa-pessoa-seta">›</span>'
         + '</button>';
@@ -5041,6 +5039,7 @@ function renderMapaInterno(grupo, cartoes){
   ativarMapa();
   ativarTilt3DMapa();
 }
+
 function abrirCoopModal(el){
   var nome = el.getAttribute('data-aldeia');
   var mun = el.getAttribute('data-municipio');
@@ -5057,23 +5056,43 @@ function abrirCoopModal(el){
   $('coopModalTags').innerHTML = tags;
   $('coopModal').classList.add('on');
 }
+
 function ativarMapa(){
   if (typeof IntersectionObserver === 'undefined') return;
-  var linhas = document.querySelectorAll('[data-linha-mapa]');
-  var obsLinhas = new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){ if (entry.isIntersecting){ entry.target.classList.add('in-view'); obsLinhas.unobserve(entry.target); } });
-  }, { threshold:0.3 });
-  Array.prototype.forEach.call(linhas, function(l){ obsLinhas.observe(l); });
-
   var marcos = document.querySelectorAll('.mapa-marco');
   var obsMarcos = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){ if (entry.isIntersecting){ entry.target.classList.add('in-view'); obsMarcos.unobserve(entry.target); } });
   }, { threshold:0.2 });
-  Array.prototype.forEach.call(marcos, function(m, i){ m.style.transitionDelay = (i * 25) + 'ms'; obsMarcos.observe(m); });
+  Array.prototype.forEach.call(marcos, function(m, i){ m.style.transitionDelay = (i * 30) + 'ms'; obsMarcos.observe(m); });
+
+  var linhas = document.querySelectorAll('.mapa-linha');
+  var obsLinhas = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){ if (entry.isIntersecting){ entry.target.classList.add('in-view'); obsLinhas.unobserve(entry.target); } });
+  }, { threshold:0.2 });
+  Array.prototype.forEach.call(linhas, function(l){ obsLinhas.observe(l); });
+
+  function ativarMunicipio(mun){
+    Array.prototype.forEach.call(document.querySelectorAll('.mapa-marco'), function(m){
+      m.classList.toggle('ativo', m.getAttribute('data-municipio') === mun);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.mapa-linha'), function(l){
+      l.classList.toggle('ativa', l.getAttribute('data-municipio-linha') === mun);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.mapa-info-card'), function(c){
+      c.classList.toggle('ativo', c.getAttribute('data-card-mun') === mun);
+    });
+  }
+  function desativarTudo(){
+    Array.prototype.forEach.call(document.querySelectorAll('.mapa-marco.ativo'), function(m){ m.classList.remove('ativo'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.mapa-linha.ativa'), function(l){ l.classList.remove('ativa'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.mapa-info-card.ativo'), function(c){ c.classList.remove('ativo'); });
+  }
 
   var tooltip = $('mapaTooltip');
   function mostrarTooltip(el, ev){
-    tooltip.innerHTML = '<b>' + esc(el.getAttribute('data-aldeia')) + '</b><span class="mun">' + esc(el.getAttribute('data-municipio')) + '</span>';
+    var mun = el.getAttribute('data-municipio');
+    var qtd = el.getAttribute('data-qtd');
+    tooltip.innerHTML = '<b>' + esc(mun) + '</b><span class="mun">' + esc(qtd) + (qtd==='1' ? ' cooperado' : ' cooperados') + '</span>';
     tooltip.classList.add('on');
     posicionarTooltip(ev);
   }
@@ -5086,17 +5105,10 @@ function ativarMapa(){
   function esconderTooltip(){ tooltip.classList.remove('on'); }
 
   Array.prototype.forEach.call(marcos, function(m){
-    m.addEventListener('mouseenter', function(ev){
-      mostrarTooltip(m, ev);
-      var mun = m.getAttribute('data-municipio');
-      var linhaAlvo = document.querySelector('.mapa-linha[data-municipio-linha="' + mun + '"]');
-      if (linhaAlvo) linhaAlvo.classList.add('ativa');
-    });
+    var mun = m.getAttribute('data-municipio');
+    m.addEventListener('mouseenter', function(ev){ mostrarTooltip(m, ev); ativarMunicipio(mun); });
     m.addEventListener('mousemove', posicionarTooltip);
-    m.addEventListener('mouseleave', function(){
-      esconderTooltip();
-      Array.prototype.forEach.call(document.querySelectorAll('.mapa-linha.ativa'), function(l){ l.classList.remove('ativa'); });
-    });
+    m.addEventListener('mouseleave', function(){ esconderTooltip(); desativarTudo(); });
   });
 
   var botoesPessoa = document.querySelectorAll('.mapa-pessoa-btn');
@@ -5106,22 +5118,12 @@ function ativarMapa(){
 
   var cards = document.querySelectorAll('.mapa-info-card');
   Array.prototype.forEach.call(cards, function(card){
-    card.addEventListener('mouseenter', function(){
-      var mun = card.getAttribute('data-card-mun');
-      Array.prototype.forEach.call(document.querySelectorAll('.mapa-marco'), function(m){
-        m.querySelector('.ponto').setAttribute('r', (m.getAttribute('data-municipio') === mun) ? '7.5' : '5.5');
-      });
-      var linhaAlvo = document.querySelector('.mapa-linha[data-municipio-linha="' + mun + '"]');
-      if (linhaAlvo) linhaAlvo.classList.add('ativa');
-      card.classList.add('ativo');
-    });
-    card.addEventListener('mouseleave', function(){
-      card.classList.remove('ativo');
-      Array.prototype.forEach.call(document.querySelectorAll('.mapa-marco .ponto'), function(p){ p.setAttribute('r','5.5'); });
-      Array.prototype.forEach.call(document.querySelectorAll('.mapa-linha.ativa'), function(l){ l.classList.remove('ativa'); });
-    });
+    var mun = card.getAttribute('data-card-mun');
+    card.addEventListener('mouseenter', function(){ ativarMunicipio(mun); });
+    card.addEventListener('mouseleave', function(){ desativarTudo(); });
   });
 }
+
 
 /* ---------- friso terena (losangos e chevrons) ---------- */
 function frisoTerena(){
@@ -6228,7 +6230,7 @@ window.COOP_getToken = function(){ return ($('gToken') && $('gToken').value.trim
   leg_p1: {"pt": "A COOPIMS opera na confluência entre dois campos do direito: o cooperativismo e os direitos dos povos indígenas. Reunimos aqui, por tema, as normas que orientam a Diretoria, o Conselho e cada cooperado.", "en": "COOPIMS operates at the intersection of two fields of law: cooperative law and Indigenous peoples' rights. Here we gather, by topic, the rules that guide the Board, the Council, and every member.", "es": "COOPIMS opera en la confluencia entre dos campos del derecho: el cooperativismo y los derechos de los pueblos indígenas. Reunimos aquí, por tema, las normas que orientan a la Directiva, al Consejo y a cada cooperado.", "fr": "La COOPIMS opère au confluent de deux champs du droit : le coopérativisme et les droits des peuples indigènes. Nous réunissons ici, par thème, les normes qui guident la Direction, le Conseil et chaque coopérateur."},
   mapa_rotulo: {"pt": "Onde estamos", "en": "Where We Are", "es": "Dónde estamos", "fr": "Où nous sommes"},
   mapa_titulo: {"pt": "Mapa dos cooperados em Mato Grosso do Sul", "en": "Map of Members in Mato Grosso do Sul", "es": "Mapa de los cooperados en Mato Grosso do Sul", "fr": "Carte des coopérateurs au Mato Grosso do Sul"},
-  mapa_p1: {"pt": "Contorno geográfico real do estado. Cada ponto representa um cooperado; passe o mouse para ver o nome e clique para abrir a foto e os detalhes.", "en": "Actual geographic outline of the state. Each point represents a member; hover to see the name and click to open the photo and details.", "es": "Contorno geográfico real del estado. Cada punto representa a un cooperado; pase el mouse para ver el nombre y haga clic para abrir la foto y los detalles.", "fr": "Contour géographique réel de l'État. Chaque point représente un coopérateur ; survolez pour voir le nom et cliquez pour ouvrir la photo et les détails."},
+  mapa_p1: {"pt": "Contorno geográfico real do estado. Cada ponto representa um município com cooperados; passe o mouse para ver quantos são, e toque um nome na lista para abrir a foto e os detalhes.", "en": "Actual geographic outline of the state. Each point represents a municipality with cooperative members; hover to see how many, and tap a name in the list to open the photo and details.", "es": "Contorno geográfico real del estado. Cada punto representa un municipio con cooperados; pase el mouse para ver cuántos son, y toque un nombre en la lista para abrir la foto y los detalles.", "fr": "Contour géographique réel de l'État. Chaque point représente une municipalité avec des coopérateurs ; survolez pour voir combien ils sont, et touchez un nom dans la liste pour ouvrir la photo et les détails."},
   not_rotulo: {"pt": "Notícias", "en": "News", "es": "Noticias", "fr": "Actualités"},
   not_titulo: {"pt": "O que está acontecendo", "en": "What's happening", "es": "Qué está pasando", "fr": "Ce qui se passe"},
   apoio_rotulo: {"pt": "Quem apoia a cooperativa", "en": "Who Supports the Cooperative", "es": "Quién apoya a la cooperativa", "fr": "Qui soutient la coopérative"},
