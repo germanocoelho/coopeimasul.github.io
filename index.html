@@ -4956,28 +4956,21 @@ function renderMapaInterno(grupo, cartoes){
 
   // funcao auxiliar: encontra, dentro do leque de pontos de um municipio,
   // o ponto real mais proximo da direcao indicada (para a linha tocar um ponto de verdade)
-  function pontoDeAncoragem(baseX, baseY, n, anguloAlvo){
-    var posicoes = calcularPosicoesCluster(baseX, baseY, n);
-    if (n === 1) return posicoes[0];
-    var melhorIdx = 0, melhorDiff = Infinity;
-    for (var i = 0; i < n; i++){
-      var angPonto = (Math.PI * 2 * i / n) - Math.PI/2;
-      var diff = Math.abs(Math.atan2(Math.sin(angPonto - anguloAlvo), Math.cos(angPonto - anguloAlvo)));
-      if (diff < melhorDiff){ melhorDiff = diff; melhorIdx = i; }
-    }
-    return posicoes[melhorIdx];
-  }
-
-  // linhas conectando a sede a cada município com cooperados, tocando pontos reais em cada ponta
-  var nSede = (porMunicipio['Campo Grande'] || []).length || 1;
+    // linhas conectando a sede a cada município com cooperados: partem do centro
+  // teorico de cada municipio (nao de um ponto especifico do leque, que pode ficar
+  // grande demais quando ha muitos cooperados) e sao encurtadas por uma margem fixa
+  // em cada ponta, na direcao uma da outra, para nao cobrir os marcadores
+  var MARGEM_LINHA = 22;
   Object.keys(porMunicipio).forEach(function(mun){
     if (mun === 'Campo Grande') return;
     var base = MAPA_COORDS[mun];
-    var nMun = porMunicipio[mun].length;
-    var anguloSedeParaMun = Math.atan2(base.y - sede.y, base.x - sede.x);
-    var anguloMunParaSede = anguloSedeParaMun + Math.PI;
-    var pSede = pontoDeAncoragem(sede.x, sede.y, nSede, anguloSedeParaMun);
-    var pMun = pontoDeAncoragem(base.x, base.y, nMun, anguloMunParaSede);
+    var dx = base.x - sede.x, dy = base.y - sede.y;
+    var dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    var ux = dx/dist, uy = dy/dist;
+    var margemSede = Math.min(MARGEM_LINHA, dist*0.15);
+    var margemMun = Math.min(MARGEM_LINHA, dist*0.15);
+    var pSede = [ sede.x + ux*margemSede, sede.y + uy*margemSede ];
+    var pMun  = [ base.x - ux*margemMun, base.y - uy*margemMun ];
     var mx = (pSede[0]+pMun[0])/2 + (pMun[1] > pSede[1] ? 14 : -14);
     var my = (pSede[1]+pMun[1])/2;
     var linha = criarSvgEl('path', {
