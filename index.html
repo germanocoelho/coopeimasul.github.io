@@ -169,6 +169,38 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 .noticia .data{font-family:var(--mono);font-size:11.5px;color:var(--azul-esc)}
 .noticia h3{font-size:17.5px;margin:6px 0 8px}
 .noticia p{font-size:14px;color:#3E5650}
+.noticia{cursor:pointer;transition:box-shadow .2s,transform .2s}
+.noticia:hover{box-shadow:0 8px 24px rgba(0,60,40,.14);transform:translateY(-2px)}
+.noticia .txt{display:flex;flex-direction:column;flex:1}
+.noticia .ler-btn{margin-top:auto;align-self:flex-start;background:none;border:none;color:var(--verde-esc);font-weight:700;font-size:13px;padding:10px 0 0;cursor:pointer;display:flex;align-items:center;gap:6px}
+.noticia .ler-btn:hover{text-decoration:underline}
+
+/* ===== MODAL DE LEITURA DA NOTÍCIA — papel timbrado COOPIMS ===== */
+#modalNoticia{display:none;position:fixed;inset:0;background:rgba(6,16,13,.82);z-index:210;align-items:flex-start;justify-content:center;padding:26px 16px;overflow-y:auto}
+#modalNoticia.on{display:flex}
+#modalNoticia .folha{background:var(--branco);max-width:760px;width:100%;border-radius:8px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);position:relative;margin-bottom:40px}
+#modalNoticia .fechar-nc{position:absolute;right:14px;top:14px;background:rgba(0,0,0,.28);color:#fff;border:none;width:34px;height:34px;border-radius:50%;font-size:17px;cursor:pointer;z-index:2}
+#modalNoticia .fechar-nc:hover{background:rgba(0,0,0,.5)}
+#modalNoticia .timbre{background:linear-gradient(120deg,var(--verde-esc),var(--verde) 55%,var(--azul-esc));padding:22px 30px 18px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--ouro)}
+#modalNoticia .timbre img{height:54px;width:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+#modalNoticia .timbre .tit-inst{color:#fff}
+#modalNoticia .timbre .tit-inst b{font-size:15px;letter-spacing:.03em;display:block}
+#modalNoticia .timbre .tit-inst span{font-size:11px;opacity:.85;display:block;margin-top:2px}
+#modalNoticia .corpo{padding:28px 30px 32px}
+#modalNoticia .nc-data{font-family:var(--mono);font-size:12px;color:var(--azul-esc);margin-bottom:8px;display:block}
+#modalNoticia .nc-titulo{font-size:23px;line-height:1.3;margin:0 0 18px;color:#1C2B26}
+#modalNoticia .nc-texto{font-size:15px;line-height:1.85;color:#2E403A;text-align:justify}
+#modalNoticia .nc-texto p{margin:0 0 14px}
+#modalNoticia .nc-galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:20px}
+#modalNoticia .nc-galeria img{width:100%;height:110px;object-fit:cover;border-radius:6px;cursor:pointer;transition:opacity .2s}
+#modalNoticia .nc-galeria img:hover{opacity:.82}
+#modalNoticia .rodape-timbre{border-top:1px solid var(--linha);padding:14px 30px;font-size:11.5px;color:#5B736C;text-align:center}
+@media (max-width:560px){
+  #modalNoticia .timbre{padding:16px 18px 14px}
+  #modalNoticia .timbre img{height:40px}
+  #modalNoticia .corpo{padding:20px 18px 24px}
+  #modalNoticia .nc-titulo{font-size:19px}
+}
 
 /* contato */
 .contato-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:26px}
@@ -2266,6 +2298,27 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
   <div class="legenda-lb" id="lightboxLegenda"></div>
 </div>
 
+<!-- MODAL DE LEITURA DE NOTÍCIA — papel timbrado COOPIMS -->
+<div id="modalNoticia" onclick="if(event.target===this)fecharNoticiaModal()">
+  <div class="folha">
+    <button class="fechar-nc" onclick="fecharNoticiaModal()" aria-label="Fechar">✕</button>
+    <div class="timbre">
+      <img id="ncTimbreLogo" src="" alt="COOPIMS">
+      <div class="tit-inst">
+        <b>COOPIMS</b>
+        <span>Cooperativa Estadual dos Povos Indígenas de Mato Grosso do Sul</span>
+      </div>
+    </div>
+    <div class="corpo">
+      <span class="nc-data" id="ncData"></span>
+      <h2 class="nc-titulo" id="ncTitulo"></h2>
+      <div class="nc-texto" id="ncTexto"></div>
+      <div class="nc-galeria" id="ncGaleria"></div>
+    </div>
+    <div class="rodape-timbre">www.coopims.com.br &nbsp;·&nbsp; Assessoria de Comunicação da COOPIMS</div>
+  </div>
+</div>
+
 <!-- TRANSPARÊNCIA -->
 <section class="pg alt" id="transparencia">
   <div class="wrap">
@@ -2821,13 +2874,21 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
       <div class="fgrid">
         <div><label for="nTitulo">Título *</label><input id="nTitulo"></div>
         <div><label for="nData">Data</label><input id="nData" type="date"></div>
-        <div><label for="nFoto">Foto (URL Cloudinary, opcional)</label><input id="nFoto" placeholder="https://res.cloudinary.com/..."></div>
       </div>
-      <div class="fcol"><label for="nTexto">Texto *</label><textarea id="nTexto"></textarea></div>
+      <div class="fcol">
+        <label for="nTexto">Texto * <span style="font-weight:400;opacity:.7;font-size:12px">(deixe uma linha em branco entre parágrafos; use **negrito** e *itálico* se quiser)</span></label>
+        <textarea id="nTexto" rows="8"></textarea>
+      </div>
+      <div class="fcol">
+        <label>Fotos do evento (opcional, pode escolher várias)</label>
+        <input id="nFotosInput" type="file" accept="image/*" multiple>
+        <div id="nFotosStatus" class="msg" style="display:none"></div>
+        <div id="nFotosPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+      </div>
       <div class="acoes"><button class="btn verde" id="btnSalvarNot" type="button">Publicar notícia</button></div>
       <div class="msg" id="msgNot"></div>
       <div class="tabela-scroll"><table class="adm-t" id="tabNot">
-        <thead><tr><th>Data</th><th>Título</th><th>Ações</th></tr></thead><tbody></tbody>
+        <thead><tr><th>Data</th><th>Título</th><th>Fotos</th><th>Ações</th></tr></thead><tbody></tbody>
       </table></div>
     </div>
 
@@ -5549,11 +5610,60 @@ function renderDocs(){
 }
 
 /* ---------- notícias ---------- */
+var _nFotosTemp = [];
+
+function uploadFotosNot(input){
+  if (!input.files || !input.files.length) return;
+  var status = $('nFotosStatus');
+  var arquivos = Array.prototype.slice.call(input.files);
+  status.style.display = 'block';
+  var restantes = arquivos.length, falhas = 0;
+  status.className = 'msg ok';
+  status.textContent = '⏳ Enviando ' + arquivos.length + ' foto(s)...';
+  arquivos.forEach(function(arquivo){
+    enviarParaCloudinary(arquivo, function(url){
+      _nFotosTemp.push(url);
+      restantes--;
+      renderNFotosPreview();
+      if (restantes === 0){
+        status.className = falhas ? 'msg erro' : 'msg ok';
+        status.textContent = falhas ? ('⚠ ' + falhas + ' foto(s) falharam no envio.') : '✅ Fotos enviadas!';
+      }
+    }, function(){
+      falhas++; restantes--;
+      if (restantes === 0){ status.className = 'msg erro'; status.textContent = '⚠ ' + falhas + ' foto(s) falharam no envio.'; }
+    });
+  });
+  input.value = '';
+}
+function removerNFotoTemp(idx){
+  _nFotosTemp.splice(idx, 1);
+  renderNFotosPreview();
+}
+function renderNFotosPreview(){
+  $('nFotosPreview').innerHTML = _nFotosTemp.map(function(url, idx){
+    return '<div style="position:relative"><img src="' + esc(url) + '" alt="" style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)">'
+      + '<button type="button" data-rmnfoto="' + idx + '" style="position:absolute;top:-6px;right:-6px;background:#B23A2E;color:#fff;border:none;width:20px;height:20px;border-radius:50%;font-size:11px;cursor:pointer;line-height:1">✕</button></div>';
+  }).join('');
+}
+/* Converte o texto digitado (parágrafos separados por linha em branco, **negrito**, *itálico*) em HTML seguro */
+function formatarTextoNoticia(texto){
+  var paragrafos = String(texto || '').replace(/\r\n/g,'\n').split(/\n\s*\n/);
+  return paragrafos.map(function(par){
+    var seguro = esc(par.trim()).replace(/\n/g, '<br>');
+    seguro = seguro.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+    return '<p>' + seguro + '</p>';
+  }).join('');
+}
 function salvarNot(){
-  var n = { id:String(Date.now()), titulo:$('nTitulo').value.trim(), data:$('nData').value || hoje(), foto:$('nFoto').value.trim(), texto:$('nTexto').value.trim() };
+  var n = { id:String(Date.now()), titulo:$('nTitulo').value.trim(), data:$('nData').value || hoje(),
+    texto:$('nTexto').value.trim(), fotos: _nFotosTemp.slice() };
+  n.foto = n.fotos[0] || '';
   if (!n.titulo || !n.texto){ msg('msgNot','Informe título e texto.', false); return; }
   db.noticias.push(n); salvarLocal(); renderTudo();
-  $('nTitulo').value=''; $('nFoto').value=''; $('nTexto').value='';
+  $('nTitulo').value=''; $('nTexto').value='';
+  _nFotosTemp = []; renderNFotosPreview();
+  $('nFotosStatus').style.display = 'none';
   msg('msgNot','Notícia publicada.', true);
 }
 function removerNot(id){
@@ -5561,18 +5671,43 @@ function removerNot(id){
   db.noticias = db.noticias.filter(function(n){ return n.id !== id; });
   salvarLocal(); renderTudo();
 }
+function abrirNoticiaModal(id){
+  var n = db.noticias.filter(function(x){ return x.id === id; })[0];
+  if (!n) return;
+  var logoTopo = document.querySelector('header.site .logo');
+  if (logoTopo) $('ncTimbreLogo').src = logoTopo.src;
+  $('ncData').textContent = dataBR(n.data);
+  $('ncTitulo').textContent = n.titulo;
+  $('ncTexto').innerHTML = formatarTextoNoticia(n.texto);
+  var fotos = (n.fotos && n.fotos.length) ? n.fotos : (n.foto ? [n.foto] : []);
+  $('ncGaleria').innerHTML = fotos.map(function(url){
+    return '<img src="' + esc(url) + '" alt="" loading="lazy" onclick="abrirLightboxDireta(this.src)">';
+  }).join('');
+  $('modalNoticia').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function fecharNoticiaModal(){
+  $('modalNoticia').classList.remove('on');
+  document.body.style.overflow = '';
+}
+function abrirLightboxDireta(url){
+  $('lightboxImg').src = url; $('lightboxLegenda').textContent = '';
+  $('lightbox').classList.add('on');
+}
 function renderNot(){
   var tb = $('tabNot').querySelector('tbody');
   var ord = db.noticias.slice().sort(function(a,b){ return String(b.data).localeCompare(String(a.data)); });
   tb.innerHTML = ord.map(function(n){
-    return '<tr><td class="mono">' + dataBR(n.data) + '</td><td>' + esc(n.titulo) + '</td>'
+    var qtdFotos = (n.fotos && n.fotos.length) ? n.fotos.length : (n.foto ? 1 : 0);
+    return '<tr><td class="mono">' + dataBR(n.data) + '</td><td>' + esc(n.titulo) + '</td><td>' + qtdFotos + '</td>'
       + '<td><button class="btn mini perigo" data-rmnot="' + esc(n.id) + '" type="button">Remover</button></td></tr>';
-  }).join('') || '<tr><td colspan="3" style="text-align:center;color:#8FB4A6">Nenhuma notícia.</td></tr>';
+  }).join('') || '<tr><td colspan="4" style="text-align:center;color:#8FB4A6">Nenhuma notícia.</td></tr>';
   $('pgNoticias').innerHTML = ord.slice(0,6).map(function(n){
-    return '<article class="noticia">'
+    return '<article class="noticia" data-abrirnot="' + esc(n.id) + '">'
       + (n.foto ? '<img src="' + esc(n.foto) + '" alt="" loading="lazy">' : '<div class="semfoto"></div>')
       + '<div class="txt"><span class="data">' + dataBR(n.data) + '</span>'
-      + '<h3>' + esc(n.titulo) + '</h3><p>' + esc(n.texto).slice(0,220) + (n.texto.length > 220 ? '…' : '') + '</p></div></article>';
+      + '<h3>' + esc(n.titulo) + '</h3><p>' + esc(n.texto).slice(0,220) + (n.texto.length > 220 ? '…' : '') + '</p>'
+      + '<button class="ler-btn" type="button" data-abrirnot="' + esc(n.id) + '">📰 Ler notícia completa</button></div></article>';
   }).join('') || '<p style="color:#5B736C">As primeiras notícias da cooperativa serão publicadas em breve.</p>';
 }
 
@@ -5850,8 +5985,17 @@ function ligarTabelas(){
       _comuAvulsos.splice(parseInt(b.getAttribute('data-rm-avulso'),10), 1);
       renderChipsAvulso(); atualizarContadorComu();
     }
+    else if (b.hasAttribute('data-rmnfoto')) removerNFotoTemp(parseInt(b.getAttribute('data-rmnfoto'),10));
     return;
   });
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    if (!(t instanceof Element)) return;
+    var card = t.closest('[data-abrirnot]');
+    if (card) abrirNoticiaModal(card.getAttribute('data-abrirnot'));
+  });
+  var inFotosNot = $('nFotosInput');
+  if (inFotosNot) inFotosNot.addEventListener('change', function(){ uploadFotosNot(this); });
   document.addEventListener('change', function(ev){
     var t = ev.target;
     if (!(t instanceof Element)) return;
@@ -6104,7 +6248,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
   $('lightbox').addEventListener('click', function(ev){ if (ev.target.id === 'lightbox') fecharLightbox(); });
-  document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape') fecharLightbox(); });
+  document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape'){ fecharLightbox(); fecharNoticiaModal(); } });
 
   $('btnAbrirFicha').addEventListener('click', abrirFicha);
   $('btnAbrirFicha2').addEventListener('click', abrirFicha);
@@ -6142,6 +6286,11 @@ window.COOP_salvarLocal = salvarLocal;
 window.COOP_ghSalvarArquivo = ghSalvarArquivo;
 window.COOP_ghLerTexto = ghLerTexto;
 window.COOP_getToken = function(){ return ($('gToken') && $('gToken').value.trim()) || (localStorage.getItem('coop_gh_token') || ''); };
+
+/* ---------- exports do modal de notícias (chamados via onclick inline no HTML) ---------- */
+window.abrirNoticiaModal = abrirNoticiaModal;
+window.fecharNoticiaModal = fecharNoticiaModal;
+window.abrirLightboxDireta = abrirLightboxDireta;
 
 })();
 </script>
