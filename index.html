@@ -189,7 +189,8 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 #modalNoticia .timbre .tit-inst span{font-size:11px;opacity:.85;display:block;margin-top:2px}
 #modalNoticia .corpo{padding:28px 30px 32px}
 #modalNoticia .nc-data{font-family:var(--mono);font-size:12px;color:var(--azul-esc);margin-bottom:8px;display:block}
-#modalNoticia .nc-titulo{font-size:23px;line-height:1.3;margin:0 0 18px;color:#1C2B26}
+#modalNoticia .nc-titulo{font-size:23px;line-height:1.3;margin:0 0 6px;color:#1C2B26}
+#modalNoticia .nc-assinatura{display:block;font-size:12px;font-style:italic;color:#5B736C;margin-bottom:18px}
 #modalNoticia .nc-texto{font-size:15px;line-height:1.85;color:#2E403A;text-align:justify}
 #modalNoticia .nc-texto p{margin:0 0 14px}
 #modalNoticia .nc-galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;margin-top:20px}
@@ -239,6 +240,108 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 .leg-grupo li:last-child{margin-bottom:0}
 .leg-grupo li b{display:block;font-size:14px;color:var(--verde-esc)}
 .leg-grupo li span{display:block;font-size:13px;color:#4A625C;margin-top:2px}
+
+/* ===================================================================
+   ACERVO CIENTÍFICO — biblioteca de obras ligadas à causa indígena
+   =================================================================== */
+.acervo-secao{position:relative}
+.acervo-secao.pg.alt{
+  background:
+    radial-gradient(circle at 6px 6px, rgba(0,132,61,.07) 1.4px, transparent 1.6px),
+    radial-gradient(circle at 26px 26px, rgba(196,148,10,.09) 1.4px, transparent 1.6px),
+    var(--areia);
+  background-size:32px 32px, 32px 32px, auto;
+}
+.acervo-toolbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:28px 0 22px}
+.acervo-busca-caixa{display:flex;align-items:center;gap:8px;background:var(--branco);border:1.5px solid var(--linha);border-radius:24px;padding:9px 16px;min-width:260px;flex:1;max-width:380px;color:#5B736C;transition:border-color .2s,box-shadow .2s}
+.acervo-busca-caixa:focus-within{border-color:var(--ouro-esc);box-shadow:0 0 0 3px rgba(196,148,10,.14)}
+.acervo-busca-caixa input{border:none;outline:none;background:none;font-size:14px;color:var(--pinho);flex:1;font-family:var(--corpo)}
+.acervo-filtros{display:flex;flex-wrap:wrap;gap:8px}
+.acervo-chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.3px;padding:7px 14px;border-radius:20px;border:1.5px solid var(--linha);background:var(--branco);color:#4A625C;cursor:pointer;transition:all .18s;white-space:nowrap}
+.acervo-chip:hover{border-color:var(--ouro-esc);color:var(--ouro-esc)}
+.acervo-chip.on{background:linear-gradient(100deg,var(--verde-esc),var(--verde));border-color:var(--verde-esc);color:#fff;box-shadow:0 3px 10px rgba(0,92,43,.25)}
+
+.acervo-vazio{display:none;color:#5B736C;font-size:14.5px;padding:18px 0}
+.acervo-vazio.mostrar{display:block}
+
+/* ---------- obra em destaque: peça "joia" da seção ---------- */
+.acervo-destaque{display:none;margin-bottom:34px}
+.acervo-destaque.mostrar{display:block}
+.acervo-destaque-card{
+  position:relative;display:grid;grid-template-columns:200px 1fr;gap:0;
+  background:linear-gradient(135deg,#0E241F,#163C33 55%,#0B1D19);
+  border-radius:16px;overflow:hidden;box-shadow:0 18px 44px rgba(4,26,20,.28);
+  border:1px solid rgba(244,196,48,.35);
+}
+.acervo-destaque-card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(420px 220px at 88% -10%, rgba(244,196,48,.16), transparent 60%);
+}
+.acervo-destaque-fita{position:absolute;top:16px;left:-38px;transform:rotate(-45deg);background:var(--ouro);color:#3B2C00;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:1px;padding:4px 46px;box-shadow:0 3px 8px rgba(0,0,0,.25);z-index:2}
+.acervo-destaque-capa{position:relative;display:flex;align-items:center;justify-content:center;padding:26px 20px;z-index:1}
+.acervo-destaque-capa img{width:150px;height:210px;object-fit:cover;border-radius:6px;box-shadow:0 14px 30px rgba(0,0,0,.45);transform:rotate(-3deg);transition:transform .3s}
+.acervo-destaque-card:hover .acervo-destaque-capa img{transform:rotate(0deg) scale(1.03)}
+.acervo-destaque-capa .sem-capa{width:150px;height:210px;border-radius:6px;box-shadow:0 14px 30px rgba(0,0,0,.45);transform:rotate(-3deg);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);font-family:var(--disp);font-size:15px;text-align:center;padding:14px;line-height:1.3}
+.acervo-destaque-info{position:relative;z-index:1;padding:28px 30px 28px 6px;color:#fff}
+.acervo-destaque-tipo{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ouro);border:1px solid rgba(244,196,48,.5);border-radius:20px;padding:3px 12px;margin-bottom:12px}
+.acervo-destaque-info h3{font-family:var(--disp);font-size:24px;line-height:1.28;margin:0 0 8px;color:#fff}
+.acervo-destaque-info .autores{font-size:13.5px;color:#B9D8CB;margin-bottom:10px}
+.acervo-destaque-info .resumo{font-size:13.5px;color:#D8E7E0;line-height:1.7;max-width:640px;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.acervo-destaque-info .btn{font-size:13px}
+
+/* ---------- grade de obras (estante) ---------- */
+.acervo-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:22px}
+.acervo-card{background:var(--branco);border-radius:10px;overflow:hidden;cursor:pointer;box-shadow:0 2px 10px rgba(22,48,43,.08);transition:transform .22s,box-shadow .22s;display:flex;flex-direction:column}
+.acervo-card:hover{transform:translateY(-5px);box-shadow:0 16px 32px rgba(22,48,43,.18)}
+.acervo-capa-wrap{position:relative;aspect-ratio:2/3;background:linear-gradient(150deg,#123128,#1E4B3F);overflow:hidden}
+.acervo-capa-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.acervo-card:hover .acervo-capa-wrap img{transform:scale(1.05)}
+.acervo-capa-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;color:rgba(255,255,255,.92)}
+.acervo-capa-placeholder .inicial{font-family:var(--disp);font-size:44px;line-height:1;color:var(--ouro);margin-bottom:8px}
+.acervo-capa-placeholder .rotulo-tipo{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;opacity:.85}
+.acervo-capa-faixa{position:absolute;top:0;left:0;right:0;height:5px}
+.acervo-ano-selo{position:absolute;top:9px;right:9px;background:rgba(11,29,25,.72);color:var(--ouro);font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:4px;backdrop-filter:blur(2px)}
+.acervo-card-txt{padding:14px 15px 16px;display:flex;flex-direction:column;flex:1}
+.acervo-card-tema{font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--verde-esc);margin-bottom:6px}
+.acervo-card-txt h4{font-size:14.5px;line-height:1.32;margin:0 0 6px;color:var(--pinho);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.acervo-card-txt .autores{font-size:12px;color:#5B736C;margin-top:auto;padding-top:8px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ---------- modal de leitura de uma obra ---------- */
+#modalObra{display:none;position:fixed;inset:0;background:rgba(6,16,13,.86);z-index:210;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto}
+#modalObra.on{display:flex}
+.obra-folha{background:var(--branco);max-width:820px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.45);position:relative;margin-bottom:40px}
+.obra-fechar{position:absolute;right:14px;top:14px;background:rgba(0,0,0,.32);color:#fff;border:none;width:34px;height:34px;border-radius:50%;font-size:17px;cursor:pointer;z-index:3}
+.obra-fechar:hover{background:rgba(0,0,0,.55)}
+.obra-corpo{display:grid;grid-template-columns:240px 1fr}
+.obra-capa-grande{background:linear-gradient(150deg,#0E241F,#1E4B3F);display:flex;align-items:center;justify-content:center;padding:34px 26px}
+.obra-capa-grande img{width:190px;height:266px;object-fit:cover;border-radius:8px;box-shadow:0 18px 38px rgba(0,0,0,.5)}
+.obra-capa-grande .sem-capa{width:190px;height:266px;border-radius:8px;box-shadow:0 18px 38px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:16px}
+.obra-capa-grande .sem-capa .inicial{font-family:var(--disp);font-size:56px;color:var(--ouro);line-height:1;margin-bottom:10px}
+.obra-info{padding:32px 32px 34px}
+.obra-tipo-selo{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ouro-esc);border:1px solid #EDD98F;background:#FFF9E8;border-radius:20px;padding:3px 12px;margin-bottom:12px}
+.obra-info h2{font-family:var(--disp);font-size:24px;line-height:1.3;margin:0 0 8px;color:#1C2B26}
+.obra-autores{font-size:14px;color:#4A625C;margin-bottom:12px}
+.obra-meta{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--mono);font-size:12px;color:var(--azul-esc);margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--linha)}
+.obra-meta span{background:#EAF3FB;border:1px solid rgba(63,160,216,.3);border-radius:20px;padding:3px 11px}
+.obra-resumo{font-size:14.5px;line-height:1.8;color:#2E403A;text-align:justify;margin-bottom:22px}
+.obra-acoes{display:flex;gap:10px;flex-wrap:wrap}
+
+@media (max-width:760px){
+  .acervo-destaque-card{grid-template-columns:1fr}
+  .acervo-destaque-capa{padding-top:30px}
+  .acervo-destaque-fita{top:12px;left:-42px}
+  .acervo-destaque-info{padding:6px 22px 26px}
+  .obra-corpo{grid-template-columns:1fr}
+  .obra-capa-grande{padding:26px}
+  .obra-capa-grande img,.obra-capa-grande .sem-capa{width:150px;height:210px}
+  .obra-info{padding:24px 22px 28px}
+}
+@media (max-width:560px){
+  .acervo-toolbar{flex-direction:column;align-items:stretch}
+  .acervo-busca-caixa{max-width:none}
+  .acervo-grade{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+  .acervo-card-txt h4{font-size:13.5px}
+}
 
 /* ---------- badge de propostas pendentes ---------- */
 .badge-prop{background:var(--erro);color:#fff;font-size:11px;font-weight:700;border-radius:10px;padding:1px 7px;margin-left:4px}
@@ -1847,6 +1950,7 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
       <li><a href="#transparencia" data-i18n="nav_transparencia">Transparência</a></li>
       <li><a href="#esg" data-i18n="nav_esg">ESG</a></li>
       <li><a href="#legislacao" data-i18n="nav_legislacao">Legislação</a></li>
+      <li><a href="#acervo" data-i18n="nav_acervo">Acervo Científico</a></li>
       <li><a href="#mapa" data-i18n="nav_mapa">Mapa</a></li>
       <li><a href="#apoiadores" data-i18n="nav_apoiadores">Apoiadores</a></li>
       <li><a href="#noticias" data-i18n="nav_noticias">Notícias</a></li>
@@ -2343,10 +2447,11 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
     <div class="corpo">
       <span class="nc-data" id="ncData"></span>
       <h2 class="nc-titulo" id="ncTitulo"></h2>
+      <span class="nc-assinatura">Por Aldeia XP Comunicações — Assessoria de Mídia e Imprensa</span>
       <div class="nc-texto" id="ncTexto"></div>
       <div class="nc-galeria" id="ncGaleria"></div>
     </div>
-    <div class="rodape-timbre">www.coopims.com.br &nbsp;·&nbsp; Assessoria de Comunicação da COOPIMS</div>
+    <div class="rodape-timbre">www.coopims.com.br &nbsp;·&nbsp; Aldeia XP Comunicações — Assessoria de Mídia e Imprensa</div>
   </div>
 </div>
 
@@ -2483,6 +2588,47 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
     </div>
   </div>
 </section>
+
+<div class="divisor" aria-hidden="true"><span class="selo"><svg width="22" height="22" viewBox="0 0 24 24"><use href="#s-estrela" fill="#F4C430"/></svg></span></div>
+
+<!-- ACERVO CIENTÍFICO -->
+<section class="pg alt acervo-secao" id="acervo">
+  <div class="wrap">
+    <div class="rotulo" data-i18n="acervo_rotulo">Conhecimento</div>
+    <h2 class="titulo" data-i18n="acervo_titulo">Acervo Científico</h2>
+    <div class="prosa"><p data-i18n="acervo_p1">Uma biblioteca viva de livros, artigos, teses e pesquisas sobre os povos indígenas — reunida aqui para apoiar pesquisadores, gestores públicos, estudantes e as próprias comunidades. Cresce a cada estudo publicado sobre ancestralidade, direitos, saúde, educação e biotecnologia indígena.</p></div>
+
+    <div class="acervo-toolbar">
+      <div class="acervo-busca-caixa">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#s-zoom"/></svg>
+        <input id="acervoBusca" type="text" placeholder="Buscar por título, autor ou tema…">
+      </div>
+      <div class="acervo-filtros" id="acervoFiltros"></div>
+    </div>
+
+    <div class="acervo-destaque" id="acervoDestaque"></div>
+    <div class="acervo-grade" id="acervoGrade"></div>
+    <p class="acervo-vazio" id="acervoVazio" data-i18n="acervo_vazio">O acervo científico da COOPIMS está sendo formado — em breve, livros, artigos e pesquisas sobre os povos indígenas estarão disponíveis aqui.</p>
+  </div>
+</section>
+
+<!-- Modal de leitura de uma obra do acervo -->
+<div id="modalObra" onclick="if(event.target===this)fecharObraModal()">
+  <div class="obra-folha">
+    <button class="obra-fechar" onclick="fecharObraModal()" aria-label="Fechar">✕</button>
+    <div class="obra-corpo">
+      <div class="obra-capa-grande" id="obraCapaGrande"></div>
+      <div class="obra-info">
+        <span class="obra-tipo-selo" id="obraTipoSelo"></span>
+        <h2 id="obraTitulo"></h2>
+        <p class="obra-autores" id="obraAutores"></p>
+        <div class="obra-meta" id="obraMeta"></div>
+        <div class="obra-resumo" id="obraResumo"></div>
+        <div class="obra-acoes" id="obraAcoes"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="divisor" aria-hidden="true"><span class="selo"><svg width="22" height="22" viewBox="0 0 24 24"><use href="#s-estrela" fill="#F4C430"/></svg></span></div>
 
@@ -2723,6 +2869,7 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
       <button data-aba="paRel" type="button">Relatórios</button>
       <button data-aba="paDocs" type="button">Atas &amp; Documentos</button>
       <button data-aba="paNot" type="button">Notícias</button>
+      <button data-aba="paAcervo" type="button">📚 Acervo Científico</button>
       <button data-aba="paMaq" type="button">Máquinas</button>
       <button data-aba="paCom" type="button">Comissões</button>
       <button data-aba="paDir" type="button">Diretoria</button>
@@ -2930,6 +3077,73 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
       <div class="msg" id="msgNot"></div>
       <div class="tabela-scroll"><table class="adm-t" id="tabNot">
         <thead><tr><th>Data</th><th>Título</th><th>Fotos</th><th>Ações</th></tr></thead><tbody></tbody>
+      </table></div>
+    </div>
+
+    <!-- ACERVO CIENTÍFICO -->
+    <div class="painel" id="paAcervo">
+      <h3>Acervo Científico — livros, artigos, teses e pesquisas</h3>
+      <div class="fgrid">
+        <div><label for="obTitulo">Título *</label><input id="obTitulo"></div>
+        <div><label for="obAutores">Autor(es) *</label><input id="obAutores" placeholder="Separe vários nomes por vírgula"></div>
+        <div>
+          <label for="obTipo">Tipo</label>
+          <select id="obTipo">
+            <option>Livro</option>
+            <option>Capítulo de Livro</option>
+            <option>Artigo Científico</option>
+            <option>Tese</option>
+            <option>Dissertação</option>
+            <option>Relatório Técnico</option>
+            <option>Revista/Periódico</option>
+            <option>Anais de Evento</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div><label for="obAno">Ano</label><input id="obAno" type="number" min="1900" max="2100" placeholder="2026"></div>
+        <div>
+          <label for="obTema">Tema/Área</label>
+          <input id="obTema" list="obTemaSugestoes" placeholder="Ex.: Direitos Indígenas">
+          <datalist id="obTemaSugestoes">
+            <option value="Direitos Indígenas">
+            <option value="Ancestralidade e Cultura">
+            <option value="Propriedade Intelectual">
+            <option value="Biotecnologia">
+            <option value="Saúde Indígena">
+            <option value="Educação Indígena">
+            <option value="Meio Ambiente e Território">
+            <option value="Cooperativismo">
+            <option value="Antropologia">
+          </datalist>
+        </div>
+        <div><label for="obIdioma">Idioma</label><input id="obIdioma" placeholder="Português" value="Português"></div>
+      </div>
+      <div class="fcol">
+        <label for="obResumo">Resumo</label>
+        <textarea id="obResumo" rows="5" placeholder="Um breve resumo da obra..."></textarea>
+      </div>
+      <div class="fgrid">
+        <div><label for="obLink">Link para leitura/download (PDF, DOI, repositório...)</label><input id="obLink" placeholder="https://..."></div>
+        <div>
+          <label>Capa (opcional)</label>
+          <input id="obCapaInput" type="file" accept="image/*">
+          <div id="obCapaStatus" class="msg" style="display:none"></div>
+          <div id="obCapaPreview" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="fcol">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input id="obDestaque" type="checkbox" style="width:auto">
+          <span style="text-transform:none;font-family:var(--corpo);font-size:14px;letter-spacing:normal">⭐ Destacar esta obra na vitrine do acervo (aparece em maior evidência no topo)</span>
+        </label>
+      </div>
+      <div class="acoes">
+        <button class="btn verde" id="btnSalvarObra" type="button">Adicionar ao acervo</button>
+        <button class="btn" id="btnCancelarObra" type="button" style="display:none">Cancelar edição</button>
+      </div>
+      <div class="msg" id="msgObra"></div>
+      <div class="tabela-scroll"><table class="adm-t" id="tabObras">
+        <thead><tr><th>Ano</th><th>Título</th><th>Autor(es)</th><th>Tipo</th><th>Ações</th></tr></thead><tbody></tbody>
       </table></div>
     </div>
 
@@ -3696,7 +3910,7 @@ var SEED_COOPERADOS_V1 = [{"id": "seed001", "matricula": "COOP-0001", "nome": "E
 
 var db = {
   cooperados: [], docs: [], noticias: [], maquinas: [], comissoes: [],
-  diretoria: [], galeria: [], propostas: [], atos: [],
+  diretoria: [], galeria: [], propostas: [], atos: [], acervo: [],
   contato: { email:'contato@coopims.com.br', fone:'(67) 9 0000-0000', endereco:'Campo Grande, Mato Grosso do Sul' }
 };
 
@@ -3730,6 +3944,7 @@ function carregarLocal(){
   aplicarSeedGenerico('diretoria', SEED_DIRETORIA_V1);
   aplicarSeedGenerico('galeria', SEED_GALERIA_V1);
   aplicarSeedGenerico('noticias', SEED_NOTICIAS_V1);
+  aplicarSeedGenerico('acervo', SEED_ACERVO_V1);
   aplicarSeedGenerico('maquinas', SEED_MAQUINAS_V1);
   aplicarSeedGenerico('comissoes', SEED_COMISSOES_V1);
   aplicarSeedContato();
@@ -3745,6 +3960,7 @@ var REFERENCIA_CADASTRAL_V1 = [{"nome": "Edvaldo Felix", "fone": "67 99914-6070"
 var SEED_DIRETORIA_V1 = [];
 var SEED_GALERIA_V1 = [];
 var SEED_NOTICIAS_V1 = [];
+var SEED_ACERVO_V1 = [];
 var SEED_MAQUINAS_V1 = [];
 var SEED_COMISSOES_V1 = [];
 var SEED_CONTATO_V1 = { email:'contato@coopims.com.br', fone:'(67) 9 0000-0000', endereco:'Campo Grande, Mato Grosso do Sul' };
@@ -3858,7 +4074,7 @@ function aplicarSeedCooperados(){
   if (mudou) salvarLocal();
 }
 function mesclar(o){
-  ['cooperados','docs','noticias','maquinas','comissoes','diretoria','galeria','propostas','atos'].forEach(function(k){
+  ['cooperados','docs','noticias','maquinas','comissoes','diretoria','galeria','propostas','atos','acervo'].forEach(function(k){
     if (Object.prototype.toString.call(o[k]) === '[object Array]') db[k] = o[k];
   });
   if (o.contato && typeof o.contato === 'object') db.contato = o.contato;
@@ -5899,6 +6115,220 @@ function renderNot(){
   }).join('') || '<p style="color:#5B736C">As primeiras notícias da cooperativa serão publicadas em breve.</p>';
 }
 
+/* ---------- Acervo Científico ---------- */
+var _obCapaTemp = '';
+var _obEditandoId = null;
+var _acervoFiltroTema = '';
+var ACERVO_CORES_TIPO = {
+  'Livro':'#00843D','Capítulo de Livro':'#3FA0D8','Artigo Científico':'#2478AC','Tese':'#C99A0A',
+  'Dissertação':'#F4C430','Relatório Técnico':'#5B736C','Revista/Periódico':'#B23A2E','Anais de Evento':'#7A5E00','Outro':'#16302B'
+};
+function corTipoObra(tipo){ return ACERVO_CORES_TIPO[tipo] || '#16302B'; }
+function inicialObra(titulo){ return (String(titulo||'?').trim().charAt(0) || '?').toUpperCase(); }
+
+function uploadCapaObra(input){
+  if (!input.files || !input.files[0]) return;
+  var status = $('obCapaStatus');
+  status.style.display = 'block'; status.className = 'msg ok'; status.textContent = '⏳ Enviando capa...';
+  enviarParaCloudinary(input.files[0], function(url, tipo){
+    if (tipo !== 'image'){ status.className = 'msg erro'; status.textContent = '⚠ Envie um arquivo de imagem para a capa.'; return; }
+    _obCapaTemp = url;
+    renderObraCapaPreview();
+    status.className = 'msg ok'; status.textContent = '✅ Capa enviada!';
+  }, function(motivo){
+    status.className = 'msg erro'; status.textContent = '⚠ Falha ao enviar capa (' + (motivo||'') + ').';
+  });
+  input.value = '';
+}
+function removerCapaObraTemp(){
+  _obCapaTemp = '';
+  renderObraCapaPreview();
+}
+function renderObraCapaPreview(){
+  var el = $('obCapaPreview');
+  el.innerHTML = _obCapaTemp
+    ? '<div style="position:relative;display:inline-block"><img src="' + esc(_obCapaTemp) + '" style="width:90px;height:126px;object-fit:cover;border-radius:6px;border:1px solid #35594F">'
+      + '<button type="button" id="btnRemoverCapaObra" style="position:absolute;top:-8px;right:-8px;background:#B23A2E;color:#fff;border:2px solid #13302A;width:24px;height:24px;border-radius:50%;font-size:12px;cursor:pointer">✕</button></div>'
+    : '';
+}
+
+function editarObra(id){
+  var o = db.acervo.filter(function(x){ return x.id === id; })[0];
+  if (!o) return;
+  _obEditandoId = id;
+  $('obTitulo').value = o.titulo || '';
+  $('obAutores').value = o.autores || '';
+  $('obTipo').value = o.tipo || 'Livro';
+  $('obAno').value = o.ano || '';
+  $('obTema').value = o.tema || '';
+  $('obIdioma').value = o.idioma || 'Português';
+  $('obResumo').value = o.resumo || '';
+  $('obLink').value = o.link || '';
+  $('obDestaque').checked = !!o.destaque;
+  _obCapaTemp = o.capa || '';
+  renderObraCapaPreview();
+  $('obCapaStatus').style.display = 'none';
+  var btn = $('btnSalvarObra'); if (btn) btn.textContent = '💾 Salvar alterações';
+  var btnCanc = $('btnCancelarObra'); if (btnCanc) btnCanc.style.display = 'inline-block';
+  msg('msgObra','Editando obra — altere o que quiser e clique em "Salvar alterações".', true);
+  var campo = $('obTitulo'); if (campo && campo.scrollIntoView) campo.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+function cancelarEdicaoObra(){
+  _obEditandoId = null;
+  ['obTitulo','obAutores','obAno','obTema','obResumo','obLink'].forEach(function(id){ $(id).value=''; });
+  $('obTipo').value = 'Livro'; $('obIdioma').value = 'Português'; $('obDestaque').checked = false;
+  _obCapaTemp = ''; renderObraCapaPreview();
+  $('obCapaStatus').style.display = 'none';
+  var btn = $('btnSalvarObra'); if (btn) btn.textContent = 'Adicionar ao acervo';
+  var btnCanc = $('btnCancelarObra'); if (btnCanc) btnCanc.style.display = 'none';
+}
+function salvarObra(){
+  var titulo = $('obTitulo').value.trim();
+  var autores = $('obAutores').value.trim();
+  if (!titulo || !autores){ msg('msgObra','Informe título e autor(es).', false); return; }
+  var editando = !!_obEditandoId;
+  var o;
+  if (editando){
+    o = db.acervo.filter(function(x){ return x.id === _obEditandoId; })[0];
+    if (!o){ msg('msgObra','Obra não encontrada.', false); cancelarEdicaoObra(); return; }
+  } else {
+    o = { id: String(Date.now()) };
+    db.acervo.push(o);
+  }
+  o.titulo = titulo; o.autores = autores; o.tipo = $('obTipo').value;
+  o.ano = $('obAno').value.trim(); o.tema = $('obTema').value.trim();
+  o.idioma = $('obIdioma').value.trim() || 'Português';
+  o.resumo = $('obResumo').value.trim(); o.link = $('obLink').value.trim();
+  o.capa = _obCapaTemp; o.destaque = $('obDestaque').checked;
+  salvarLocal(); renderTudo();
+  msg('msgObra', editando ? 'Obra atualizada.' : 'Obra adicionada ao acervo.', true);
+  cancelarEdicaoObra();
+}
+function removerObra(id){
+  if (!confirm('Remover esta obra do acervo?')) return;
+  db.acervo = db.acervo.filter(function(o){ return o.id !== id; });
+  if (_obEditandoId === id) cancelarEdicaoObra();
+  salvarLocal(); renderTudo();
+}
+
+function abrirObraModal(id){
+  var o = db.acervo.filter(function(x){ return x.id === id; })[0];
+  if (!o) return;
+  $('obraTipoSelo').textContent = o.tipo || 'Obra';
+  $('obraTitulo').textContent = o.titulo;
+  $('obraAutores').textContent = o.autores;
+  var metaPartes = [];
+  if (o.ano) metaPartes.push(o.ano);
+  if (o.tema) metaPartes.push(o.tema);
+  if (o.idioma) metaPartes.push(o.idioma);
+  $('obraMeta').innerHTML = metaPartes.map(function(p){ return '<span>' + esc(p) + '</span>'; }).join('');
+  $('obraResumo').innerHTML = o.resumo ? formatarTextoNoticia(o.resumo) : '<p style="color:#8FB4A6">Resumo não informado.</p>';
+  $('obraCapaGrande').innerHTML = o.capa
+    ? '<img src="' + esc(o.capa) + '" alt="">'
+    : '<div class="sem-capa"><span class="inicial">' + esc(inicialObra(o.titulo)) + '</span>' + esc(o.tipo||'') + '</div>';
+  $('obraAcoes').innerHTML = o.link
+    ? '<a class="btn verde" href="' + esc(o.link) + '" target="_blank" rel="noopener">📖 Ler / baixar</a>'
+    : '<span style="color:#8FB4A6;font-size:13px">Link de leitura não informado.</span>';
+  $('modalObra').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function fecharObraModal(){
+  $('modalObra').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+function capaOuPlaceholderObra(o, classePlaceholder){
+  if (o.capa) return '<img src="' + esc(o.capa) + '" alt="" loading="lazy">';
+  return '<div class="' + classePlaceholder + '"><span class="inicial">' + esc(inicialObra(o.titulo)) + '</span><span class="rotulo-tipo">' + esc(o.tipo||'Obra') + '</span></div>';
+}
+
+function renderObras(){
+  var tabEl = $('tabObras');
+  if (!tabEl) return; // painel ainda não presente nesta página
+
+  /* painel admin: tabela */
+  var tb = tabEl.querySelector('tbody');
+  var ordAdm = db.acervo.slice().sort(function(a,b){ return String(b.ano||'').localeCompare(String(a.ano||'')); });
+  tb.innerHTML = ordAdm.map(function(o){
+    return '<tr><td class="mono">' + esc(o.ano||'—') + '</td><td>' + esc(o.titulo) + (o.destaque ? ' ⭐' : '') + '</td><td>' + esc(o.autores) + '</td><td>' + esc(o.tipo||'') + '</td>'
+      + '<td><button class="btn mini" data-editobra="' + esc(o.id) + '" type="button">✏️ Editar</button> <button class="btn mini perigo" data-rmobra="' + esc(o.id) + '" type="button">Remover</button></td></tr>';
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:#8FB4A6">Nenhuma obra cadastrada.</td></tr>';
+
+  /* chips de tema, gerados a partir dos dados reais */
+  var temas = [];
+  db.acervo.forEach(function(o){ if (o.tema && temas.indexOf(o.tema) === -1) temas.push(o.tema); });
+  temas.sort();
+  var filtrosEl = $('acervoFiltros');
+  if (filtrosEl){
+    filtrosEl.innerHTML = '<button type="button" class="acervo-chip' + (_acervoFiltroTema === '' ? ' on' : '') + '" data-temafiltro="">Todos</button>'
+      + temas.map(function(t){
+        return '<button type="button" class="acervo-chip' + (_acervoFiltroTema === t ? ' on' : '') + '" data-temafiltro="' + esc(t) + '">' + esc(t) + '</button>';
+      }).join('');
+  }
+
+  var termo = (($('acervoBusca') && $('acervoBusca').value) || '').trim().toLowerCase();
+  var lista = db.acervo.filter(function(o){
+    if (_acervoFiltroTema && o.tema !== _acervoFiltroTema) return false;
+    if (!termo) return true;
+    var alvo = (o.titulo + ' ' + o.autores + ' ' + (o.tema||'')).toLowerCase();
+    return alvo.indexOf(termo) !== -1;
+  }).sort(function(a,b){ return String(b.ano||'').localeCompare(String(a.ano||'')); });
+
+  var destaqueEl = $('acervoDestaque');
+  var destacada = db.acervo.filter(function(o){ return o.destaque; })[0];
+  var mostrarDestaque = destacada && !termo && !_acervoFiltroTema;
+  if (destaqueEl){
+    if (mostrarDestaque){
+      destaqueEl.classList.add('mostrar');
+      destaqueEl.innerHTML = '<div class="acervo-destaque-card" data-abrirobra="' + esc(destacada.id) + '">'
+        + '<span class="acervo-destaque-fita">DESTAQUE</span>'
+        + '<div class="acervo-destaque-capa">' + capaOuPlaceholderObra(destacada, 'sem-capa') + '</div>'
+        + '<div class="acervo-destaque-info">'
+        + '<span class="acervo-destaque-tipo">' + esc(destacada.tipo||'Obra') + '</span>'
+        + '<h3>' + esc(destacada.titulo) + '</h3>'
+        + '<p class="autores">' + esc(destacada.autores) + (destacada.ano ? ' · ' + esc(destacada.ano) : '') + '</p>'
+        + (destacada.resumo ? '<p class="resumo">' + esc(destacada.resumo) + '</p>' : '')
+        + '<button type="button" class="btn ouro" data-abrirobra="' + esc(destacada.id) + '">📖 Conhecer esta obra</button>'
+        + '</div></div>';
+    } else {
+      destaqueEl.classList.remove('mostrar');
+      destaqueEl.innerHTML = '';
+    }
+  }
+
+  var listaGrade = mostrarDestaque ? lista.filter(function(o){ return o.id !== destacada.id; }) : lista;
+  var gradeEl = $('acervoGrade');
+  if (gradeEl){
+    gradeEl.innerHTML = listaGrade.map(function(o){
+      return '<article class="acervo-card" data-abrirobra="' + esc(o.id) + '">'
+        + '<div class="acervo-capa-wrap"><div class="acervo-capa-faixa" style="background:' + corTipoObra(o.tipo) + '"></div>'
+        + (o.ano ? '<span class="acervo-ano-selo">' + esc(o.ano) + '</span>' : '')
+        + capaOuPlaceholderObra(o, 'acervo-capa-placeholder')
+        + '</div>'
+        + '<div class="acervo-card-txt">'
+        + (o.tema ? '<span class="acervo-card-tema">' + esc(o.tema) + '</span>' : '')
+        + '<h4>' + esc(o.titulo) + '</h4>'
+        + '<span class="autores">' + esc(o.autores) + '</span>'
+        + '</div></article>';
+    }).join('');
+  }
+
+  var vazioEl = $('acervoVazio');
+  if (vazioEl){
+    var semNada = db.acervo.length === 0;
+    var semResultado = db.acervo.length > 0 && lista.length === 0;
+    if (semNada){
+      vazioEl.classList.add('mostrar');
+      vazioEl.textContent = 'O acervo científico da COOPIMS está sendo formado — em breve, livros, artigos e pesquisas sobre os povos indígenas estarão disponíveis aqui.';
+    } else if (semResultado){
+      vazioEl.classList.add('mostrar');
+      vazioEl.textContent = 'Nenhuma obra encontrada para esse filtro ou busca.';
+    } else {
+      vazioEl.classList.remove('mostrar');
+    }
+  }
+}
+
 /* ---------- máquinas ---------- */
 function salvarMaq(){
   var m = { id:String(Date.now()), equip:$('mEquip').value.trim(), coop:$('mCoop').value.trim(), data:$('mData').value, prio:$('mPrio').value, obs:$('mObs').value.trim() };
@@ -5962,6 +6392,7 @@ function renderPublico(){
 function renderTudo(){
   renderCoop(); renderDocsCoop(); renderRelatorios(); renderDocs(); renderNot(); renderMaq(); renderCom(); renderPublico();
   renderDirAdm(); renderDirPublico(); renderGalAdm(); renderGalPublico(); renderProp(); renderComu(); renderMapa(); renderAtos(); renderAssembleia();
+  renderObras();
 }
 
 /* ---------- GitHub: publicar e recarregar ---------- */
@@ -6073,6 +6504,7 @@ function publicar(){
     texto = substituirSeed(texto, 'SEED_DIRETORIA_V1', db.diretoria);
     texto = substituirSeed(texto, 'SEED_GALERIA_V1', db.galeria);
     texto = substituirSeed(texto, 'SEED_NOTICIAS_V1', db.noticias);
+    texto = substituirSeed(texto, 'SEED_ACERVO_V1', db.acervo);
     texto = substituirSeed(texto, 'SEED_MAQUINAS_V1', db.maquinas);
     texto = substituirSeed(texto, 'SEED_COMISSOES_V1', db.comissoes);
     texto = substituirSeed(texto, 'SEED_CONTATO_V1', db.contato);
@@ -6095,6 +6527,7 @@ function recarregar(){
     if (pj.noticias) db.noticias = pj.noticias;
     if (pj.diretoria) db.diretoria = pj.diretoria;
     if (pj.galeria) db.galeria = pj.galeria;
+    if (pj.acervo) db.acervo = pj.acervo;
     if (pj.contato) db.contato = pj.contato;
   });
   if (token){
@@ -6124,6 +6557,7 @@ function carregarPublicoInicial(){
       if (pj.noticias && pj.noticias.length) db.noticias = pj.noticias;
       if (pj.diretoria && pj.diretoria.length) db.diretoria = pj.diretoria;
       if (pj.galeria && pj.galeria.length) db.galeria = pj.galeria;
+      if (pj.acervo && pj.acervo.length) db.acervo = pj.acervo;
       if (pj.contato) db.contato = pj.contato;
       if (pj.estatisticas){
         if (pj.estatisticas.cooperadosAtivos) $('dCoop').textContent = pj.estatisticas.cooperadosAtivos;
@@ -6179,6 +6613,13 @@ function ligarTabelas(){
       var partes = b.getAttribute('data-moverfoto').split(':');
       moverNFotoTemp(parseInt(partes[0],10), parseInt(partes[1],10));
     }
+    else if (b.hasAttribute('data-editobra')) editarObra(b.getAttribute('data-editobra'));
+    else if (b.hasAttribute('data-rmobra')) removerObra(b.getAttribute('data-rmobra'));
+    else if (b.id === 'btnRemoverCapaObra') removerCapaObraTemp();
+    else if (b.hasAttribute('data-temafiltro')){
+      _acervoFiltroTema = b.getAttribute('data-temafiltro');
+      renderObras();
+    }
     return;
   });
   document.addEventListener('click', function(ev){
@@ -6186,7 +6627,13 @@ function ligarTabelas(){
     if (!(t instanceof Element)) return;
     var card = t.closest('[data-abrirnot]');
     if (card) abrirNoticiaModal(card.getAttribute('data-abrirnot'));
+    var obraEl = t.closest('[data-abrirobra]');
+    if (obraEl) abrirObraModal(obraEl.getAttribute('data-abrirobra'));
   });
+  var btnSalvarObra = $('btnSalvarObra'); if (btnSalvarObra) btnSalvarObra.addEventListener('click', salvarObra);
+  var btnCancelarObra = $('btnCancelarObra'); if (btnCancelarObra) btnCancelarObra.addEventListener('click', cancelarEdicaoObra);
+  var obCapaInput = $('obCapaInput'); if (obCapaInput) obCapaInput.addEventListener('change', function(){ uploadCapaObra(this); });
+  var acervoBusca = $('acervoBusca'); if (acervoBusca) acervoBusca.addEventListener('input', renderObras);
   var inFotosNot = $('nFotosInput');
   if (inFotosNot) inFotosNot.addEventListener('change', function(){ uploadFotosNot(this); });
   var btnNeg = $('btnNTextoNegrito'); if (btnNeg) btnNeg.addEventListener('click', function(){ nTextoFormatarSelecao('**'); });
@@ -6454,7 +6901,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
   $('lightbox').addEventListener('click', function(ev){ if (ev.target.id === 'lightbox') fecharLightbox(); });
-  document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape'){ fecharLightbox(); fecharNoticiaModal(); } });
+  document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape'){ fecharLightbox(); fecharNoticiaModal(); fecharObraModal(); } });
 
   $('btnAbrirFicha').addEventListener('click', abrirFicha);
   $('btnAbrirFicha2').addEventListener('click', abrirFicha);
@@ -6498,6 +6945,7 @@ window.abrirNoticiaModal = abrirNoticiaModal;
 window.fecharNoticiaModal = fecharNoticiaModal;
 window.abrirLightboxDireta = abrirLightboxDireta;
 window.COOP_renderNot = renderNot;
+window.fecharObraModal = fecharObraModal;
 
 })();
 </script>
@@ -6533,6 +6981,7 @@ window.COOP_renderNot = renderNot;
   nav_transparencia: {"pt": "Transparência", "en": "Transparency", "es": "Transparencia", "fr": "Transparence"},
   nav_esg: {"pt": "ESG", "en": "ESG", "es": "ESG", "fr": "ESG"},
   nav_legislacao: {"pt": "Legislação", "en": "Legislation", "es": "Legislación", "fr": "Législation"},
+  nav_acervo: {"pt": "Acervo Científico", "en": "Research Archive", "es": "Acervo Científico", "fr": "Fonds Scientifique"},
   nav_mapa: {"pt": "Mapa", "en": "Map", "es": "Mapa", "fr": "Carte"},
   nav_apoiadores: {"pt": "Apoiadores", "en": "Supporters", "es": "Apoyadores", "fr": "Partenaires"},
   nav_noticias: {"pt": "Notícias", "en": "News", "es": "Noticias", "fr": "Actualités"},
@@ -6584,6 +7033,10 @@ window.COOP_renderNot = renderNot;
   leg_rotulo: {"pt": "Base legal", "en": "Legal Basis", "es": "Base legal", "fr": "Base juridique"},
   leg_titulo: {"pt": "A legislação que sustenta cada decisão", "en": "The legislation behind every decision", "es": "La legislación que sustenta cada decisión", "fr": "La législation qui fonde chaque décision"},
   leg_p1: {"pt": "A COOPIMS opera na confluência entre dois campos do direito: o cooperativismo e os direitos dos povos indígenas. Reunimos aqui, por tema, as normas que orientam a Diretoria, o Conselho e cada cooperado.", "en": "COOPIMS operates at the intersection of two fields of law: cooperative law and Indigenous peoples' rights. Here we gather, by topic, the rules that guide the Board, the Council, and every member.", "es": "COOPIMS opera en la confluencia entre dos campos del derecho: el cooperativismo y los derechos de los pueblos indígenas. Reunimos aquí, por tema, las normas que orientan a la Directiva, al Consejo y a cada cooperado.", "fr": "La COOPIMS opère au confluent de deux champs du droit : le coopérativisme et les droits des peuples indigènes. Nous réunissons ici, par thème, les normes qui guident la Direction, le Conseil et chaque coopérateur."},
+  acervo_rotulo: {"pt": "Conhecimento", "en": "Knowledge", "es": "Conocimiento", "fr": "Savoir"},
+  acervo_titulo: {"pt": "Acervo Científico", "en": "Scientific Archive", "es": "Acervo Científico", "fr": "Fonds Scientifique"},
+  acervo_p1: {"pt": "Uma biblioteca viva de livros, artigos, teses e pesquisas sobre os povos indígenas — reunida aqui para apoiar pesquisadores, gestores públicos, estudantes e as próprias comunidades. Cresce a cada estudo publicado sobre ancestralidade, direitos, saúde, educação e biotecnologia indígena.", "en": "A living library of books, articles, theses and research about Indigenous peoples — gathered here to support researchers, public officials, students and the communities themselves. It grows with every study published on ancestry, rights, health, education and Indigenous biotechnology.", "es": "Una biblioteca viva de libros, artículos, tesis e investigaciones sobre los pueblos indígenas — reunida aquí para apoyar a investigadores, gestores públicos, estudiantes y a las propias comunidades. Crece con cada estudio publicado sobre ancestralidad, derechos, salud, educación y biotecnología indígena.", "fr": "Une bibliothèque vivante de livres, d'articles, de thèses et de recherches sur les peuples indigènes — réunie ici pour soutenir les chercheurs, les gestionnaires publics, les étudiants et les communautés elles-mêmes. Elle s'enrichit à chaque étude publiée sur l'ascendance, les droits, la santé, l'éducation et la biotechnologie indigène."},
+  acervo_vazio: {"pt": "O acervo científico da COOPIMS está sendo formado — em breve, livros, artigos e pesquisas sobre os povos indígenas estarão disponíveis aqui.", "en": "The COOPIMS scientific archive is being assembled — books, articles and research about Indigenous peoples will soon be available here.", "es": "El acervo científico de COOPIMS está siendo formado — pronto, libros, artículos e investigaciones sobre los pueblos indígenas estarán disponibles aquí.", "fr": "Le fonds scientifique de la COOPIMS est en cours de constitution — livres, articles et recherches sur les peuples indigènes seront bientôt disponibles ici."},
   mapa_rotulo: {"pt": "Onde estamos", "en": "Where We Are", "es": "Dónde estamos", "fr": "Où nous sommes"},
   mapa_titulo: {"pt": "Mapa dos cooperados em Mato Grosso do Sul", "en": "Map of Members in Mato Grosso do Sul", "es": "Mapa de los cooperados en Mato Grosso do Sul", "fr": "Carte des coopérateurs au Mato Grosso do Sul"},
   mapa_p1: {"pt": "Contorno geográfico real do estado. Cada ponto representa um município com cooperados; passe o mouse para ver quantos são, e toque um nome na lista para abrir a foto e os detalhes.", "en": "Actual geographic outline of the state. Each point represents a municipality with cooperative members; hover to see how many, and tap a name in the list to open the photo and details.", "es": "Contorno geográfico real del estado. Cada punto representa un municipio con cooperados; pase el mouse para ver cuántos son, y toque un nombre en la lista para abrir la foto y los detalles.", "fr": "Contour géographique réel de l'État. Chaque point représente une municipalité avec des coopérateurs ; survolez pour voir combien ils sont, et touchez un nom dans la liste pour ouvrir la photo et les détails."},
