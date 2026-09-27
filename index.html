@@ -194,6 +194,7 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 #modalNoticia .nc-galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:20px}
 #modalNoticia .nc-galeria img{width:100%;height:110px;object-fit:cover;border-radius:6px;cursor:pointer;transition:opacity .2s}
 #modalNoticia .nc-galeria img:hover{opacity:.82}
+#modalNoticia .nc-galeria video{width:100%;height:110px;object-fit:cover;border-radius:6px;background:#000;grid-column:span 2}
 #modalNoticia .rodape-timbre{border-top:1px solid var(--linha);padding:14px 30px;font-size:11.5px;color:#5B736C;text-align:center}
 @media (max-width:560px){
   #modalNoticia .timbre{padding:16px 18px 14px}
@@ -2876,12 +2877,19 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
         <div><label for="nData">Data</label><input id="nData" type="date"></div>
       </div>
       <div class="fcol">
-        <label for="nTexto">Texto * <span style="font-weight:400;opacity:.7;font-size:12px">(deixe uma linha em branco entre parágrafos; use **negrito** e *itálico* se quiser)</span></label>
+        <label for="nTexto">Texto * <span style="font-weight:400;opacity:.7;font-size:12px">(selecione um trecho e use os botões, ou deixe uma linha em branco para separar parágrafos)</span></label>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <button type="button" id="btnNTextoNegrito" title="Negrito" style="font-weight:800;width:34px;height:30px;border-radius:5px;border:1px solid var(--linha);background:#fff;cursor:pointer">B</button>
+          <button type="button" id="btnNTextoItalico" title="Itálico" style="font-style:italic;width:34px;height:30px;border-radius:5px;border:1px solid var(--linha);background:#fff;cursor:pointer">I</button>
+          <button type="button" id="btnNTextoPreview" title="Ver como vai ficar publicado" style="height:30px;padding:0 12px;border-radius:5px;border:1px solid var(--linha);background:#fff;cursor:pointer;font-size:12.5px">👁 Pré-visualizar</button>
+          <span style="font-size:11.5px;color:#5B736C;align-self:center">O texto publicado sai sempre justificado, como no exemplo abaixo.</span>
+        </div>
         <textarea id="nTexto" rows="8"></textarea>
+        <div id="nTextoPreview" style="display:none;margin-top:10px;padding:16px 18px;background:#fff;border:1px solid var(--linha);border-radius:6px;font-size:14.5px;line-height:1.8;color:#1C2B26;text-align:justify"></div>
       </div>
       <div class="fcol">
-        <label>Fotos do evento (opcional, pode escolher várias)</label>
-        <input id="nFotosInput" type="file" accept="image/*" multiple>
+        <label>Fotos e vídeos do evento (opcional, pode escolher vários)</label>
+        <input id="nFotosInput" type="file" accept="image/*,video/*" multiple>
         <div id="nFotosStatus" class="msg" style="display:none"></div>
         <div id="nFotosPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
       </div>
@@ -4008,21 +4016,19 @@ function preencherDaReferencia(r){
 }
 
 
-/* ---------- upload direto de fotos para o Cloudinary (mesma rede ICET/CMDDI) ---------- */
-/* IMPORTANTE: antes de usar, crie um "Upload preset" do tipo "Unsigned" no painel do Cloudinary
-   (Settings > Upload > Upload presets > Add upload preset), e cole o nome dele abaixo.
-   Sem isso, o upload direto falha com erro de autenticação. */
+/* ---------- upload direto de fotos/vídeos para o Cloudinary (mesma rede ICET/CMDDI) ---------- */
+/* Usa o preset "cmddi_galeria" e o endpoint "auto/upload", a mesma estratégia já validada
+   no site do CMDDI (aceita imagem e vídeo automaticamente, sem exigir configuração própria
+   do COOPIMS no Cloudinary). */
 var CLOUDINARY_CLOUD_NAME = 'dn1ubybc0';
-var CLOUDINARY_UPLOAD_PRESET = 'coopeimasul_fotos';
-var CLOUDINARY_PASTA = 'coopeimasul/cooperados';
+var CLOUDINARY_UPLOAD_PRESET = 'cmddi_galeria';
 
 function enviarParaCloudinary(arquivo, aoConcluir, aoFalhar, aoProgredir){
   if (!arquivo) return;
-  var url = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/image/upload';
+  var url = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/auto/upload';
   var dados = new FormData();
   dados.append('file', arquivo);
   dados.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  dados.append('folder', CLOUDINARY_PASTA);
 
   var xhr = new XMLHttpRequest();
   xhr.open('POST', url, true);
@@ -4033,9 +4039,9 @@ function enviarParaCloudinary(arquivo, aoConcluir, aoFalhar, aoProgredir){
     try{
       var resp = JSON.parse(xhr.responseText);
       if (xhr.status >= 200 && xhr.status < 300 && resp.secure_url){
-        aoConcluir(resp.secure_url);
+        aoConcluir(resp.secure_url, resp.resource_type || 'image');
       } else {
-        aoFalhar((resp.error && resp.error.message) || 'Falha no envio da foto.');
+        aoFalhar((resp.error && resp.error.message) || 'Falha no envio do arquivo.');
       }
     } catch(e){ aoFalhar('Falha ao entender a resposta do servidor de fotos.'); }
   };
@@ -5619,19 +5625,19 @@ function uploadFotosNot(input){
   status.style.display = 'block';
   var restantes = arquivos.length, falhas = 0;
   status.className = 'msg ok';
-  status.textContent = '⏳ Enviando ' + arquivos.length + ' foto(s)...';
+  status.textContent = '⏳ Enviando ' + arquivos.length + ' arquivo(s)...';
   arquivos.forEach(function(arquivo){
-    enviarParaCloudinary(arquivo, function(url){
-      _nFotosTemp.push(url);
+    enviarParaCloudinary(arquivo, function(url, tipo){
+      _nFotosTemp.push({ url: url, video: tipo === 'video' });
       restantes--;
       renderNFotosPreview();
       if (restantes === 0){
         status.className = falhas ? 'msg erro' : 'msg ok';
-        status.textContent = falhas ? ('⚠ ' + falhas + ' foto(s) falharam no envio.') : '✅ Fotos enviadas!';
+        status.textContent = falhas ? ('⚠ ' + falhas + ' arquivo(s) falharam no envio.') : '✅ Enviado!';
       }
-    }, function(){
+    }, function(motivo){
       falhas++; restantes--;
-      if (restantes === 0){ status.className = 'msg erro'; status.textContent = '⚠ ' + falhas + ' foto(s) falharam no envio.'; }
+      if (restantes === 0){ status.className = 'msg erro'; status.textContent = '⚠ ' + falhas + ' arquivo(s) falharam no envio (' + (motivo||'') + ').'; }
     });
   });
   input.value = '';
@@ -5641,8 +5647,12 @@ function removerNFotoTemp(idx){
   renderNFotosPreview();
 }
 function renderNFotosPreview(){
-  $('nFotosPreview').innerHTML = _nFotosTemp.map(function(url, idx){
-    return '<div style="position:relative"><img src="' + esc(url) + '" alt="" style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)">'
+  $('nFotosPreview').innerHTML = _nFotosTemp.map(function(f, idx){
+    var miolo = f.video
+      ? '<video src="' + esc(f.url) + '" muted style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)"></video>'
+      : '<img src="' + esc(f.url) + '" alt="" style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)">';
+    return '<div style="position:relative">' + miolo
+      + (f.video ? '<span style="position:absolute;left:3px;bottom:3px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:1px 5px;border-radius:3px">▶ vídeo</span>' : '')
       + '<button type="button" data-rmnfoto="' + idx + '" style="position:absolute;top:-6px;right:-6px;background:#B23A2E;color:#fff;border:none;width:20px;height:20px;border-radius:50%;font-size:11px;cursor:pointer;line-height:1">✕</button></div>';
   }).join('');
 }
@@ -5655,15 +5665,44 @@ function formatarTextoNoticia(texto){
     return '<p>' + seguro + '</p>';
   }).join('');
 }
+/* Botões de formatação: envolve (ou remove) marcadores markdown no trecho selecionado do textarea */
+function nTextoFormatarSelecao(marcador){
+  var ta = $('nTexto');
+  var ini = ta.selectionStart, fim = ta.selectionEnd;
+  var texto = ta.value;
+  var selecionado = texto.slice(ini, fim);
+  if (!selecionado){ notif('Selecione um trecho do texto primeiro.'); ta.focus(); return; }
+  var jaFormatado = selecionado.slice(0, marcador.length) === marcador && selecionado.slice(-marcador.length) === marcador;
+  var novoTrecho = jaFormatado ? selecionado.slice(marcador.length, selecionado.length - marcador.length) : (marcador + selecionado + marcador);
+  ta.value = texto.slice(0, ini) + novoTrecho + texto.slice(fim);
+  ta.focus();
+  ta.selectionStart = ini; ta.selectionEnd = ini + novoTrecho.length;
+  nTextoAtualizarPreview();
+}
+function nTextoAtualizarPreview(){
+  var pv = $('nTextoPreview');
+  if (pv.style.display === 'none') return;
+  pv.innerHTML = formatarTextoNoticia($('nTexto').value) || '<span style="color:#8FB4A6">O texto aparece aqui conforme você digita...</span>';
+}
+function nTextoAlternarPreview(){
+  var pv = $('nTextoPreview');
+  var mostrando = pv.style.display !== 'none';
+  pv.style.display = mostrando ? 'none' : 'block';
+  $('btnNTextoPreview').textContent = mostrando ? '👁 Pré-visualizar' : '✏️ Voltar a editar';
+  if (!mostrando) nTextoAtualizarPreview();
+}
 function salvarNot(){
   var n = { id:String(Date.now()), titulo:$('nTitulo').value.trim(), data:$('nData').value || hoje(),
     texto:$('nTexto').value.trim(), fotos: _nFotosTemp.slice() };
-  n.foto = n.fotos[0] || '';
+  var capa = n.fotos.filter(function(f){ return !f.video; })[0] || n.fotos[0];
+  n.foto = capa ? (capa.video ? capa.url.replace(/\.\w+(\?.*)?$/, '.jpg$1') : capa.url) : '';
   if (!n.titulo || !n.texto){ msg('msgNot','Informe título e texto.', false); return; }
   db.noticias.push(n); salvarLocal(); renderTudo();
   $('nTitulo').value=''; $('nTexto').value='';
   _nFotosTemp = []; renderNFotosPreview();
   $('nFotosStatus').style.display = 'none';
+  $('nTextoPreview').style.display = 'none'; $('nTextoPreview').innerHTML = '';
+  $('btnNTextoPreview').textContent = '👁 Pré-visualizar';
   msg('msgNot','Notícia publicada.', true);
 }
 function removerNot(id){
@@ -5679,9 +5718,11 @@ function abrirNoticiaModal(id){
   $('ncData').textContent = dataBR(n.data);
   $('ncTitulo').textContent = n.titulo;
   $('ncTexto').innerHTML = formatarTextoNoticia(n.texto);
-  var fotos = (n.fotos && n.fotos.length) ? n.fotos : (n.foto ? [n.foto] : []);
-  $('ncGaleria').innerHTML = fotos.map(function(url){
-    return '<img src="' + esc(url) + '" alt="" loading="lazy" onclick="abrirLightboxDireta(this.src)">';
+  var fotos = (n.fotos && n.fotos.length) ? n.fotos : (n.foto ? [{ url: n.foto, video: false }] : []);
+  $('ncGaleria').innerHTML = fotos.map(function(f){
+    return f.video
+      ? '<video src="' + esc(f.url) + '" controls preload="metadata"></video>'
+      : '<img src="' + esc(f.url) + '" alt="" loading="lazy" onclick="abrirLightboxDireta(this.src)">';
   }).join('');
   $('modalNoticia').classList.add('on');
   document.body.style.overflow = 'hidden';
@@ -5996,6 +6037,10 @@ function ligarTabelas(){
   });
   var inFotosNot = $('nFotosInput');
   if (inFotosNot) inFotosNot.addEventListener('change', function(){ uploadFotosNot(this); });
+  var btnNeg = $('btnNTextoNegrito'); if (btnNeg) btnNeg.addEventListener('click', function(){ nTextoFormatarSelecao('**'); });
+  var btnIta = $('btnNTextoItalico'); if (btnIta) btnIta.addEventListener('click', function(){ nTextoFormatarSelecao('*'); });
+  var btnPrev = $('btnNTextoPreview'); if (btnPrev) btnPrev.addEventListener('click', nTextoAlternarPreview);
+  var taNTexto = $('nTexto'); if (taNTexto) taNTexto.addEventListener('input', nTextoAtualizarPreview);
   document.addEventListener('change', function(ev){
     var t = ev.target;
     if (!(t instanceof Element)) return;
