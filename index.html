@@ -163,7 +163,7 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 /* notícias */
 .noticias{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:30px}
 .noticia{background:var(--branco);border:1px solid var(--linha);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
-.noticia img{height:170px;object-fit:cover;width:100%}
+.noticia img{height:200px;object-fit:cover;object-position:center 25%;width:100%;background:#EDEAE0}
 .noticia .semfoto{height:12px;background:linear-gradient(115deg,var(--verde) 0 47%,var(--branco) 47% 53%,var(--azul) 53% 100%)}
 .noticia .txt{padding:18px}
 .noticia .data{font-family:var(--mono);font-size:11.5px;color:var(--azul-esc)}
@@ -2893,7 +2893,10 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
         <div id="nFotosStatus" class="msg" style="display:none"></div>
         <div id="nFotosPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
       </div>
-      <div class="acoes"><button class="btn verde" id="btnSalvarNot" type="button">Publicar notícia</button></div>
+      <div class="acoes">
+        <button class="btn verde" id="btnSalvarNot" type="button">Publicar notícia</button>
+        <button class="btn" id="btnCancelarNot" type="button" style="display:none">Cancelar edição</button>
+      </div>
       <div class="msg" id="msgNot"></div>
       <div class="tabela-scroll"><table class="adm-t" id="tabNot">
         <thead><tr><th>Data</th><th>Título</th><th>Fotos</th><th>Ações</th></tr></thead><tbody></tbody>
@@ -5646,14 +5649,27 @@ function removerNFotoTemp(idx){
   _nFotosTemp.splice(idx, 1);
   renderNFotosPreview();
 }
+function moverNFotoTemp(idx, dir){
+  var novo = idx + dir;
+  if (novo < 0 || novo >= _nFotosTemp.length) return;
+  var tmp = _nFotosTemp[idx]; _nFotosTemp[idx] = _nFotosTemp[novo]; _nFotosTemp[novo] = tmp;
+  renderNFotosPreview();
+}
 function renderNFotosPreview(){
-  $('nFotosPreview').innerHTML = _nFotosTemp.map(function(f, idx){
+  var dica = _nFotosTemp.length > 1
+    ? '<div style="width:100%;font-size:11.5px;color:#5B736C;margin-bottom:4px">Use ◀ ▶ para reordenar. A primeira foto (sem ser vídeo) vira a capa da notícia.</div>'
+    : '';
+  $('nFotosPreview').innerHTML = dica + _nFotosTemp.map(function(f, idx){
     var miolo = f.video
       ? '<video src="' + esc(f.url) + '" muted style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)"></video>'
       : '<img src="' + esc(f.url) + '" alt="" style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)">';
-    return '<div style="position:relative">' + miolo
-      + (f.video ? '<span style="position:absolute;left:3px;bottom:3px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:1px 5px;border-radius:3px">▶ vídeo</span>' : '')
-      + '<button type="button" data-rmnfoto="' + idx + '" style="position:absolute;top:-6px;right:-6px;background:#B23A2E;color:#fff;border:none;width:20px;height:20px;border-radius:50%;font-size:11px;cursor:pointer;line-height:1">✕</button></div>';
+    var setas = '<div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);display:flex;gap:2px">'
+      + '<button type="button" data-moverfoto="' + idx + ':-1" ' + (idx === 0 ? 'disabled' : '') + ' title="Mover para trás" style="width:20px;height:18px;border:none;border-radius:3px;background:#2478AC;color:#fff;font-size:10px;cursor:pointer;opacity:' + (idx === 0 ? '.35' : '1') + '">◀</button>'
+      + '<button type="button" data-moverfoto="' + idx + ':1" ' + (idx === _nFotosTemp.length - 1 ? 'disabled' : '') + ' title="Mover para frente" style="width:20px;height:18px;border:none;border-radius:3px;background:#2478AC;color:#fff;font-size:10px;cursor:pointer;opacity:' + (idx === _nFotosTemp.length - 1 ? '.35' : '1') + '">▶</button></div>';
+    return '<div style="position:relative;margin-bottom:8px">' + miolo
+      + (f.video ? '<span style="position:absolute;left:3px;top:3px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:1px 5px;border-radius:3px">▶ vídeo</span>' : (idx === 0 ? '<span style="position:absolute;left:3px;top:3px;background:rgba(0,90,43,.85);color:#fff;font-size:9.5px;padding:1px 5px;border-radius:3px">CAPA</span>' : ''))
+      + '<button type="button" data-rmnfoto="' + idx + '" style="position:absolute;top:-6px;right:-6px;background:#B23A2E;color:#fff;border:none;width:20px;height:20px;border-radius:50%;font-size:11px;cursor:pointer;line-height:1">✕</button>'
+      + setas + '</div>';
   }).join('');
 }
 /* Converte o texto digitado (parágrafos separados por linha em branco, **negrito**, *itálico*) em HTML seguro */
@@ -5691,33 +5707,122 @@ function nTextoAlternarPreview(){
   $('btnNTextoPreview').textContent = mostrando ? '👁 Pré-visualizar' : '✏️ Voltar a editar';
   if (!mostrando) nTextoAtualizarPreview();
 }
-function salvarNot(){
-  var n = { id:String(Date.now()), titulo:$('nTitulo').value.trim(), data:$('nData').value || hoje(),
-    texto:$('nTexto').value.trim(), fotos: _nFotosTemp.slice() };
-  var capa = n.fotos.filter(function(f){ return !f.video; })[0] || n.fotos[0];
-  n.foto = capa ? (capa.video ? capa.url.replace(/\.\w+(\?.*)?$/, '.jpg$1') : capa.url) : '';
-  if (!n.titulo || !n.texto){ msg('msgNot','Informe título e texto.', false); return; }
-  db.noticias.push(n); salvarLocal(); renderTudo();
-  $('nTitulo').value=''; $('nTexto').value='';
+/* Traduz título+texto de uma notícia para EN/ES/FR usando a mesma chave Claude
+   já configurada na Sala de Imprensa (siCfg().claude). Não bloqueia a publicação
+   se não houver chave configurada — nesse caso a notícia fica só em português. */
+async function traduzirNoticia(n){
+  var cfg = (typeof siCfg === 'function') ? siCfg() : {};
+  var key = (cfg.claude||'').trim();
+  if (!key) return false;
+  var idiomas = [{code:'en',nome:'inglês'},{code:'es',nome:'espanhol'},{code:'fr',nome:'francês'}];
+  n.i18n = n.i18n || {};
+  var falhas = 0;
+  for (var ii=0; ii<idiomas.length; ii++){
+    var idi = idiomas[ii];
+    try{
+      var prompt = 'Você é um tradutor especializado em comunicados institucionais de direitos humanos e povos indígenas.\n'+
+        'Traduza o conteúdo abaixo do Português para o '+idi.nome+'.\n'+
+        'Mantenha o tom institucional, formal e respeitoso. Preserve nomes próprios, siglas (COOPIMS, SESAI, DSEI, FUNAI, SUS, MS) e hashtags sem tradução.\n'+
+        'Responda APENAS com JSON no formato: {"titulo":"...","texto":"..."}\n\n'+
+        'TÍTULO: '+n.titulo+'\nTEXTO:\n'+n.texto;
+      var body = { model:'claude-sonnet-4-6', max_tokens:2000, messages:[{role:'user',content:prompt}] };
+      var headers = {'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','x-api-key':key};
+      var resp = await fetch('https://api.anthropic.com/v1/messages', { method:'POST', headers, body: JSON.stringify(body) });
+      var data = await resp.json();
+      if (!resp.ok) throw new Error((data.error&&data.error.message)||('HTTP '+resp.status));
+      var raw = (data.content&&data.content[0]&&data.content[0].text)||'';
+      var clean = raw.replace(/```json?|```/g,'').trim();
+      var parsed = JSON.parse(clean);
+      n.i18n[idi.code] = { titulo: parsed.titulo || n.titulo, texto: parsed.texto || n.texto };
+    }catch(e){
+      falhas++;
+      console.warn('Erro ao traduzir notícia para '+idi.nome, e);
+    }
+  }
+  return falhas === 0;
+}
+
+var _nEditandoId = null;
+
+function editarNot(id){
+  var n = db.noticias.filter(function(x){ return x.id === id; })[0];
+  if (!n) return;
+  _nEditandoId = id;
+  $('nTitulo').value = n.titulo;
+  $('nData').value = n.data || '';
+  $('nTexto').value = n.texto;
+  _nFotosTemp = (n.fotos && n.fotos.length) ? n.fotos.slice() : (n.foto ? [{ url:n.foto, video:false }] : []);
+  renderNFotosPreview();
+  $('nFotosStatus').style.display = 'none';
+  $('nTextoPreview').style.display = 'none'; $('nTextoPreview').innerHTML = '';
+  $('btnNTextoPreview').textContent = '👁 Pré-visualizar';
+  var btn = $('btnSalvarNot'); if (btn) btn.textContent = '💾 Salvar alterações';
+  var btnCanc = $('btnCancelarNot'); if (btnCanc) btnCanc.style.display = 'inline-block';
+  msg('msgNot','Editando notícia — altere o que quiser (inclusive adicionar novas fotos/vídeos) e clique em "Salvar alterações".', true);
+  var campo = $('nTitulo'); if (campo && campo.scrollIntoView) campo.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+function cancelarEdicaoNot(){
+  _nEditandoId = null;
+  $('nTitulo').value=''; $('nTexto').value=''; $('nData').value='';
   _nFotosTemp = []; renderNFotosPreview();
   $('nFotosStatus').style.display = 'none';
   $('nTextoPreview').style.display = 'none'; $('nTextoPreview').innerHTML = '';
   $('btnNTextoPreview').textContent = '👁 Pré-visualizar';
-  msg('msgNot','Notícia publicada.', true);
+  var btn = $('btnSalvarNot'); if (btn) btn.textContent = 'Publicar notícia';
+  var btnCanc = $('btnCancelarNot'); if (btnCanc) btnCanc.style.display = 'none';
+}
+async function salvarNot(){
+  var titulo = $('nTitulo').value.trim();
+  var texto = $('nTexto').value.trim();
+  if (!titulo || !texto){ msg('msgNot','Informe título e texto.', false); return; }
+  var editando = !!_nEditandoId;
+  var n;
+  if (editando){
+    n = db.noticias.filter(function(x){ return x.id === _nEditandoId; })[0];
+    if (!n){ msg('msgNot','Notícia não encontrada.', false); cancelarEdicaoNot(); return; }
+    n.titulo = titulo; n.data = $('nData').value || n.data || hoje(); n.texto = texto; n.fotos = _nFotosTemp.slice();
+    delete n.i18n; // conteúdo mudou: descarta traduções antigas e re-traduz
+  } else {
+    n = { id:String(Date.now()), titulo:titulo, data:$('nData').value || hoje(), texto:texto, fotos:_nFotosTemp.slice() };
+  }
+  var capa = n.fotos.filter(function(f){ return !f.video; })[0] || n.fotos[0];
+  n.foto = capa ? (capa.video ? capa.url.replace(/\.\w+(\?.*)?$/, '.jpg$1') : capa.url) : '';
+  if (!editando) db.noticias.push(n);
+  salvarLocal(); renderTudo();
+
+  var cfg = (typeof siCfg === 'function') ? siCfg() : {};
+  var temChave = !!((cfg.claude||'').trim());
+  var btn = $('btnSalvarNot');
+  var rotuloOriginal = btn ? btn.textContent : '';
+  if (btn) btn.disabled = true;
+  if (temChave){
+    if (btn) btn.textContent = '✨ Traduzindo...';
+    var ok = await traduzirNoticia(n);
+    salvarLocal(); renderTudo();
+    msg('msgNot', (editando ? 'Notícia atualizada' : 'Notícia publicada') + (ok ? ' e traduzida para EN/ES/FR.' : ' (tradução incompleta — verifique a chave Claude na Sala de Imprensa).'), ok);
+  } else {
+    msg('msgNot', (editando ? 'Notícia atualizada' : 'Notícia publicada') + ' (apenas em português — configure a chave Claude na Sala de Imprensa para traduzir automaticamente).', true);
+  }
+  if (btn){ btn.disabled = false; btn.textContent = rotuloOriginal; }
+  cancelarEdicaoNot();
 }
 function removerNot(id){
   if (!confirm('Remover esta notícia?')) return;
   db.noticias = db.noticias.filter(function(n){ return n.id !== id; });
+  if (_nEditandoId === id) cancelarEdicaoNot();
   salvarLocal(); renderTudo();
 }
 function abrirNoticiaModal(id){
   var n = db.noticias.filter(function(x){ return x.id === id; })[0];
   if (!n) return;
+  var lang = (typeof window.COOPIMS_getLang === 'function') ? window.COOPIMS_getLang() : 'pt';
+  var tit = (n.i18n && n.i18n[lang] && n.i18n[lang].titulo) || n.titulo;
+  var txt = (n.i18n && n.i18n[lang] && n.i18n[lang].texto) || n.texto;
   var logoTopo = document.querySelector('header.site .logo');
   if (logoTopo) $('ncTimbreLogo').src = logoTopo.src;
   $('ncData').textContent = dataBR(n.data);
-  $('ncTitulo').textContent = n.titulo;
-  $('ncTexto').innerHTML = formatarTextoNoticia(n.texto);
+  $('ncTitulo').textContent = tit;
+  $('ncTexto').innerHTML = formatarTextoNoticia(txt);
   var fotos = (n.fotos && n.fotos.length) ? n.fotos : (n.foto ? [{ url: n.foto, video: false }] : []);
   $('ncGaleria').innerHTML = fotos.map(function(f){
     return f.video
@@ -5740,14 +5845,18 @@ function renderNot(){
   var ord = db.noticias.slice().sort(function(a,b){ return String(b.data).localeCompare(String(a.data)); });
   tb.innerHTML = ord.map(function(n){
     var qtdFotos = (n.fotos && n.fotos.length) ? n.fotos.length : (n.foto ? 1 : 0);
-    return '<tr><td class="mono">' + dataBR(n.data) + '</td><td>' + esc(n.titulo) + '</td><td>' + qtdFotos + '</td>'
-      + '<td><button class="btn mini perigo" data-rmnot="' + esc(n.id) + '" type="button">Remover</button></td></tr>';
+    var badge = (n.i18n && n.i18n.en) ? ' <span title="Traduzida para EN/ES/FR" style="font-size:11px">🌐</span>' : '';
+    return '<tr><td class="mono">' + dataBR(n.data) + '</td><td>' + esc(n.titulo) + badge + '</td><td>' + qtdFotos + '</td>'
+      + '<td><button class="btn mini" data-editnot="' + esc(n.id) + '" type="button">✏️ Editar</button> <button class="btn mini perigo" data-rmnot="' + esc(n.id) + '" type="button">Remover</button></td></tr>';
   }).join('') || '<tr><td colspan="4" style="text-align:center;color:#8FB4A6">Nenhuma notícia.</td></tr>';
+  var lang = (typeof window.COOPIMS_getLang === 'function') ? window.COOPIMS_getLang() : 'pt';
   $('pgNoticias').innerHTML = ord.slice(0,6).map(function(n){
+    var tit = (n.i18n && n.i18n[lang] && n.i18n[lang].titulo) || n.titulo;
+    var txt = (n.i18n && n.i18n[lang] && n.i18n[lang].texto) || n.texto;
     return '<article class="noticia" data-abrirnot="' + esc(n.id) + '">'
       + (n.foto ? '<img src="' + esc(n.foto) + '" alt="" loading="lazy">' : '<div class="semfoto"></div>')
       + '<div class="txt"><span class="data">' + dataBR(n.data) + '</span>'
-      + '<h3>' + esc(n.titulo) + '</h3><p>' + esc(n.texto).slice(0,220) + (n.texto.length > 220 ? '…' : '') + '</p>'
+      + '<h3>' + esc(tit) + '</h3><p>' + esc(txt).slice(0,220) + (txt.length > 220 ? '…' : '') + '</p>'
       + '<button class="ler-btn" type="button" data-abrirnot="' + esc(n.id) + '">📰 Ler notícia completa</button></div></article>';
   }).join('') || '<p style="color:#5B736C">As primeiras notícias da cooperativa serão publicadas em breve.</p>';
 }
@@ -6013,6 +6122,7 @@ function ligarTabelas(){
     else if (b.hasAttribute('data-rm')) removerCoop(b.getAttribute('data-rm'));
     else if (b.hasAttribute('data-rmdoc')) removerDoc(b.getAttribute('data-rmdoc'));
     else if (b.hasAttribute('data-rmnot')) removerNot(b.getAttribute('data-rmnot'));
+    else if (b.hasAttribute('data-editnot')) editarNot(b.getAttribute('data-editnot'));
     else if (b.hasAttribute('data-rmmaq')) removerMaq(b.getAttribute('data-rmmaq'));
     else if (b.hasAttribute('data-rmcom')) removerCom(b.getAttribute('data-rmcom'));
     else if (b.hasAttribute('data-eddir')) editarDir(b.getAttribute('data-eddir'));
@@ -6027,6 +6137,10 @@ function ligarTabelas(){
       renderChipsAvulso(); atualizarContadorComu();
     }
     else if (b.hasAttribute('data-rmnfoto')) removerNFotoTemp(parseInt(b.getAttribute('data-rmnfoto'),10));
+    else if (b.hasAttribute('data-moverfoto')){
+      var partes = b.getAttribute('data-moverfoto').split(':');
+      moverNFotoTemp(parseInt(partes[0],10), parseInt(partes[1],10));
+    }
     return;
   });
   document.addEventListener('click', function(ev){
@@ -6265,6 +6379,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   $('btnSalvarDoc').addEventListener('click', salvarDoc);
   $('btnSalvarNot').addEventListener('click', salvarNot);
+  var btnCancelarNot = $('btnCancelarNot'); if (btnCancelarNot) btnCancelarNot.addEventListener('click', cancelarEdicaoNot);
   $('btnSalvarMaq').addEventListener('click', salvarMaq);
   $('btnSalvarCom').addEventListener('click', salvarCom);
 
@@ -6336,6 +6451,7 @@ window.COOP_getToken = function(){ return ($('gToken') && $('gToken').value.trim
 window.abrirNoticiaModal = abrirNoticiaModal;
 window.fecharNoticiaModal = fecharNoticiaModal;
 window.abrirLightboxDireta = abrirLightboxDireta;
+window.COOP_renderNot = renderNot;
 
 })();
 </script>
@@ -6717,6 +6833,7 @@ window.abrirLightboxDireta = abrirLightboxDireta;
     function setLang(l){
       try{ localStorage.setItem('coopims_lang', l); }catch(e){}
       aplicarIdioma(l);
+      if (window.COOP_renderNot) window.COOP_renderNot();
     }
     window.COOPIMS_setLang = setLang;
     window.COOPIMS_getLang = getLang;
