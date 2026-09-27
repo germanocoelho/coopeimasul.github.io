@@ -343,6 +343,41 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
   .acervo-card-txt h4{font-size:13.5px}
 }
 
+/* ===================================================================
+   COOPIMS NA MÍDIA — repercussão / clipping de imprensa
+   =================================================================== */
+.midia-secao.pg.alt{background:var(--areia)}
+.midia-vazio{display:none;color:#5B736C;font-size:14.5px;padding:18px 0}
+.midia-vazio.mostrar{display:block}
+.midia-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;margin-top:28px}
+.midia-card{background:var(--branco);border:1px solid var(--linha);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:transform .22s,box-shadow .22s}
+.midia-card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(22,48,43,.14)}
+.midia-capa-wrap{height:150px;width:100%;background:linear-gradient(150deg,#123128,#1E4B3F);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.midia-capa-wrap img{width:100%;height:100%;object-fit:contain}
+.midia-capa-placeholder{color:#fff;font-family:var(--disp);font-size:15px;text-align:center;padding:14px;opacity:.92}
+.midia-veiculo-selo{position:absolute;left:9px;top:9px;background:rgba(11,29,25,.78);color:var(--ouro);font-family:var(--mono);font-size:10.5px;letter-spacing:.4px;padding:4px 10px;border-radius:20px;backdrop-filter:blur(2px);max-width:calc(100% - 18px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.midia-card-txt{padding:16px 17px 18px;display:flex;flex-direction:column;flex:1}
+.midia-card-txt .data{font-family:var(--mono);font-size:11.5px;color:var(--azul-esc);margin-bottom:6px}
+.midia-card-txt h4{font-size:15.5px;line-height:1.35;margin:0 0 8px;color:#1C2B26}
+.midia-card-txt p{font-size:13.5px;color:#3E5650;line-height:1.6;margin:0 0 12px}
+.midia-ler{margin-top:auto;align-self:flex-start;background:none;border:none;color:var(--verde-esc);font-weight:700;font-size:13px;padding:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.midia-ler:hover{text-decoration:underline}
+@media (max-width:560px){
+  .midia-grade{grid-template-columns:1fr;gap:16px}
+}
+
+/* ---------- admin: gerenciar matérias da mídia (reordenar, editar) ---------- */
+.midia-adm-lista{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.midia-adm-item{display:flex;align-items:center;gap:12px;background:#0F231F;border:1px solid #35594F;border-radius:6px;padding:10px 12px}
+.midia-adm-item .midia-adm-thumb{width:44px;height:44px;border-radius:5px;object-fit:cover;background:#13302A;flex-shrink:0}
+.midia-adm-item .midia-adm-info{flex:1;min-width:0}
+.midia-adm-item .midia-adm-info b{display:block;font-size:13.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.midia-adm-item .midia-adm-info span{display:block;font-size:11.5px;color:#9FD4B8;font-family:var(--mono);margin-top:2px}
+.midia-adm-setas{display:flex;flex-direction:column;gap:2px}
+.midia-adm-seta{width:26px;height:20px;border:none;border-radius:3px;background:#2478AC;color:#fff;font-size:10px;cursor:pointer}
+.midia-adm-seta:disabled{opacity:.3;cursor:default}
+.midia-adm-acoes{display:flex;gap:6px;flex-shrink:0}
+
 /* ---------- badge de propostas pendentes ---------- */
 .badge-prop{background:var(--erro);color:#fff;font-size:11px;font-weight:700;border-radius:10px;padding:1px 7px;margin-left:4px}
 
@@ -1954,6 +1989,7 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
       <li><a href="#mapa" data-i18n="nav_mapa">Mapa</a></li>
       <li><a href="#apoiadores" data-i18n="nav_apoiadores">Apoiadores</a></li>
       <li><a href="#noticias" data-i18n="nav_noticias">Notícias</a></li>
+      <li><a href="#midia" data-i18n="nav_midia">COOPIMS na Mídia</a></li>
       <li><a href="#contato" data-i18n="nav_contato">Contato</a></li>
       <li class="adm" style="margin-left:auto"><a class="adm" href="#admArea">⭐ Painel ADM</a></li>
     </ul>
@@ -2749,6 +2785,19 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
 
 <div class="divisor" aria-hidden="true"><span class="selo"><svg width="22" height="22" viewBox="0 0 24 24"><use href="#s-estrela" fill="#F4C430"/></svg></span></div>
 
+<!-- COOPIMS NA MÍDIA (repercussão / clipping de imprensa) -->
+<section class="pg alt midia-secao" id="midia">
+  <div class="wrap">
+    <div class="rotulo" data-i18n="midia_rotulo">Repercussão</div>
+    <h2 class="titulo" data-i18n="midia_titulo">COOPIMS na Mídia</h2>
+    <div class="prosa"><p data-i18n="midia_p1">O que a imprensa tem publicado sobre a cooperativa — reportagens, notas e entrevistas em veículos de comunicação.</p></div>
+    <div class="midia-grade" id="midiaGrade"></div>
+    <p class="midia-vazio" id="midiaVazio" data-i18n="midia_vazio">Ainda não há matérias de imprensa cadastradas — assim que a COOPIMS for notícia em algum veículo, o link aparece aqui.</p>
+  </div>
+</section>
+
+<div class="divisor" aria-hidden="true"><span class="selo"><svg width="22" height="22" viewBox="0 0 24 24"><use href="#s-estrela" fill="#F4C430"/></svg></span></div>
+
 <div class="divisor" aria-hidden="true"><span class="selo"><svg width="22" height="22" viewBox="0 0 24 24"><use href="#s-estrela" fill="#F4C430"/></svg></span></div>
 
 <!-- APOIADORES -->
@@ -2869,6 +2918,7 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
       <button data-aba="paRel" type="button">Relatórios</button>
       <button data-aba="paDocs" type="button">Atas &amp; Documentos</button>
       <button data-aba="paNot" type="button">Notícias</button>
+      <button data-aba="paMidia" type="button">📰 COOPIMS na Mídia</button>
       <button data-aba="paAcervo" type="button">📚 Acervo Científico</button>
       <button data-aba="paMaq" type="button">Máquinas</button>
       <button data-aba="paCom" type="button">Comissões</button>
@@ -3078,6 +3128,37 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
       <div class="tabela-scroll"><table class="adm-t" id="tabNot">
         <thead><tr><th>Data</th><th>Título</th><th>Fotos</th><th>Ações</th></tr></thead><tbody></tbody>
       </table></div>
+    </div>
+
+    <!-- COOPIMS NA MÍDIA -->
+    <div class="painel" id="paMidia">
+      <h3>COOPIMS na Mídia — matérias publicadas sobre a cooperativa</h3>
+      <p style="font-size:13px;color:#9FD4B8;margin:-6px 0 14px">Cadastre aqui reportagens, notas e entrevistas que veículos de imprensa publicaram sobre a COOPIMS. Use as setas ▲▼ na lista abaixo para escolher a ordem de exibição no site.</p>
+      <div class="fgrid">
+        <div><label for="mdTitulo">Título da matéria *</label><input id="mdTitulo"></div>
+        <div><label for="mdVeiculo">Veículo *</label><input id="mdVeiculo" placeholder="Ex.: Correio do Estado, Campo Grande News..."></div>
+      </div>
+      <div class="fgrid">
+        <div><label for="mdData">Data</label><input id="mdData" type="date"></div>
+        <div><label for="mdLink">Link da matéria *</label><input id="mdLink" placeholder="https://..."></div>
+      </div>
+      <div class="fcol">
+        <label for="mdResumo">Resumo (opcional)</label>
+        <textarea id="mdResumo" rows="3" placeholder="Uma ou duas linhas sobre o que a matéria trata..."></textarea>
+      </div>
+      <div class="fcol">
+        <label>Imagem de capa / print da matéria (opcional)</label>
+        <input id="mdCapaInput" type="file" accept="image/*">
+        <div id="mdCapaStatus" class="msg" style="display:none"></div>
+        <div id="mdCapaPreview" style="margin-top:8px"></div>
+      </div>
+      <div class="acoes">
+        <button class="btn verde" id="btnSalvarMidia" type="button">Adicionar matéria</button>
+        <button class="btn" id="btnCancelarMidia" type="button" style="display:none">Cancelar edição</button>
+      </div>
+      <div class="msg" id="msgMidia"></div>
+      <label style="display:block;margin-top:20px">Ordem de exibição no site (a primeira aparece primeiro)</label>
+      <div class="midia-adm-lista" id="listaMidiaAdm"></div>
     </div>
 
     <!-- ACERVO CIENTÍFICO -->
@@ -3910,7 +3991,7 @@ var SEED_COOPERADOS_V1 = [{"id": "seed001", "matricula": "COOP-0001", "nome": "E
 
 var db = {
   cooperados: [], docs: [], noticias: [], maquinas: [], comissoes: [],
-  diretoria: [], galeria: [], propostas: [], atos: [], acervo: [],
+  diretoria: [], galeria: [], propostas: [], atos: [], acervo: [], midia: [],
   contato: { email:'contato@coopims.com.br', fone:'(67) 9 0000-0000', endereco:'Campo Grande, Mato Grosso do Sul' }
 };
 
@@ -3945,6 +4026,7 @@ function carregarLocal(){
   aplicarSeedGenerico('galeria', SEED_GALERIA_V1);
   aplicarSeedGenerico('noticias', SEED_NOTICIAS_V1);
   aplicarSeedGenerico('acervo', SEED_ACERVO_V1);
+  aplicarSeedGenerico('midia', SEED_MIDIA_V1);
   aplicarSeedGenerico('maquinas', SEED_MAQUINAS_V1);
   aplicarSeedGenerico('comissoes', SEED_COMISSOES_V1);
   aplicarSeedContato();
@@ -3961,6 +4043,7 @@ var SEED_DIRETORIA_V1 = [];
 var SEED_GALERIA_V1 = [];
 var SEED_NOTICIAS_V1 = [];
 var SEED_ACERVO_V1 = [];
+var SEED_MIDIA_V1 = [];
 var SEED_MAQUINAS_V1 = [];
 var SEED_COMISSOES_V1 = [];
 var SEED_CONTATO_V1 = { email:'contato@coopims.com.br', fone:'(67) 9 0000-0000', endereco:'Campo Grande, Mato Grosso do Sul' };
@@ -4074,7 +4157,7 @@ function aplicarSeedCooperados(){
   if (mudou) salvarLocal();
 }
 function mesclar(o){
-  ['cooperados','docs','noticias','maquinas','comissoes','diretoria','galeria','propostas','atos','acervo'].forEach(function(k){
+  ['cooperados','docs','noticias','maquinas','comissoes','diretoria','galeria','propostas','atos','acervo','midia'].forEach(function(k){
     if (Object.prototype.toString.call(o[k]) === '[object Array]') db[k] = o[k];
   });
   if (o.contato && typeof o.contato === 'object') db.contato = o.contato;
@@ -6329,6 +6412,135 @@ function renderObras(){
   }
 }
 
+/* ---------- COOPIMS na Mídia (clipping de imprensa) ---------- */
+var _mdCapaTemp = '';
+var _mdEditandoId = null;
+
+function uploadCapaMidia(input){
+  if (!input.files || !input.files[0]) return;
+  var status = $('mdCapaStatus');
+  status.style.display = 'block'; status.className = 'msg ok'; status.textContent = '⏳ Enviando imagem...';
+  enviarParaCloudinary(input.files[0], function(url, tipo){
+    if (tipo !== 'image'){ status.className = 'msg erro'; status.textContent = '⚠ Envie um arquivo de imagem.'; return; }
+    _mdCapaTemp = url;
+    renderMidiaCapaPreview();
+    status.className = 'msg ok'; status.textContent = '✅ Imagem enviada!';
+  }, function(motivo){
+    status.className = 'msg erro'; status.textContent = '⚠ Falha ao enviar imagem (' + (motivo||'') + ').';
+  });
+  input.value = '';
+}
+function removerCapaMidiaTemp(){
+  _mdCapaTemp = '';
+  renderMidiaCapaPreview();
+}
+function renderMidiaCapaPreview(){
+  var el = $('mdCapaPreview');
+  el.innerHTML = _mdCapaTemp
+    ? '<div style="position:relative;display:inline-block"><img src="' + esc(_mdCapaTemp) + '" style="width:90px;height:90px;object-fit:cover;border-radius:6px;border:1px solid #35594F">'
+      + '<button type="button" id="btnRemoverCapaMidia" style="position:absolute;top:-8px;right:-8px;background:#B23A2E;color:#fff;border:2px solid #13302A;width:24px;height:24px;border-radius:50%;font-size:12px;cursor:pointer">✕</button></div>'
+    : '';
+}
+function editarMidia(id){
+  var m = db.midia.filter(function(x){ return x.id === id; })[0];
+  if (!m) return;
+  _mdEditandoId = id;
+  $('mdTitulo').value = m.titulo || '';
+  $('mdVeiculo').value = m.veiculo || '';
+  $('mdData').value = m.data || '';
+  $('mdLink').value = m.link || '';
+  $('mdResumo').value = m.resumo || '';
+  _mdCapaTemp = m.imagem || '';
+  renderMidiaCapaPreview();
+  $('mdCapaStatus').style.display = 'none';
+  var btn = $('btnSalvarMidia'); if (btn) btn.textContent = '💾 Salvar alterações';
+  var btnCanc = $('btnCancelarMidia'); if (btnCanc) btnCanc.style.display = 'inline-block';
+  msg('msgMidia','Editando matéria — altere o que quiser e clique em "Salvar alterações".', true);
+  var campo = $('mdTitulo'); if (campo && campo.scrollIntoView) campo.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+function cancelarEdicaoMidia(){
+  _mdEditandoId = null;
+  ['mdTitulo','mdVeiculo','mdData','mdLink','mdResumo'].forEach(function(id){ $(id).value=''; });
+  _mdCapaTemp = ''; renderMidiaCapaPreview();
+  $('mdCapaStatus').style.display = 'none';
+  var btn = $('btnSalvarMidia'); if (btn) btn.textContent = 'Adicionar matéria';
+  var btnCanc = $('btnCancelarMidia'); if (btnCanc) btnCanc.style.display = 'none';
+}
+function salvarMidia(){
+  var titulo = $('mdTitulo').value.trim();
+  var veiculo = $('mdVeiculo').value.trim();
+  var link = $('mdLink').value.trim();
+  if (!titulo || !veiculo || !link){ msg('msgMidia','Informe título, veículo e link da matéria.', false); return; }
+  var editando = !!_mdEditandoId;
+  var m;
+  if (editando){
+    m = db.midia.filter(function(x){ return x.id === _mdEditandoId; })[0];
+    if (!m){ msg('msgMidia','Matéria não encontrada.', false); cancelarEdicaoMidia(); return; }
+  } else {
+    m = { id: String(Date.now()) };
+    db.midia.push(m);
+  }
+  m.titulo = titulo; m.veiculo = veiculo; m.data = $('mdData').value.trim();
+  m.link = link; m.resumo = $('mdResumo').value.trim(); m.imagem = _mdCapaTemp;
+  salvarLocal(); renderTudo();
+  msg('msgMidia', editando ? 'Matéria atualizada.' : 'Matéria adicionada.', true);
+  cancelarEdicaoMidia();
+}
+function removerMidia(id){
+  if (!confirm('Remover esta matéria da lista de mídia?')) return;
+  db.midia = db.midia.filter(function(m){ return m.id !== id; });
+  if (_mdEditandoId === id) cancelarEdicaoMidia();
+  salvarLocal(); renderTudo();
+}
+function moverMidia(id, dir){
+  var idx = db.midia.findIndex(function(m){ return m.id === id; });
+  var novo = idx + dir;
+  if (idx < 0 || novo < 0 || novo >= db.midia.length) return;
+  var tmp = db.midia[idx]; db.midia[idx] = db.midia[novo]; db.midia[novo] = tmp;
+  salvarLocal(); renderTudo();
+}
+function renderMidia(){
+  var listaAdm = $('listaMidiaAdm');
+  if (listaAdm){
+    listaAdm.innerHTML = db.midia.map(function(m, idx){
+      var thumb = m.imagem
+        ? '<img src="' + esc(m.imagem) + '" class="midia-adm-thumb" alt="">'
+        : '<div class="midia-adm-thumb" style="display:flex;align-items:center;justify-content:center;color:#9FD4B8;font-size:18px">📰</div>';
+      return '<div class="midia-adm-item">'
+        + '<div class="midia-adm-setas">'
+        + '<button type="button" class="midia-adm-seta" data-movermidia="' + esc(m.id) + ':-1" ' + (idx === 0 ? 'disabled' : '') + ' title="Mover para cima">▲</button>'
+        + '<button type="button" class="midia-adm-seta" data-movermidia="' + esc(m.id) + ':1" ' + (idx === db.midia.length - 1 ? 'disabled' : '') + ' title="Mover para baixo">▼</button>'
+        + '</div>'
+        + thumb
+        + '<div class="midia-adm-info"><b>' + esc(m.titulo) + '</b><span>' + esc(m.veiculo) + (m.data ? ' · ' + dataBR(m.data) : '') + '</span></div>'
+        + '<div class="midia-adm-acoes"><button class="btn mini" data-editmidia="' + esc(m.id) + '" type="button">✏️</button> <button class="btn mini perigo" data-rmmidia="' + esc(m.id) + '" type="button">✕</button></div>'
+        + '</div>';
+    }).join('') || '<p style="color:#9FD4B8;font-size:13px">Nenhuma matéria cadastrada ainda.</p>';
+  }
+
+  var grade = $('midiaGrade');
+  if (grade){
+    grade.innerHTML = db.midia.map(function(m){
+      var capa = m.imagem
+        ? '<img src="' + esc(m.imagem) + '" alt="" loading="lazy">'
+        : '<div class="midia-capa-placeholder">📰<br>' + esc(m.veiculo) + '</div>';
+      return '<article class="midia-card">'
+        + '<div class="midia-capa-wrap"><span class="midia-veiculo-selo">' + esc(m.veiculo) + '</span>' + capa + '</div>'
+        + '<div class="midia-card-txt">'
+        + (m.data ? '<span class="data">' + dataBR(m.data) + '</span>' : '')
+        + '<h4>' + esc(m.titulo) + '</h4>'
+        + (m.resumo ? '<p>' + esc(m.resumo) + '</p>' : '')
+        + '<a class="midia-ler" href="' + esc(m.link) + '" target="_blank" rel="noopener">Ler matéria completa ↗</a>'
+        + '</div></article>';
+    }).join('');
+  }
+  var vazioEl = $('midiaVazio');
+  if (vazioEl){
+    if (db.midia.length === 0) vazioEl.classList.add('mostrar');
+    else vazioEl.classList.remove('mostrar');
+  }
+}
+
 /* ---------- máquinas ---------- */
 function salvarMaq(){
   var m = { id:String(Date.now()), equip:$('mEquip').value.trim(), coop:$('mCoop').value.trim(), data:$('mData').value, prio:$('mPrio').value, obs:$('mObs').value.trim() };
@@ -6393,6 +6605,7 @@ function renderTudo(){
   renderCoop(); renderDocsCoop(); renderRelatorios(); renderDocs(); renderNot(); renderMaq(); renderCom(); renderPublico();
   renderDirAdm(); renderDirPublico(); renderGalAdm(); renderGalPublico(); renderProp(); renderComu(); renderMapa(); renderAtos(); renderAssembleia();
   renderObras();
+  renderMidia();
 }
 
 /* ---------- GitHub: publicar e recarregar ---------- */
@@ -6485,13 +6698,21 @@ function publicar(){
   if (!token){ msg('msgPub','Cole o token do GitHub para publicar.', false); return; }
   try { localStorage.setItem('coop_gh_token', token); } catch(e){}
   var repoPub = $('gRepoPub').value.trim();
-  var repoPriv = 'germanocoelho/coopeimasul-dados-privados';
+  var repoPriv = ($('gRepoPriv') && $('gRepoPriv').value.trim()) || 'germanocoelho/coopeimasul-dados-privados';
 
   var cooperadosPublicos = db.cooperados.map(mascararCooperadoParaPublico);
   var privadoPayload = { atualizado: new Date().toISOString(), cooperados: db.cooperados };
 
+  /* O envio dos dados privados (CPF, RG, telefone) roda separado do envio do site
+     público: se o repositório privado tiver algum problema (não existir, token sem
+     acesso a ele, etc.), isso NÃO pode travar a publicação de notícias, fotos,
+     acervo e demais dados públicos. As duas etapas são independentes. */
   msg('msgPub','Salvando dados privados (CPF, RG, telefone...)…', true);
+  var avisoPrivado = '';
   ghSalvarArquivo(repoPriv, 'dados-privado.json', privadoPayload, token, 'Atualização via painel ADM')
+  .catch(function(e){
+    avisoPrivado = ' ⚠ Dados privados dos cooperados (CPF/RG/telefone) NÃO foram salvos: ' + e.message + ' — verifique se o repositório "' + repoPriv + '" existe e se o token tem acesso a ele.';
+  })
   .then(function(){
     msg('msgPub','Lendo o site publicado…', true);
     return ghLerTexto(repoPub, 'index.html', token);
@@ -6505,14 +6726,17 @@ function publicar(){
     texto = substituirSeed(texto, 'SEED_GALERIA_V1', db.galeria);
     texto = substituirSeed(texto, 'SEED_NOTICIAS_V1', db.noticias);
     texto = substituirSeed(texto, 'SEED_ACERVO_V1', db.acervo);
+    texto = substituirSeed(texto, 'SEED_MIDIA_V1', db.midia);
     texto = substituirSeed(texto, 'SEED_MAQUINAS_V1', db.maquinas);
     texto = substituirSeed(texto, 'SEED_COMISSOES_V1', db.comissoes);
     texto = substituirSeed(texto, 'SEED_CONTATO_V1', db.contato);
     msg('msgPub','Enviando para o GitHub Pages…', true);
     return ghSalvarTexto(repoPub, 'index.html', texto, atual.sha, token, 'Atualização via painel ADM');
   })
-  .then(function(){ msg('msgPub','Publicado com sucesso! CPF/RG/telefone ficaram só no repositório privado. O site pode levar 1-2 minutos para atualizar. ⭐', true); })
-  .catch(function(e){ msg('msgPub','Erro ao publicar: ' + e.message, false); });
+  .then(function(){
+    msg('msgPub', (avisoPrivado ? 'Site público publicado com sucesso!' + avisoPrivado : 'Publicado com sucesso! CPF/RG/telefone ficaram só no repositório privado.') + ' O site pode levar 1-2 minutos para atualizar. ⭐', !avisoPrivado);
+  })
+  .catch(function(e){ msg('msgPub','Erro ao publicar o site público: ' + e.message + (avisoPrivado ? avisoPrivado : ''), false); });
 }
 function recarregar(){
   var token = $('gToken').value.trim() || (localStorage.getItem('coop_gh_token') || '');
@@ -6528,6 +6752,7 @@ function recarregar(){
     if (pj.diretoria) db.diretoria = pj.diretoria;
     if (pj.galeria) db.galeria = pj.galeria;
     if (pj.acervo) db.acervo = pj.acervo;
+    if (pj.midia) db.midia = pj.midia;
     if (pj.contato) db.contato = pj.contato;
   });
   if (token){
@@ -6558,6 +6783,7 @@ function carregarPublicoInicial(){
       if (pj.diretoria && pj.diretoria.length) db.diretoria = pj.diretoria;
       if (pj.galeria && pj.galeria.length) db.galeria = pj.galeria;
       if (pj.acervo && pj.acervo.length) db.acervo = pj.acervo;
+      if (pj.midia && pj.midia.length) db.midia = pj.midia;
       if (pj.contato) db.contato = pj.contato;
       if (pj.estatisticas){
         if (pj.estatisticas.cooperadosAtivos) $('dCoop').textContent = pj.estatisticas.cooperadosAtivos;
@@ -6620,6 +6846,13 @@ function ligarTabelas(){
       _acervoFiltroTema = b.getAttribute('data-temafiltro');
       renderObras();
     }
+    else if (b.hasAttribute('data-editmidia')) editarMidia(b.getAttribute('data-editmidia'));
+    else if (b.hasAttribute('data-rmmidia')) removerMidia(b.getAttribute('data-rmmidia'));
+    else if (b.id === 'btnRemoverCapaMidia') removerCapaMidiaTemp();
+    else if (b.hasAttribute('data-movermidia')){
+      var partesMd = b.getAttribute('data-movermidia').split(':');
+      moverMidia(partesMd[0], parseInt(partesMd[1],10));
+    }
     return;
   });
   document.addEventListener('click', function(ev){
@@ -6634,6 +6867,9 @@ function ligarTabelas(){
   var btnCancelarObra = $('btnCancelarObra'); if (btnCancelarObra) btnCancelarObra.addEventListener('click', cancelarEdicaoObra);
   var obCapaInput = $('obCapaInput'); if (obCapaInput) obCapaInput.addEventListener('change', function(){ uploadCapaObra(this); });
   var acervoBusca = $('acervoBusca'); if (acervoBusca) acervoBusca.addEventListener('input', renderObras);
+  var btnSalvarMidia = $('btnSalvarMidia'); if (btnSalvarMidia) btnSalvarMidia.addEventListener('click', salvarMidia);
+  var btnCancelarMidia = $('btnCancelarMidia'); if (btnCancelarMidia) btnCancelarMidia.addEventListener('click', cancelarEdicaoMidia);
+  var mdCapaInput = $('mdCapaInput'); if (mdCapaInput) mdCapaInput.addEventListener('change', function(){ uploadCapaMidia(this); });
   var inFotosNot = $('nFotosInput');
   if (inFotosNot) inFotosNot.addEventListener('change', function(){ uploadFotosNot(this); });
   var btnNeg = $('btnNTextoNegrito'); if (btnNeg) btnNeg.addEventListener('click', function(){ nTextoFormatarSelecao('**'); });
@@ -7037,6 +7273,11 @@ window.fecharObraModal = fecharObraModal;
   acervo_titulo: {"pt": "Acervo Científico", "en": "Scientific Archive", "es": "Acervo Científico", "fr": "Fonds Scientifique"},
   acervo_p1: {"pt": "Uma biblioteca viva de livros, artigos, teses e pesquisas sobre os povos indígenas — reunida aqui para apoiar pesquisadores, gestores públicos, estudantes e as próprias comunidades. Cresce a cada estudo publicado sobre ancestralidade, direitos, saúde, educação e biotecnologia indígena.", "en": "A living library of books, articles, theses and research about Indigenous peoples — gathered here to support researchers, public officials, students and the communities themselves. It grows with every study published on ancestry, rights, health, education and Indigenous biotechnology.", "es": "Una biblioteca viva de libros, artículos, tesis e investigaciones sobre los pueblos indígenas — reunida aquí para apoyar a investigadores, gestores públicos, estudiantes y a las propias comunidades. Crece con cada estudio publicado sobre ancestralidad, derechos, salud, educación y biotecnología indígena.", "fr": "Une bibliothèque vivante de livres, d'articles, de thèses et de recherches sur les peuples indigènes — réunie ici pour soutenir les chercheurs, les gestionnaires publics, les étudiants et les communautés elles-mêmes. Elle s'enrichit à chaque étude publiée sur l'ascendance, les droits, la santé, l'éducation et la biotechnologie indigène."},
   acervo_vazio: {"pt": "O acervo científico da COOPIMS está sendo formado — em breve, livros, artigos e pesquisas sobre os povos indígenas estarão disponíveis aqui.", "en": "The COOPIMS scientific archive is being assembled — books, articles and research about Indigenous peoples will soon be available here.", "es": "El acervo científico de COOPIMS está siendo formado — pronto, libros, artículos e investigaciones sobre los pueblos indígenas estarán disponibles aquí.", "fr": "Le fonds scientifique de la COOPIMS est en cours de constitution — livres, articles et recherches sur les peuples indigènes seront bientôt disponibles ici."},
+  nav_midia: {"pt": "COOPIMS na Mídia", "en": "COOPIMS in the Media", "es": "COOPIMS en los Medios", "fr": "La COOPIMS dans les Médias"},
+  midia_rotulo: {"pt": "Repercussão", "en": "Media Coverage", "es": "Repercusión", "fr": "Retentissement"},
+  midia_titulo: {"pt": "COOPIMS na Mídia", "en": "COOPIMS in the Media", "es": "COOPIMS en los Medios", "fr": "La COOPIMS dans les Médias"},
+  midia_p1: {"pt": "O que a imprensa tem publicado sobre a cooperativa — reportagens, notas e entrevistas em veículos de comunicação.", "en": "What the press has published about the cooperative — reports, notes and interviews across media outlets.", "es": "Lo que la prensa ha publicado sobre la cooperativa — reportajes, notas y entrevistas en medios de comunicación.", "fr": "Ce que la presse a publié sur la coopérative — reportages, notes et entretiens dans les médias."},
+  midia_vazio: {"pt": "Ainda não há matérias de imprensa cadastradas — assim que a COOPIMS for notícia em algum veículo, o link aparece aqui.", "en": "No press coverage has been added yet — as soon as COOPIMS is featured in an outlet, the link will appear here.", "es": "Aún no hay materias de prensa registradas — en cuanto COOPIMS sea noticia en algún medio, el enlace aparecerá aquí.", "fr": "Aucun article de presse n'a encore été ajouté — dès que la COOPIMS fera l'actualité dans un média, le lien apparaîtra ici."},
   mapa_rotulo: {"pt": "Onde estamos", "en": "Where We Are", "es": "Dónde estamos", "fr": "Où nous sommes"},
   mapa_titulo: {"pt": "Mapa dos cooperados em Mato Grosso do Sul", "en": "Map of Members in Mato Grosso do Sul", "es": "Mapa de los cooperados en Mato Grosso do Sul", "fr": "Carte des coopérateurs au Mato Grosso do Sul"},
   mapa_p1: {"pt": "Contorno geográfico real do estado. Cada ponto representa um município com cooperados; passe o mouse para ver quantos são, e toque um nome na lista para abrir a foto e os detalhes.", "en": "Actual geographic outline of the state. Each point represents a municipality with cooperative members; hover to see how many, and tap a name in the list to open the photo and details.", "es": "Contorno geográfico real del estado. Cada punto representa un municipio con cooperados; pase el mouse para ver cuántos son, y toque un nombre en la lista para abrir la foto y los detalles.", "fr": "Contour géographique réel de l'État. Chaque point représente une municipalité avec des coopérateurs ; survolez pour voir combien ils sont, et touchez un nom dans la liste pour ouvrir la photo et les détails."},
