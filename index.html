@@ -163,7 +163,8 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 /* notícias */
 .noticias{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:30px}
 .noticia{background:var(--branco);border:1px solid var(--linha);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
-.noticia img{height:200px;object-fit:cover;object-position:center 25%;width:100%;background:#EDEAE0}
+.noticia .capa-wrap{height:150px;width:100%;background:#EDEAE0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.noticia .capa-wrap img{width:100%;height:100%;object-fit:contain}
 .noticia .semfoto{height:12px;background:linear-gradient(115deg,var(--verde) 0 47%,var(--branco) 47% 53%,var(--azul) 53% 100%)}
 .noticia .txt{padding:18px}
 .noticia .data{font-family:var(--mono);font-size:11.5px;color:var(--azul-esc)}
@@ -191,16 +192,25 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 #modalNoticia .nc-titulo{font-size:23px;line-height:1.3;margin:0 0 18px;color:#1C2B26}
 #modalNoticia .nc-texto{font-size:15px;line-height:1.85;color:#2E403A;text-align:justify}
 #modalNoticia .nc-texto p{margin:0 0 14px}
-#modalNoticia .nc-galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:20px}
-#modalNoticia .nc-galeria img{width:100%;height:110px;object-fit:cover;border-radius:6px;cursor:pointer;transition:opacity .2s}
+#modalNoticia .nc-galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;margin-top:20px}
+#modalNoticia .nc-galeria figure{margin:0}
+#modalNoticia .nc-galeria figure.video{grid-column:span 2}
+#modalNoticia .nc-galeria img{width:100%;height:110px;object-fit:cover;border-radius:6px;cursor:pointer;transition:opacity .2s;display:block}
 #modalNoticia .nc-galeria img:hover{opacity:.82}
-#modalNoticia .nc-galeria video{width:100%;height:110px;object-fit:cover;border-radius:6px;background:#000;grid-column:span 2}
+#modalNoticia .nc-galeria video{width:100%;height:110px;object-fit:cover;border-radius:6px;background:#000;display:block}
+#modalNoticia .nc-galeria figure.video video{height:180px}
+#modalNoticia .nc-galeria figcaption{font-size:12px;color:#5B736C;margin-top:5px;line-height:1.35}
 #modalNoticia .rodape-timbre{border-top:1px solid var(--linha);padding:14px 30px;font-size:11.5px;color:#5B736C;text-align:center}
 @media (max-width:560px){
   #modalNoticia .timbre{padding:16px 18px 14px}
   #modalNoticia .timbre img{height:40px}
   #modalNoticia .corpo{padding:20px 18px 24px}
   #modalNoticia .nc-titulo{font-size:19px}
+  #modalNoticia .nc-galeria{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+  #modalNoticia .nc-galeria img{height:96px}
+  #modalNoticia .nc-galeria figure.video{grid-column:1 / -1}
+  #modalNoticia .nc-galeria figure.video video{height:200px}
+  .noticia .capa-wrap{height:130px}
 }
 
 /* contato */
@@ -1324,6 +1334,26 @@ body.adm-unlocked .adm-panel{display:block}
 .fcol{margin-top:14px}
 .fcol textarea{min-height:90px;resize:vertical}
 .acoes{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+
+/* ---------- upload de fotos/vídeos da notícia: miniaturas com legenda ---------- */
+.nfotos-grid{display:flex;flex-wrap:wrap;gap:12px}
+.nfoto-card{width:104px}
+.nfoto-thumb-wrap{position:relative;margin-bottom:10px}
+.nfoto-thumb{width:104px;height:104px;object-fit:cover;border-radius:6px;border:1px solid #35594F;display:block;background:#0F231F}
+.nfoto-badge{position:absolute;left:3px;top:3px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:1px 5px;border-radius:3px}
+.nfoto-badge.capa{background:rgba(0,90,43,.85);font-size:9.5px}
+.nfoto-rm{position:absolute;top:-8px;right:-8px;background:#B23A2E;color:#fff;border:2px solid #13302A;width:24px;height:24px;border-radius:50%;font-size:12px;cursor:pointer;line-height:1}
+.nfoto-setas{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);display:flex;gap:3px}
+.nfoto-seta{width:26px;height:22px;border:none;border-radius:3px;background:#2478AC;color:#fff;font-size:11px;cursor:pointer}
+.nfoto-seta:disabled{opacity:.35;cursor:default}
+.nfoto-legenda{width:100%;padding:6px 8px;font-size:12px;border:1px solid #35594F;border-radius:5px;background:#0F231F;color:#fff}
+@media (max-width:560px){
+  .nfoto-card{width:88px}
+  .nfoto-thumb{width:88px;height:88px}
+  .nfoto-legenda{font-size:12.5px;padding:7px 8px}
+  .nfoto-seta{width:28px;height:26px;font-size:12px}
+  .nfoto-rm{width:26px;height:26px}
+}
 .btn.verde{background:var(--verde);color:#fff}
 .btn.verde:hover{background:var(--verde-esc)}
 .btn.azul{background:var(--azul);color:#fff}
@@ -5631,7 +5661,7 @@ function uploadFotosNot(input){
   status.textContent = '⏳ Enviando ' + arquivos.length + ' arquivo(s)...';
   arquivos.forEach(function(arquivo){
     enviarParaCloudinary(arquivo, function(url, tipo){
-      _nFotosTemp.push({ url: url, video: tipo === 'video' });
+      _nFotosTemp.push({ url: url, video: tipo === 'video', legenda: '' });
       restantes--;
       renderNFotosPreview();
       if (restantes === 0){
@@ -5657,20 +5687,23 @@ function moverNFotoTemp(idx, dir){
 }
 function renderNFotosPreview(){
   var dica = _nFotosTemp.length > 1
-    ? '<div style="width:100%;font-size:11.5px;color:#5B736C;margin-bottom:4px">Use ◀ ▶ para reordenar. A primeira foto (sem ser vídeo) vira a capa da notícia.</div>'
+    ? '<div style="width:100%;font-size:11.5px;color:#5B736C;margin-bottom:6px">Use ◀ ▶ para reordenar. A primeira foto (sem ser vídeo) vira a capa da notícia. A legenda aparece junto da foto/vídeo na notícia publicada.</div>'
     : '';
-  $('nFotosPreview').innerHTML = dica + _nFotosTemp.map(function(f, idx){
+  $('nFotosPreview').innerHTML = dica + '<div class="nfotos-grid">' + _nFotosTemp.map(function(f, idx){
     var miolo = f.video
-      ? '<video src="' + esc(f.url) + '" muted style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)"></video>'
-      : '<img src="' + esc(f.url) + '" alt="" style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)">';
-    var setas = '<div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);display:flex;gap:2px">'
-      + '<button type="button" data-moverfoto="' + idx + ':-1" ' + (idx === 0 ? 'disabled' : '') + ' title="Mover para trás" style="width:20px;height:18px;border:none;border-radius:3px;background:#2478AC;color:#fff;font-size:10px;cursor:pointer;opacity:' + (idx === 0 ? '.35' : '1') + '">◀</button>'
-      + '<button type="button" data-moverfoto="' + idx + ':1" ' + (idx === _nFotosTemp.length - 1 ? 'disabled' : '') + ' title="Mover para frente" style="width:20px;height:18px;border:none;border-radius:3px;background:#2478AC;color:#fff;font-size:10px;cursor:pointer;opacity:' + (idx === _nFotosTemp.length - 1 ? '.35' : '1') + '">▶</button></div>';
-    return '<div style="position:relative;margin-bottom:8px">' + miolo
-      + (f.video ? '<span style="position:absolute;left:3px;top:3px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:1px 5px;border-radius:3px">▶ vídeo</span>' : (idx === 0 ? '<span style="position:absolute;left:3px;top:3px;background:rgba(0,90,43,.85);color:#fff;font-size:9.5px;padding:1px 5px;border-radius:3px">CAPA</span>' : ''))
-      + '<button type="button" data-rmnfoto="' + idx + '" style="position:absolute;top:-6px;right:-6px;background:#B23A2E;color:#fff;border:none;width:20px;height:20px;border-radius:50%;font-size:11px;cursor:pointer;line-height:1">✕</button>'
-      + setas + '</div>';
-  }).join('');
+      ? '<video src="' + esc(f.url) + '" muted class="nfoto-thumb"></video>'
+      : '<img src="' + esc(f.url) + '" alt="" class="nfoto-thumb">';
+    var setas = '<div class="nfoto-setas">'
+      + '<button type="button" data-moverfoto="' + idx + ':-1" ' + (idx === 0 ? 'disabled' : '') + ' title="Mover para trás" class="nfoto-seta">◀</button>'
+      + '<button type="button" data-moverfoto="' + idx + ':1" ' + (idx === _nFotosTemp.length - 1 ? 'disabled' : '') + ' title="Mover para frente" class="nfoto-seta">▶</button></div>';
+    return '<div class="nfoto-card">'
+      + '<div class="nfoto-thumb-wrap">' + miolo
+      + (f.video ? '<span class="nfoto-badge">▶ vídeo</span>' : (idx === 0 ? '<span class="nfoto-badge capa">CAPA</span>' : ''))
+      + '<button type="button" data-rmnfoto="' + idx + '" class="nfoto-rm" title="Remover">✕</button>'
+      + setas + '</div>'
+      + '<input type="text" data-legendafoto="' + idx + '" value="' + esc(f.legenda || '') + '" placeholder="Legenda (opcional)" class="nfoto-legenda">'
+      + '</div>';
+  }).join('') + '</div>';
 }
 /* Converte o texto digitado (parágrafos separados por linha em branco, **negrito**, *itálico*) em HTML seguro */
 function formatarTextoNoticia(texto){
@@ -5751,7 +5784,9 @@ function editarNot(id){
   $('nTitulo').value = n.titulo;
   $('nData').value = n.data || '';
   $('nTexto').value = n.texto;
-  _nFotosTemp = (n.fotos && n.fotos.length) ? n.fotos.slice() : (n.foto ? [{ url:n.foto, video:false }] : []);
+  _nFotosTemp = (n.fotos && n.fotos.length)
+    ? n.fotos.map(function(f){ return { url:f.url, video:!!f.video, legenda:f.legenda || '' }; })
+    : (n.foto ? [{ url:n.foto, video:false, legenda:'' }] : []);
   renderNFotosPreview();
   $('nFotosStatus').style.display = 'none';
   $('nTextoPreview').style.display = 'none'; $('nTextoPreview').innerHTML = '';
@@ -5825,9 +5860,12 @@ function abrirNoticiaModal(id){
   $('ncTexto').innerHTML = formatarTextoNoticia(txt);
   var fotos = (n.fotos && n.fotos.length) ? n.fotos : (n.foto ? [{ url: n.foto, video: false }] : []);
   $('ncGaleria').innerHTML = fotos.map(function(f){
-    return f.video
+    var legenda = (f.legenda || '').trim();
+    var miolo = f.video
       ? '<video src="' + esc(f.url) + '" controls preload="metadata"></video>'
-      : '<img src="' + esc(f.url) + '" alt="" loading="lazy" onclick="abrirLightboxDireta(this.src)">';
+      : '<img src="' + esc(f.url) + '" alt="' + esc(legenda) + '" loading="lazy" onclick="abrirLightboxDireta(this.src)">';
+    return '<figure class="nc-item' + (f.video ? ' video' : '') + '">' + miolo
+      + (legenda ? '<figcaption>' + esc(legenda) + '</figcaption>' : '') + '</figure>';
   }).join('');
   $('modalNoticia').classList.add('on');
   document.body.style.overflow = 'hidden';
@@ -5854,7 +5892,7 @@ function renderNot(){
     var tit = (n.i18n && n.i18n[lang] && n.i18n[lang].titulo) || n.titulo;
     var txt = (n.i18n && n.i18n[lang] && n.i18n[lang].texto) || n.texto;
     return '<article class="noticia" data-abrirnot="' + esc(n.id) + '">'
-      + (n.foto ? '<img src="' + esc(n.foto) + '" alt="" loading="lazy">' : '<div class="semfoto"></div>')
+      + (n.foto ? '<div class="capa-wrap"><img src="' + esc(n.foto) + '" alt="" loading="lazy"></div>' : '<div class="semfoto"></div>')
       + '<div class="txt"><span class="data">' + dataBR(n.data) + '</span>'
       + '<h3>' + esc(tit) + '</h3><p>' + esc(txt).slice(0,220) + (txt.length > 220 ? '…' : '') + '</p>'
       + '<button class="ler-btn" type="button" data-abrirnot="' + esc(n.id) + '">📰 Ler notícia completa</button></div></article>';
@@ -6155,6 +6193,14 @@ function ligarTabelas(){
   var btnIta = $('btnNTextoItalico'); if (btnIta) btnIta.addEventListener('click', function(){ nTextoFormatarSelecao('*'); });
   var btnPrev = $('btnNTextoPreview'); if (btnPrev) btnPrev.addEventListener('click', nTextoAlternarPreview);
   var taNTexto = $('nTexto'); if (taNTexto) taNTexto.addEventListener('input', nTextoAtualizarPreview);
+  document.addEventListener('input', function(ev){
+    var t = ev.target;
+    if (!(t instanceof Element)) return;
+    if (t.hasAttribute('data-legendafoto')){
+      var idx = parseInt(t.getAttribute('data-legendafoto'), 10);
+      if (_nFotosTemp[idx]) _nFotosTemp[idx].legenda = t.value;
+    }
+  });
   document.addEventListener('change', function(ev){
     var t = ev.target;
     if (!(t instanceof Element)) return;
