@@ -6672,7 +6672,21 @@ function ghLerTexto(repo, caminho, token){
     if (!r.ok) throw new Error('GET ' + caminho + ': HTTP ' + r.status + (r.status === 404 ? ' (arquivo não encontrado no repositório)' : ''));
     return r.json();
   }).then(function(j){
-    return { sha: j.sha, texto: decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))) };
+    /* A API de "contents" só devolve o conteúdo do arquivo em base64 quando ele tem
+       até 1MB. O index.html da COOPIMS já passou desse tamanho, então para arquivos
+       grandes o campo "content" vem vazio — nesse caso, busca o conteúdo pelo SHA do
+       blob (git/blobs), que suporta até 100MB. */
+    if (j.content){
+      return { sha: j.sha, texto: decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))) };
+    }
+    var blobApi = 'https://api.github.com/repos/' + repo + '/git/blobs/' + j.sha;
+    return fetch(blobApi, { headers: ghHeaders(token) }).then(function(r2){
+      if (!r2.ok) throw new Error('GET (blob) ' + caminho + ': HTTP ' + r2.status);
+      return r2.json();
+    }).then(function(b){
+      if (!b.content) throw new Error('GET (blob) ' + caminho + ': resposta sem conteúdo — arquivo pode ter passado de 100MB.');
+      return { sha: j.sha, texto: decodeURIComponent(escape(atob(b.content.replace(/\n/g,'')))) };
+    });
   });
 }
 function ghSalvarTexto(repo, caminho, texto, sha, token, mensagem){
