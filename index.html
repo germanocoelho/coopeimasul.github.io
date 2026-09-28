@@ -381,6 +381,15 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 /* ---------- badge de propostas pendentes ---------- */
 .badge-prop{background:var(--erro);color:#fff;font-size:11px;font-weight:700;border-radius:10px;padding:1px 7px;margin-left:4px}
 
+/* ---------- aviso de publicação automática ---------- */
+.auto-pub-badge{position:fixed;right:16px;bottom:16px;z-index:400;max-width:340px;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.28);color:#fff;line-height:1.4}
+.auto-pub-badge.auto-pub-pendente{background:#2478AC}
+.auto-pub-badge.auto-pub-publicando{background:#C79A2A;color:#1B2E28}
+.auto-pub-badge.auto-pub-sucesso{background:#1B5E20}
+.auto-pub-badge.auto-pub-aviso{background:#C79A2A;color:#1B2E28}
+.auto-pub-badge.auto-pub-erro{background:#B23A2E}
+@media (max-width:560px){ .auto-pub-badge{left:16px;right:16px;max-width:none;bottom:12px} }
+
 /* ---------- modal ficha de cooperado ---------- */
 #fichaModal{display:none;position:fixed;inset:0;background:rgba(10,25,20,.88);z-index:210;align-items:flex-start;justify-content:center;padding:26px 16px;overflow-y:auto}
 #fichaModal.on{display:flex}
@@ -4013,7 +4022,7 @@ function dataBR(iso){
   var p = String(iso).slice(0,10).split('-');
   return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : iso;
 }
-function salvarLocal(){ try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch(e){} }
+function salvarLocal(){ try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch(e){} agendarAutoPublicar(); }
 function carregarLocal(){
   try {
     var s = localStorage.getItem(DB_KEY);
@@ -6703,13 +6712,13 @@ function substituirSeed(texto, nomeConst, valorNovo){
   if (!padrao.test(texto)) throw new Error('Não encontrei ' + nomeConst + ' no index.html publicado — publicação abortada por segurança.');
   return texto.replace(padrao, novoTrecho);
 }
-function publicar(){
-  var token = $('gToken').value.trim() || (localStorage.getItem('coop_gh_token') || '');
-  if (!token){ msg('msgPub','Cole o token do GitHub para publicar.', false); return; }
-  try { localStorage.setItem('coop_gh_token', token); } catch(e){}
-  var repoPub = $('gRepoPub').value.trim();
-  var repoPriv = ($('gRepoPriv') && $('gRepoPriv').value.trim()) || 'germanocoelho/coopeimasul-dados-privados';
-
+/* Núcleo da publicação, usado tanto pelo botão manual "Publicar no GitHub"
+   quanto pela publicação automática que roda sozinha depois de cada alteração.
+   "info" é um objeto mutável onde guardamos o aviso do repositório privado,
+   mesmo que a etapa pública falhe depois — assim quem chamou sempre sabe o
+   que aconteceu com os dois repositórios. */
+function executarPublicacao(token, repoPub, repoPriv, aoStatus, info){
+  info = info || {};
   var cooperadosPublicos = db.cooperados.map(mascararCooperadoParaPublico);
   var privadoPayload = { atualizado: new Date().toISOString(), cooperados: db.cooperados };
 
@@ -6717,14 +6726,13 @@ function publicar(){
      público: se o repositório privado tiver algum problema (não existir, token sem
      acesso a ele, etc.), isso NÃO pode travar a publicação de notícias, fotos,
      acervo e demais dados públicos. As duas etapas são independentes. */
-  msg('msgPub','Salvando dados privados (CPF, RG, telefone...)…', true);
-  var avisoPrivado = '';
-  ghSalvarArquivo(repoPriv, 'dados-privado.json', privadoPayload, token, 'Atualização via painel ADM')
+  if (aoStatus) aoStatus('Salvando dados privados (CPF, RG, telefone...)…');
+  return ghSalvarArquivo(repoPriv, 'dados-privado.json', privadoPayload, token, 'Atualização via painel ADM')
   .catch(function(e){
-    avisoPrivado = ' ⚠ Dados privados dos cooperados (CPF/RG/telefone) NÃO foram salvos: ' + e.message + ' — verifique se o repositório "' + repoPriv + '" existe e se o token tem acesso a ele.';
+    info.avisoPrivado = ' ⚠ Dados privados dos cooperados (CPF/RG/telefone) NÃO foram salvos: ' + e.message + ' — verifique se o repositório "' + repoPriv + '" existe e se o token tem acesso a ele.';
   })
   .then(function(){
-    msg('msgPub','Lendo o site publicado…', true);
+    if (aoStatus) aoStatus('Lendo o site publicado…');
     return ghLerTexto(repoPub, 'index.html', token);
   })
   .then(function(atual){
@@ -6740,13 +6748,55 @@ function publicar(){
     texto = substituirSeed(texto, 'SEED_MAQUINAS_V1', db.maquinas);
     texto = substituirSeed(texto, 'SEED_COMISSOES_V1', db.comissoes);
     texto = substituirSeed(texto, 'SEED_CONTATO_V1', db.contato);
-    msg('msgPub','Enviando para o GitHub Pages…', true);
+    if (aoStatus) aoStatus('Enviando para o GitHub Pages…');
     return ghSalvarTexto(repoPub, 'index.html', texto, atual.sha, token, 'Atualização via painel ADM');
   })
+  .then(function(){ return info; });
+}
+function publicar(){
+  var token = $('gToken').value.trim() || (localStorage.getItem('coop_gh_token') || '');
+  if (!token){ msg('msgPub','Cole o token do GitHub para publicar.', false); return; }
+  try { localStorage.setItem('coop_gh_token', token); } catch(e){}
+  var repoPub = $('gRepoPub').value.trim();
+  var repoPriv = ($('gRepoPriv') && $('gRepoPriv').value.trim()) || 'germanocoelho/coopeimasul-dados-privados';
+  var info = {};
+  executarPublicacao(token, repoPub, repoPriv, function(texto){ msg('msgPub', texto, true); }, info)
   .then(function(){
-    msg('msgPub', (avisoPrivado ? 'Site público publicado com sucesso!' + avisoPrivado : 'Publicado com sucesso! CPF/RG/telefone ficaram só no repositório privado.') + ' O site pode levar 1-2 minutos para atualizar. ⭐', !avisoPrivado);
+    msg('msgPub', (info.avisoPrivado ? 'Site público publicado com sucesso!' + info.avisoPrivado : 'Publicado com sucesso! CPF/RG/telefone ficaram só no repositório privado.') + ' O site pode levar 1-2 minutos para atualizar. ⭐', !info.avisoPrivado);
   })
-  .catch(function(e){ msg('msgPub','Erro ao publicar o site público: ' + e.message + (avisoPrivado ? avisoPrivado : ''), false); });
+  .catch(function(e){ msg('msgPub','Erro ao publicar o site público: ' + e.message + (info.avisoPrivado ? info.avisoPrivado : ''), false); });
+}
+
+/* ---------- Publicação automática ---------- */
+var _autoPubTimer = null;
+function mostrarAutoPubStatus(texto, estado){
+  var el = $('autoPubStatus');
+  if (!el) return;
+  el.textContent = texto;
+  el.className = 'auto-pub-badge auto-pub-' + estado;
+  el.style.display = 'block';
+}
+function agendarAutoPublicar(){
+  if (!document.body.classList.contains('adm-unlocked')) return;
+  var token = window.COOP_getToken ? window.COOP_getToken() : ((( $('gToken') && $('gToken').value.trim() ) || localStorage.getItem('coop_gh_token') || ''));
+  if (!token) return; /* sem token configurado ainda: nada para publicar automaticamente */
+  mostrarAutoPubStatus('Alterações salvas — publicando automaticamente em instantes…', 'pendente');
+  if (_autoPubTimer) clearTimeout(_autoPubTimer);
+  _autoPubTimer = setTimeout(function(){ executarAutoPublicar(token); }, 4000);
+}
+function executarAutoPublicar(token){
+  mostrarAutoPubStatus('Publicando automaticamente no GitHub…', 'publicando');
+  var repoPub = ($('gRepoPub') && $('gRepoPub').value.trim()) || 'germanocoelho/coopeimasul.github.io';
+  var repoPriv = ($('gRepoPriv') && $('gRepoPriv').value.trim()) || 'germanocoelho/coopeimasul-dados-privados';
+  var info = {};
+  executarPublicacao(token, repoPub, repoPriv, function(texto){ mostrarAutoPubStatus(texto, 'publicando'); }, info)
+  .then(function(){
+    mostrarAutoPubStatus(info.avisoPrivado ? '✓ Publicado automaticamente!' + info.avisoPrivado : '✓ Publicado automaticamente com sucesso!', info.avisoPrivado ? 'aviso' : 'sucesso');
+    setTimeout(function(){ var el = $('autoPubStatus'); if (el) el.style.display = 'none'; }, 7000);
+  })
+  .catch(function(e){
+    mostrarAutoPubStatus('⚠ Falha ao publicar automaticamente: ' + e.message + ' — use o botão "💾 Publicar no GitHub" na aba Publicar.', 'erro');
+  });
 }
 function recarregar(){
   var token = $('gToken').value.trim() || (localStorage.getItem('coop_gh_token') || '');
@@ -8758,5 +8808,6 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 </script>
+<div id="autoPubStatus" class="auto-pub-badge" style="display:none"></div>
 </body>
 </html>
