@@ -434,6 +434,9 @@ footer .friso-rodape{ position:relative; overflow:hidden; isolation:isolate }
 .galeria-item .legenda{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(10,25,20,.86),transparent);color:#fff;padding:22px 10px 8px;font-size:12px}
 .galeria-item .cat{position:absolute;left:8px;top:8px;background:rgba(10,25,20,.75);color:var(--ouro);font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px}
 .galeria-vazio{grid-column:1/-1;text-align:center;color:#8FA79E;padding:30px 0;font-size:14px}
+.galeria-item.galeria-capa{grid-column:span 2;grid-row:span 2;aspect-ratio:auto}
+.galeria-capa-selo{position:absolute;right:8px;top:8px;background:var(--ouro);color:#1B2E28;font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;z-index:2}
+@media (max-width:560px){ .galeria-item.galeria-capa{grid-column:span 1;grid-row:span 1;aspect-ratio:4/5} }
 
 /* lightbox simples */
 #lightbox{display:none;position:fixed;inset:0;background:rgba(6,16,13,.94);z-index:220;align-items:center;justify-content:center;padding:30px}
@@ -1507,6 +1510,8 @@ body.adm-unlocked .adm-panel{display:block}
 .btn.azul:hover{background:var(--azul-esc)}
 .btn.cinza{background:#2C5248;color:#CDE8DA}
 .btn.perigo{background:var(--erro);color:#fff}
+.btn.dourado{background:var(--ouro);color:#1B2E28}
+.btn.dourado:hover{background:var(--ouro-esc)}
 .btn.mini{padding:5px 12px;font-size:12.5px;border-radius:4px}
 .tabela-scroll{overflow-x:auto;margin-top:22px;border:1px solid #2C5248;border-radius:6px}
 table.adm-t{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px}
@@ -3329,8 +3334,9 @@ c-17 -21 0 -49 32 -49 27 0 37 28 19 50 -16 19 -34 19 -51 -1z" transform="transla
         <button class="btn cinza" id="btnLimparGal" type="button">Limpar formulário</button>
       </div>
       <div class="msg" id="msgGal"></div>
+      <div class="aviso">Use as setas ▲▼ para mudar a ordem em que as fotos aparecem no site, e a estrela ⭐ para escolher qual foto é a capa da galeria (ela aparece em destaque, primeiro, na visão "Todas").</div>
       <div class="tabela-scroll"><table class="adm-t" id="tabGal">
-        <thead><tr><th>Foto</th><th>Categoria</th><th>Legenda</th><th>Data</th><th>Ações</th></tr></thead><tbody></tbody>
+        <thead><tr><th>Ordem</th><th>Foto</th><th>Categoria</th><th>Legenda</th><th>Data</th><th>Ações</th></tr></thead><tbody></tbody>
       </table></div>
       <div class="aviso">Fotos ficam guardadas como imagem embutida (base64) no seu navegador e, ao publicar, no arquivo de dados do repositório. Para álbuns grandes, prefira colar a URL de um serviço como Cloudinary, o que deixa o site mais leve.</div>
     </div>
@@ -4472,11 +4478,25 @@ function limparFormGal(){
   $('glId').value=''; $('glCategoria').value='Pecuária'; $('glData').value=hoje(); $('glLegenda').value='';
   $('glFoto').value=''; $('glFotoUrl').value=''; limparPreview('glPreview'); _fotoGalAtual='';
 }
+/* Migração defensiva: fotos publicadas antes deste recurso não tinham campo
+   "ordem" — aqui garantimos que toda foto tenha uma posição, preservando a
+   ordem por data que já existia, sem mexer em nada que já estava no ar. */
+function garantirOrdemGaleria(){
+  var semOrdem = db.galeria.filter(function(g){ return typeof g.ordem !== 'number'; });
+  if (!semOrdem.length) return;
+  var maxOrdem = db.galeria.reduce(function(m,g){ return typeof g.ordem === 'number' ? Math.max(m,g.ordem) : m; }, -1);
+  db.galeria.slice().sort(function(a,b){ return String(a.data).localeCompare(String(b.data)); })
+    .forEach(function(g){ if (typeof g.ordem !== 'number'){ maxOrdem++; g.ordem = maxOrdem; } });
+}
 function salvarGal(){
   if (!_fotoGalAtual){ msg('msgGal','Escolha um arquivo de foto ou cole uma URL.', false); return; }
   var id = $('glId').value || String(Date.now());
-  var g = { id:id, categoria:$('glCategoria').value, data:$('glData').value || hoje(), legenda:$('glLegenda').value.trim(), foto:_fotoGalAtual };
-  var i, achou=false;
+  var i, existente = null;
+  for (i=0;i<db.galeria.length;i++){ if (db.galeria[i].id===id){ existente = db.galeria[i]; break; } }
+  var maxOrdem = db.galeria.reduce(function(m,g){ return typeof g.ordem === 'number' ? Math.max(m,g.ordem) : m; }, -1);
+  var g = { id:id, categoria:$('glCategoria').value, data:$('glData').value || hoje(), legenda:$('glLegenda').value.trim(), foto:_fotoGalAtual,
+    ordem: existente ? existente.ordem : maxOrdem + 1, capa: existente ? !!existente.capa : false };
+  var achou=false;
   for (i=0;i<db.galeria.length;i++){ if (db.galeria[i].id===id){ db.galeria[i]=g; achou=true; break; } }
   if (!achou) db.galeria.push(g);
   salvarLocal(); renderTudo(); limparFormGal();
@@ -4493,19 +4513,46 @@ function removerGal(id){
   db.galeria = db.galeria.filter(function(g){ return g.id!==id; });
   salvarLocal(); renderTudo();
 }
+function moverGal(id, dir){
+  garantirOrdemGaleria();
+  var ordenada = db.galeria.slice().sort(function(a,b){ return a.ordem - b.ordem; });
+  var idx = ordenada.findIndex(function(g){ return g.id === id; });
+  var novo = idx + dir;
+  if (idx < 0 || novo < 0 || novo >= ordenada.length) return;
+  var tmp = ordenada[idx].ordem; ordenada[idx].ordem = ordenada[novo].ordem; ordenada[novo].ordem = tmp;
+  salvarLocal(); renderTudo();
+}
+function definirCapaGal(id){
+  db.galeria.forEach(function(g){ g.capa = (g.id === id); });
+  salvarLocal(); renderTudo();
+  msg('msgGal','⭐ Foto definida como capa da galeria.', true);
+}
 function renderGalAdm(){
+  garantirOrdemGaleria();
   var tb = $('tabGal').querySelector('tbody');
-  tb.innerHTML = db.galeria.slice().sort(function(a,b){ return String(b.data).localeCompare(String(a.data)); }).map(function(g){
-    return '<tr><td>' + (g.foto ? '<img src="'+g.foto+'" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:5px">' : '-') + '</td>'
+  var ordenada = db.galeria.slice().sort(function(a,b){ return a.ordem - b.ordem; });
+  tb.innerHTML = ordenada.map(function(g, idx){
+    return '<tr><td class="mono" style="white-space:nowrap">'
+      + '<button class="btn mini cinza" data-movergal="'+esc(g.id)+':-1" '+(idx===0?'disabled':'')+' type="button" title="Mover para cima">▲</button> '
+      + '<button class="btn mini cinza" data-movergal="'+esc(g.id)+':1" '+(idx===ordenada.length-1?'disabled':'')+' type="button" title="Mover para baixo">▼</button></td>'
+      + '<td>' + (g.foto ? '<img src="'+g.foto+'" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:5px">' : '-') + '</td>'
       + '<td>' + esc(g.categoria) + '</td><td>' + esc(g.legenda) + '</td><td class="mono">' + dataBR(g.data) + '</td>'
-      + '<td><button class="btn mini azul" data-edgal="'+esc(g.id)+'" type="button">Editar</button> <button class="btn mini perigo" data-rmgal="'+esc(g.id)+'" type="button">Remover</button></td></tr>';
-  }).join('') || '<tr><td colspan="5" style="text-align:center;color:#8FB4A6">Nenhuma foto na galeria.</td></tr>';
+      + '<td><button class="btn mini '+(g.capa?'dourado':'azul')+'" data-defcapa="'+esc(g.id)+'" type="button">'+(g.capa?'⭐ É a capa':'☆ Definir capa')+'</button> '
+      + '<button class="btn mini azul" data-edgal="'+esc(g.id)+'" type="button">Editar</button> <button class="btn mini perigo" data-rmgal="'+esc(g.id)+'" type="button">Remover</button></td></tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:#8FB4A6">Nenhuma foto na galeria.</td></tr>';
 }
 function renderGalPublico(){
-  var lista = db.galeria.slice().sort(function(a,b){ return String(b.data).localeCompare(String(a.data)); })
-    .filter(function(g){ return _filtroGaleria === 'todos' || g.categoria === _filtroGaleria; });
+  garantirOrdemGaleria();
+  var todas = _filtroGaleria === 'todos';
+  var lista = db.galeria.slice().sort(function(a,b){ return a.ordem - b.ordem; })
+    .filter(function(g){ return todas || g.categoria === _filtroGaleria; });
+  if (todas){
+    var capaIdx = lista.findIndex(function(g){ return g.capa; });
+    if (capaIdx > 0){ var capaItem = lista.splice(capaIdx,1)[0]; lista.unshift(capaItem); }
+  }
   $('pgGaleria').innerHTML = lista.map(function(g){
-    return '<div class="galeria-item" data-abrirfoto="'+esc(g.id)+'"><span class="cat">'+esc(g.categoria)+'</span>'
+    return '<div class="galeria-item'+(g.capa?' galeria-capa':'')+'" data-abrirfoto="'+esc(g.id)+'"><span class="cat">'+esc(g.categoria)+'</span>'
+      + (g.capa ? '<span class="galeria-capa-selo">⭐ Capa</span>' : '')
       + '<img src="'+esc(g.foto)+'" alt="'+esc(g.legenda||g.categoria)+'" loading="lazy">'
       + '<span class="zoom-ico"><svg width="18" height="18" viewBox="0 0 24 24"><use href="#s-zoom" fill="none" stroke="currentColor"/></svg></span>'
       + (g.legenda ? '<div class="legenda">'+esc(g.legenda)+'</div>' : '') + '</div>';
@@ -6887,6 +6934,11 @@ function ligarTabelas(){
     else if (b.hasAttribute('data-rmdir')) removerDir(b.getAttribute('data-rmdir'));
     else if (b.hasAttribute('data-edgal')) editarGal(b.getAttribute('data-edgal'));
     else if (b.hasAttribute('data-rmgal')) removerGal(b.getAttribute('data-rmgal'));
+    else if (b.hasAttribute('data-defcapa')) definirCapaGal(b.getAttribute('data-defcapa'));
+    else if (b.hasAttribute('data-movergal')){
+      var partesGal = b.getAttribute('data-movergal').split(':');
+      moverGal(partesGal[0], parseInt(partesGal[1],10));
+    }
     else if (b.hasAttribute('data-aprov')) aprovarProposta(b.getAttribute('data-aprov'));
     else if (b.hasAttribute('data-reprov')) reprovarProposta(b.getAttribute('data-reprov'));
     else if (b.hasAttribute('data-envio-solo')) enviarParaUm(b.getAttribute('data-envio-solo'));
