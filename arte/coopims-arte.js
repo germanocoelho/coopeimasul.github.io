@@ -32,304 +32,167 @@
   function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var r = Math.imul(seed ^ seed >>> 15, 1 | seed); r = r + Math.imul(r ^ r >>> 7, 61 | r) ^ r; return ((r ^ r >>> 14) >>> 0) / 4294967296; }; }
 
   /* =====================================================================
-     PLANTAS (base em 0,0; crescem para cima)
+     TERRITÓRIO VIVO · arte generativa em canvas
+     Milhares de fios seguem um campo de fluxo e desenham, ao vivo, algo
+     entre a vista aérea das roças, o curso dos rios e o fio do trançado.
+     O cursor desvia os fios; cada toque planta uma semente que abre um
+     losango escalonado (inspirado, sem copiar, na geometria Kadiwéu) e
+     espalha novos fios pelo território.
      ===================================================================== */
-  function milho(r, jovem){
-    var h = jovem ? 70 : 140 + r()*30, s = '';
-    var verde = ['#4C9A35','#3F8A2E','#5AA83F'][Math.floor(r()*3)];
-    s += '<path d="M0 0 C 2 -' + (h*.3) + ' -3 -' + (h*.65) + ' 1 -' + h + '" stroke="#3B7228" stroke-width="' + (jovem?4:5) + '" fill="none" stroke-linecap="round"/>';
-    var nf = jovem ? 3 : 5;
-    for (var k = 0; k < nf; k++){
-      var y = -(h*.16) - k*(h*.16), lado = k % 2 ? 1 : -1, c = 0.75 + r()*.5;
-      s += '<path d="M0 ' + y + ' C ' + (lado*30*c) + ' ' + (y-20) + ', ' + (lado*60*c) + ' ' + (y-8) + ', ' + (lado*74*c) + ' ' + (y+18) +
-           ' C ' + (lado*50*c) + ' ' + (y-1) + ', ' + (lado*24*c) + ' ' + (y-3) + ', 0 ' + (y+7) + ' Z" fill="' + verde + '"/>';
-    }
-    if (!jovem){
-      s += '<g transform="translate(5,-' + (h*.5) + ') rotate(20)"><ellipse rx="7.5" ry="21" fill="#E8B53A"/>' +
-           '<path d="M-8 6 C -10 -10 -6 -22 0 -26 C -2 -14 -2 0 -8 6 Z M8 6 C 10 -10 6 -22 0 -26 C 2 -14 2 0 8 6 Z" fill="#7CAE4A"/>' +
-           '<path d="M0 -24 C 3 -32 -2 -36 4 -42" stroke="#C9773A" stroke-width="1.6" fill="none"/></g>';
-      s += '<path d="M1 -' + h + ' l-12 -20 M1 -' + h + ' l1 -26 M1 -' + h + ' l12 -19 M1 -' + h + ' l-5 -24" stroke="#D8B24A" stroke-width="2.2" stroke-linecap="round"/>';
-    }
-    return s;
-  }
-  function mandioca(r, jovem){
-    var s = '', escala = jovem ? .55 : 1;
-    var hastes = [[-34,-92],[2,-116],[36,-98],[-14,-70],[20,-74]];
-    hastes.forEach(function(p, i){
-      if (jovem && i > 2) return;
-      var x = p[0]*escala, y = p[1]*escala;
-      s += '<path d="M0 0 Q ' + (x*.3) + ' ' + (y*.55) + ' ' + x + ' ' + y + '" stroke="#8E3B2B" stroke-width="3" fill="none" stroke-linecap="round"/>';
-      var lobos = 7, base = -90;
-      for (var k = 0; k < lobos; k++){
-        var a = base - 75 + k*25 + (r()*8-4);
-        var cor = k % 2 ? '#3D8A3A' : '#56A845';
-        s += '<ellipse cx="' + x + '" cy="' + (y-13*escala) + '" rx="' + (3.6*escala+1) + '" ry="' + (15*escala+3) + '" fill="' + cor + '" transform="rotate(' + (a+90) + ' ' + x + ' ' + y + ')"/>';
-      }
-    });
-    return s;
-  }
-  function abobora(r, jovem){
-    var s = '<path d="M-70 0 C -40 -14 -10 8 20 -4 S 70 -6 90 2" stroke="#4E8A33" stroke-width="3.5" fill="none"/>';
-    var folhas = jovem ? [[0,-6]] : [[-48,-10],[8,-14],[62,-10]];
-    folhas.forEach(function(f){
-      s += '<g transform="translate(' + f[0] + ',' + f[1] + ')"><path d="M0 0 C -26 -6 -30 -34 -12 -40 C -6 -50 8 -50 13 -40 C 30 -36 28 -8 0 0 Z" fill="#4A9A3C"/><path d="M0 0 L0 -36 M0 -18 L-12 -28 M0 -18 L12 -28" stroke="#2F6B2A" stroke-width="1.4"/></g>';
-    });
-    if (!jovem){
-      s += '<g transform="translate(-14,4)"><ellipse rx="28" ry="19" fill="#E07A1F"/><path d="M-14 -16 C -20 -4 -20 6 -14 17 M0 -19 L0 19 M14 -16 C 20 -4 20 6 14 17" stroke="#B85A12" stroke-width="2" fill="none"/><path d="M0 -19 l3 -9" stroke="#5B7A2A" stroke-width="4" stroke-linecap="round"/></g>';
-      if (r() > .4) s += '<g transform="translate(48,6)"><ellipse rx="19" ry="13" fill="#E8902C"/><path d="M-9 -11 C -13 0 -13 4 -9 12 M0 -13 L0 13 M9 -11 C 13 0 13 4 9 12" stroke="#B85A12" stroke-width="1.6" fill="none"/></g>';
-    }
-    return s;
-  }
-  function feijao(r, jovem){
-    var s = '', n = jovem ? 3 : 6;
-    for (var k = 0; k < n; k++){
-      var x = (r()*2-1)*28, y = -12 - r()*38, a = r()*40-20;
-      s += '<path d="M0 0 Q ' + (x*.4) + ' ' + (y*.5) + ' ' + x + ' ' + y + '" stroke="#4E8A33" stroke-width="2" fill="none"/>';
-      s += '<g transform="translate(' + x + ',' + y + ') rotate(' + a + ')"><ellipse cx="-7" cy="0" rx="7" ry="4.5" fill="#5AA83F"/><ellipse cx="7" cy="0" rx="7" ry="4.5" fill="#4C9A35"/><ellipse cx="0" cy="-7" rx="4.5" ry="7" fill="#64B046"/></g>';
-      if (!jovem && r() > .5) s += '<path d="M' + (x+4) + ' ' + (y+6) + ' q 6 10 2 20" stroke="#8C6D2A" stroke-width="3" fill="none" stroke-linecap="round"/>';
-    }
-    return s;
-  }
-  var PLANTAS = [milho, mandioca, abobora, feijao];
-
-  /* =====================================================================
-     PESSOAS (ilustração estilizada; não retratam pessoas reais)
-     ===================================================================== */
-  var PELE = '#8A5636', CABELO = '#1A1412';
-  function mulherCesto(){
-    // mulher com o cesto (ajaka) às costas preso por alça na testa
-    return '' +
-    '<g class="pessoa-respira">' +
-      '<path d="M-14 0 L-10 -62 L4 -62 L2 0 Z" fill="' + PELE + '"/>' +
-      '<path d="M-22 -40 L-28 -118 C -20 -132 18 -132 24 -118 L20 -40 Z" fill="#B3402A"/>' +
-      '<path d="M-24 -62 L22 -62" stroke="#EFE4CF" stroke-width="5"/>' +
-      '<path d="M-24 -62 l6 -6 l6 6 l6 -6 l6 6 l6 -6 l6 6 l6 -6 l6 6" stroke="#1E1A17" stroke-width="2" fill="none"/>' +
-      '<path d="M-28 -118 C -26 -150 22 -150 24 -118 Z" fill="#EFE4CF"/>' +
-      '<path d="M22 -120 C 34 -110 36 -92 30 -78" stroke="' + PELE + '" stroke-width="9" fill="none" stroke-linecap="round"/>' +
-      '<circle cx="-2" cy="-164" r="17" fill="' + PELE + '"/>' +
-      '<path d="M-19 -166 C -20 -190 18 -192 16 -164 C 16 -150 22 -130 26 -112 C 14 -126 8 -142 6 -150 Z" fill="' + CABELO + '"/>' +
-      // cesto
-      '<g transform="translate(-44,-150)">' +
-        '<path d="M-26 0 L26 0 L20 70 C 8 78 -8 78 -20 70 Z" fill="url(#arte-trama)" stroke="#6B4A1F" stroke-width="2"/>' +
-        '<ellipse cx="0" cy="0" rx="26" ry="7" fill="#A8772F" stroke="#6B4A1F" stroke-width="2"/>' +
-        '<ellipse cx="-8" cy="-5" rx="7" ry="4" fill="#E8B53A"/><ellipse cx="6" cy="-6" rx="8" ry="4" fill="#E07A1F"/><ellipse cx="-1" cy="-9" rx="5" ry="3" fill="#7CAE4A"/>' +
-      '</g>' +
-      '<path d="M-68 -148 C -40 -190 -6 -186 -14 -172" stroke="#6B4A1F" stroke-width="3" fill="none"/>' +
-    '</g>';
-  }
-  function crianca(){
-    return '' +
-    '<g class="pessoa-respira">' +
-      '<path d="M-9 0 L-7 -34 L5 -34 L4 0 Z" fill="' + PELE + '"/>' +
-      '<path d="M-15 -30 L-17 -78 C -10 -88 12 -88 16 -78 L14 -30 Z" fill="#E8B53A"/>' +
-      '<path d="M-16 -50 l5 -5 l5 5 l5 -5 l5 5 l5 -5 l5 5" stroke="#B3402A" stroke-width="2.2" fill="none"/>' +
-      '<circle cx="0" cy="-96" r="13" fill="' + PELE + '"/>' +
-      '<path d="M-13 -98 C -14 -116 14 -116 13 -98 C 10 -106 -8 -108 -13 -98 Z" fill="' + CABELO + '"/>' +
-      '<path d="M14 -72 C 26 -80 30 -92 28 -104" stroke="' + PELE + '" stroke-width="6" fill="none" stroke-linecap="round"/>' +
-      '<g transform="translate(30,-112) rotate(14)"><ellipse rx="6" ry="15" fill="#E8B53A"/><path d="M-6 6 C -8 -8 -4 -16 0 -19 C -1 -8 -1 0 -6 6 Z M6 6 C 8 -8 4 -16 0 -19 C 1 -8 1 0 6 6 Z" fill="#7CAE4A"/></g>' +
-    '</g>';
-  }
-  function homemEnxada(){
-    return '' +
-    '<g class="pessoa-respira">' +
-      '<path d="M-16 0 L-12 -70 L2 -70 L-2 0 Z M6 0 L4 -70 L16 -70 L20 0 Z" fill="#2E3A44"/>' +
-      '<path d="M-20 -66 L-24 -136 C -14 -150 20 -150 26 -136 L22 -66 Z" fill="#EFE4CF"/>' +
-      '<path d="M-23 -112 L25 -112" stroke="#B3402A" stroke-width="6"/>' +
-      '<path d="M-23 -112 m4 -3 l4 6 l4 -6 l4 6 l4 -6 l4 6 l4 -6 l4 6 l4 -6 l4 6 l4 -6" stroke="#1E1A17" stroke-width="1.6" fill="none"/>' +
-      '<circle cx="2" cy="-162" r="17" fill="' + PELE + '"/>' +
-      '<path d="M-15 -166 C -14 -186 18 -186 19 -166 C 10 -174 -6 -174 -15 -166 Z" fill="' + CABELO + '"/>' +
-      '<path d="M-16 -168 L20 -168" stroke="#B3402A" stroke-width="4"/>' +
-      '<g class="enxada">' +
-        '<path d="M22 -130 C 34 -118 44 -104 52 -92" stroke="' + PELE + '" stroke-width="9" fill="none" stroke-linecap="round"/>' +
-        '<path d="M-18 -128 C -4 -112 22 -100 50 -92" stroke="' + PELE + '" stroke-width="9" fill="none" stroke-linecap="round"/>' +
-        '<path d="M40 -120 L110 -6" stroke="#6B4A1F" stroke-width="5" stroke-linecap="round"/>' +
-        '<path d="M98 -16 L128 -4 L118 10 L92 -2 Z" fill="#7A8288"/>' +
-      '</g>' +
-    '</g>';
+  // ruído de gradiente 2D (Perlin clássico, compacto)
+  var PERM = (function(){
+    var p = [], r = rng(2026), i;
+    for (i = 0; i < 256; i++) p[i] = i;
+    for (i = 255; i > 0; i--){ var j = Math.floor(r()*(i+1)), t0 = p[i]; p[i] = p[j]; p[j] = t0; }
+    return p.concat(p);
+  })();
+  function fade(t){ return t*t*t*(t*(t*6-15)+10); }
+  function grad(h, x, y){ switch(h & 7){ case 0:return x+y; case 1:return -x+y; case 2:return x-y; case 3:return -x-y; case 4:return x; case 5:return -x; case 6:return y; default:return -y; } }
+  function ruido(x, y){
+    var X = Math.floor(x) & 255, Y = Math.floor(y) & 255; x -= Math.floor(x); y -= Math.floor(y);
+    var u = fade(x), v = fade(y), a = PERM[X]+Y, b = PERM[X+1]+Y;
+    var l1 = grad(PERM[a], x, y) + u*(grad(PERM[b], x-1, y) - grad(PERM[a], x, y));
+    var l2 = grad(PERM[a+1], x, y-1) + u*(grad(PERM[b+1], x-1, y-1) - grad(PERM[a+1], x, y-1));
+    return l1 + v*(l2 - l1);
   }
 
-  /* =====================================================================
-     CENA DA ROÇA
-     ===================================================================== */
-  function cenaRoca(){
-    var r = rng(2026), s = '';
-    s += '<defs>' +
-      '<linearGradient id="arte-ceu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1D36"/><stop offset=".34" stop-color="#253C6E"/><stop offset=".6" stop-color="#C4623A"/><stop offset=".72" stop-color="#F2A93B"/><stop offset="1" stop-color="#F7D27A"/></linearGradient>' +
-      '<radialGradient id="arte-solbrilho"><stop offset="0" stop-color="#FFF6CF" stop-opacity=".95"/><stop offset=".35" stop-color="#FFD77A" stop-opacity=".55"/><stop offset="1" stop-color="#FFB347" stop-opacity="0"/></radialGradient>' +
-      '<linearGradient id="arte-rio" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9A04A"/><stop offset=".25" stop-color="#3C7DA8"/><stop offset="1" stop-color="#21557A"/></linearGradient>' +
-      '<linearGradient id="arte-terra" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A5A33"/><stop offset=".45" stop-color="#6B3F22"/><stop offset="1" stop-color="#4A2A14"/></linearGradient>' +
-      '<linearGradient id="arte-sombra" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>' +
-      '<pattern id="arte-trama" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#C9963F"/><rect width="5" height="10" fill="#A8772F"/><rect y="4" width="10" height="2" fill="#E2B862" opacity=".7"/></pattern>' +
-      '<filter id="arte-desfoque"><feGaussianBlur stdDeviation="6"/></filter>' +
-    '</defs>';
-    s += '<rect width="1600" height="900" fill="url(#arte-ceu)"/>';
-    // estrelas
-    s += '<g class="estrela-ceu">';
-    for (var i = 0; i < 46; i++) s += '<circle cx="' + (r()*1600).toFixed(0) + '" cy="' + (r()*300).toFixed(0) + '" r="' + (r()*1.6+.4).toFixed(1) + '" fill="#fff" opacity="' + (r()*.7+.3).toFixed(2) + '"/>';
-    s += '</g>';
-    // sol
-    s += '<g class="arte-camada" data-prof=".08"><g class="sol-nasce">' +
-         '<circle cx="1180" cy="575" r="300" fill="url(#arte-solbrilho)"/>' +
-         '<g class="sol-raios" opacity=".16">';
-    for (i = 0; i < 24; i++) s += '<path d="M1180 575 L' + (1180 + Math.cos(i/24*6.283)*620).toFixed(0) + ' ' + (575 + Math.sin(i/24*6.283)*620).toFixed(0) + ' L' + (1180 + Math.cos((i+.35)/24*6.283)*620).toFixed(0) + ' ' + (575 + Math.sin((i+.35)/24*6.283)*620).toFixed(0) + ' Z" fill="#FFE9A8"/>';
-    s += '</g><circle cx="1180" cy="575" r="74" fill="#FFE8A3"/><circle cx="1180" cy="575" r="62" fill="#FFF3C9"/></g></g>';
-    // bando de tuiuiús
-    s += '<g class="bando">';
-    [[0,0,1],[70,26,.8],[-60,34,.75]].forEach(function(b){
-      s += '<g transform="translate(' + (200+b[0]) + ',' + (240+b[1]) + ') scale(' + b[2] + ')">' +
-           '<path class="asa" d="M-46 -4 C -24 -26 -8 -14 0 -2 C 8 -14 24 -26 46 -4 C 24 -10 10 -2 0 4 C -10 -2 -24 -10 -46 -4 Z" fill="#F5F1E8"/>' +
-           '<ellipse cx="0" cy="2" rx="12" ry="5" fill="#fff"/><path d="M10 0 L24 -4" stroke="#1E1A17" stroke-width="3"/><path d="M14 -1 L19 -2" stroke="#C0392B" stroke-width="4"/><path d="M24 -4 L36 -2" stroke="#1E1A17" stroke-width="2"/>' +
-           '<path d="M-12 3 L-30 5" stroke="#1E1A17" stroke-width="1.5"/></g>';
-    });
-    s += '</g>';
-    // serras ao fundo
-    s += '<g class="arte-camada" data-prof=".12">' +
-      '<path d="M0 606 Q 160 520 360 566 T 760 540 T 1180 566 T 1600 528 L1600 900 L0 900 Z" fill="#3A4878" opacity=".92"/>' +
-      '<path d="M0 640 Q 280 590 560 622 T 1120 606 T 1600 626 V900 H0 Z" fill="#4E5F6A"/>' +
-      '<g class="bruma" opacity=".22"><ellipse cx="400" cy="640" rx="380" ry="26" fill="#fff" filter="url(#arte-desfoque)"/><ellipse cx="1180" cy="630" rx="420" ry="24" fill="#fff" filter="url(#arte-desfoque)"/></g>' +
-    '</g>';
-    // cerrado, casa e árvores
-    s += '<g class="arte-camada" data-prof=".25">';
-    s += '<path d="M0 668 Q 400 640 800 660 T 1600 650 V900 H0Z" fill="#3E5A2E"/>';
-    function ipe(x, y, k){
-      var q = '<g transform="translate(' + x + ',' + y + ') scale(' + k + ')"><path d="M0 0 C 2 -30 -6 -50 4 -74 M2 -46 C 14 -56 22 -60 30 -76 M0 -58 C -12 -66 -18 -74 -26 -84" stroke="#4A3220" stroke-width="5" fill="none" stroke-linecap="round"/>';
-      [[4,-90,26],[30,-84,20],[-24,-90,20],[-6,-108,22],[18,-106,18],[-30,-74,14],[40,-70,13]].forEach(function(c){ q += '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + c[2] + '" fill="' + (r() > .5 ? '#F2C230' : '#E0A81C') + '"/>'; });
-      return q + '</g>';
-    }
-    function arbusto(x, y, k){
-      var q = '<g transform="translate(' + x + ',' + y + ') scale(' + k + ')">';
-      for (var j = 0; j < 6; j++) q += '<circle cx="' + (j*9-22) + '" cy="' + (-10 - (j%2)*8) + '" r="' + (12 + (j%3)*3) + '" fill="' + (j%2 ? '#2F5A26' : '#38692C') + '"/>';
-      q += '<circle cx="-8" cy="-22" r="3" fill="#C9D85A"/><circle cx="10" cy="-16" r="3" fill="#C9D85A"/></g>';
-      return q;
-    }
-    function buriti(x, y, k){
-      var q = '<g transform="translate(' + x + ',' + y + ') scale(' + k + ')"><path d="M0 0 L3 -130" stroke="#5A4630" stroke-width="7"/>';
-      for (var j = 0; j < 11; j++){ var a = -160 + j*14; q += '<path d="M3 -130 l' + (Math.cos(a*Math.PI/180)*60).toFixed(0) + ' ' + (Math.sin(a*Math.PI/180)*44).toFixed(0) + '" stroke="#3E6B2E" stroke-width="5" stroke-linecap="round"/>'; }
-      return q + '</g>';
-    }
-    s += ipe(150, 676, 1.05) + ipe(1480, 664, .9) + ipe(760, 660, .6);
-    s += buriti(1330, 668, .9) + buriti(1388, 672, .75);
-    s += arbusto(560, 668, .8) + arbusto(1040, 664, .7) + arbusto(1560, 668, .8) + arbusto(60, 676, .7);
-    // casa de palha com fumaça
-    s += '<g transform="translate(300,668)">' +
-         '<rect x="-64" y="-46" width="128" height="46" fill="#B58A5A"/><rect x="-12" y="-30" width="22" height="30" fill="#4A3220"/>' +
-         '<path d="M-84 -42 L0 -96 L84 -42 Z" fill="#D8B26A"/>' +
-         '<path d="M-70 -46 L-8 -88 M-40 -44 L6 -82 M-10 -44 L20 -74 M30 -44 L36 -66 M60 -44 L50 -60" stroke="#B48A44" stroke-width="2"/>' +
-         '<g opacity=".7"><circle class="fumaca" cx="20" cy="-100" r="9" fill="#E8E2D6"/><circle class="fumaca" cx="26" cy="-104" r="11" fill="#E8E2D6" style="animation-delay:-2.3s"/><circle class="fumaca" cx="16" cy="-100" r="8" fill="#E8E2D6" style="animation-delay:-4.6s"/></g>' +
-         '</g>';
-    s += '</g>';
-    // rio com canoa
-    s += '<g class="arte-camada" data-prof=".35">' +
-      '<path d="M0 676 C 400 652, 800 700, 1200 672 S 1600 682 1600 682 L1600 712 C 1200 702, 800 730, 400 704 S0 704 0 704 Z" fill="url(#arte-rio)"/>';
-    for (i = 0; i < 16; i++){ var bx = r()*1500+40, by = 682 + r()*22; s += '<path class="brilho-rio" style="animation-delay:-' + (r()*3).toFixed(1) + 's" d="M' + bx.toFixed(0) + ' ' + by.toFixed(0) + ' h' + (20 + r()*40).toFixed(0) + '" stroke="#FFE3A3" stroke-width="2" stroke-linecap="round"/>'; }
-    s += '<g class="canoa"><g transform="translate(0,684)">' +
-         '<path d="M-48 0 C -30 12 30 12 52 0 Z" fill="#5A3A22"/><path d="M-40 0 L44 0" stroke="#3D2616" stroke-width="2"/>' +
-         '<circle cx="0" cy="-30" r="7" fill="' + PELE + '"/><path d="M-7 -33 C -6 -42 8 -42 7 -32 Z" fill="' + CABELO + '"/><path d="M-6 -2 L-8 -22 C -4 -28 6 -28 8 -22 L6 -2 Z" fill="#B3402A"/>' +
-         '<g class="remo"><path d="M4 -20 L22 18" stroke="#6B4A1F" stroke-width="2.6"/><ellipse cx="23" cy="22" rx="3" ry="7" fill="#6B4A1F" transform="rotate(-24 23 22)"/></g>' +
-         '</g></g>';
-    s += '</g>';
-    // roça (terra, sulcos e plantas)
-    s += '<g class="arte-camada" data-prof=".6">';
-    s += '<path d="M0 702 C 400 692 1200 712 1600 700 L1600 900 L0 900 Z" fill="url(#arte-terra)"/>';
-    for (i = -14; i <= 14; i++) s += '<path d="M' + (800 + i*38) + ' 704 L' + (800 + i*250) + ' 900" stroke="#4A2A14" stroke-width="2" opacity=".45"/>';
-    var fileiras = [[724,.28,0],[752,.38,1],[786,.5,0],[826,.66,3],[868,.84,2]];
-    fileiras.forEach(function(f){
-      var y = f[0], k = f[1], tipo = f[2], passo = 120*k + 26;
-      for (var x = -40; x < 1660; x += passo*(0.85 + r()*.3)){
-        var q = r(), t;
-        if (tipo === 0) t = q < .8 ? 0 : 3;
-        else if (tipo === 1) t = q < .75 ? 1 : 0;
-        else if (tipo === 3) t = q < .45 ? 3 : (q < .8 ? 1 : 0);
-        else t = q < .3 ? 2 : (q < .65 ? 0 : (q < .85 ? 3 : 1));
-        if (k > .6 && x > 780 && x < 1240) continue; // espaço das pessoas
-        s += '<g transform="translate(' + x.toFixed(0) + ',' + y + ') scale(' + (k*(.9+r()*.2)).toFixed(2) + ')"><g class="balanco" style="animation-delay:-' + (r()*5).toFixed(2) + 's">' + PLANTAS[t](r) + '</g></g>';
-      }
-    });
-    s += '</g>';
-    // pessoas e plantios do visitante
-    s += '<g class="arte-camada" data-prof="1">' +
-      '<g class="arte-plantios"></g>' +
-      '<ellipse cx="900" cy="880" rx="70" ry="10" fill="#000" opacity=".25"/><ellipse cx="985" cy="878" rx="36" ry="7" fill="#000" opacity=".22"/><ellipse cx="1150" cy="884" rx="80" ry="10" fill="#000" opacity=".25"/>' +
-      '<g transform="translate(900,880) scale(1.1)">' + mulherCesto() + '</g>' +
-      '<g transform="translate(985,878) scale(1.1)">' + crianca() + '</g>' +
-      '<g transform="translate(1140,884) scale(1.12)">' + homemEnxada() + '</g>' +
-      '<g transform="translate(1560,900) scale(1.25)"><g class="balanco">' + milho(r) + '</g></g>' +
-      '<g transform="translate(40,900) scale(1.3)"><g class="balanco" style="animation-delay:-2s">' + mandioca(r) + '</g></g>' +
-    '</g>';
-    s += '<rect x="0" y="780" width="1600" height="120" fill="url(#arte-sombra)" pointer-events="none"/>';
-    return s;
-  }
+  var PALETA = [
+    [232,181,58],  // milho
+    [179,64,42],   // urucum
+    [217,178,106], // palha
+    [124,174,74],  // rama
+    [239,228,207], // argila clara
+    [224,122,31]   // abóbora
+  ];
 
   function montarRoca(){
     var sec = document.getElementById('arte-roca');
     if (!sec) return;
-    var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('class', 'arte-cena');
-    svg.setAttribute('viewBox', '0 0 1600 900');
-    svg.setAttribute('preserveAspectRatio', 'xMidYMax slice');
-    svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', 'Ilustração: amanhecer numa roça indígena de Mato Grosso do Sul, com milho, mandioca, abóbora e feijão, uma casa de palha, um rio com canoa e uma família trabalhando na terra.');
-    svg.innerHTML = cenaRoca();
-    sec.insertBefore(svg, sec.firstChild);
-    // no celular, aproxima o enquadramento da família na roça
-    var mq = window.matchMedia('(max-width: 700px)');
-    function enquadrar(){ svg.setAttribute('viewBox', mq.matches ? '660 150 640 750' : '0 0 1600 900'); }
-    enquadrar();
-    if (mq.addEventListener) mq.addEventListener('change', enquadrar); else if (mq.addListener) mq.addListener(enquadrar);
-
-    var camadas = [].slice.call(svg.querySelectorAll('.arte-camada'));
-    var plantios = svg.querySelector('.arte-plantios');
+    var cv = document.createElement('canvas');
+    cv.className = 'arte-tela';
+    cv.setAttribute('role', 'img');
+    cv.setAttribute('aria-label', 'Arte generativa: milhares de fios coloridos em tons de milho, urucum, palha e rama correm como rios e sulcos de roça sobre fundo escuro; cada toque abre um losango escalonado e espalha novos fios.');
+    sec.insertBefore(cv, sec.firstChild);
+    var cx = cv.getContext('2d');
+    var W = 0, H = 0, dpr = 1, fios = [], sementes = [], tempo = 0, rolagem = 0;
+    var mouse = {x:-9999, y:-9999, on:false};
+    var rr = rng(Date.now() % 100000), total = 0;
     var cont = sec.querySelector('.arte-contador');
-    var total = 0, rr = rng(Date.now() % 100000);
-    var px = 0, py = 0, alvoX = 0;
 
-    function aplicar(){
-      camadas.forEach(function(c){
-        var d = parseFloat(c.getAttribute('data-prof')) || 0;
-        c.style.transform = 'translate(' + (alvoX*d*18).toFixed(1) + 'px,' + (py*d*-90).toFixed(1) + 'px)';
-      });
+    function novoFio(x, y, cor){
+      return {x:x == null ? rr()*W : x, y:y == null ? rr()*H : y, px:0, py:0,
+        vida: 80 + rr()*260, idade:0, cor: cor || PALETA[Math.floor(rr()*PALETA.length)],
+        larg: .5 + rr()*1.3, vel: .9 + rr()*1.6};
     }
-    function rolar(){
-      var b = sec.getBoundingClientRect(), h = window.innerHeight;
-      if (b.bottom < 0 || b.top > h) return;
-      py = ((h - b.top) / (h + b.height)) - .5;
-      aplicar();
+    function medir(){
+      var b = sec.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = Math.max(320, b.width); H = Math.max(420, b.height);
+      cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+      cv.style.width = W + 'px'; cv.style.height = H + 'px';
+      cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cx.fillStyle = '#14110F'; cx.fillRect(0, 0, W, H);
+      var n = Math.round(Math.min(1800, W*H/700));
+      fios = []; for (var i = 0; i < n; i++) fios.push(novoFio());
+      // pré-aquecimento: o território já nasce desenhado
+      for (var k = 0; k < (reduz ? 260 : 90); k++) passo(true);
     }
-    if (!reduz){
-      window.addEventListener('scroll', function(){ requestAnimationFrame(rolar); }, {passive:true});
-      sec.addEventListener('pointermove', function(e){
-        var b = sec.getBoundingClientRect();
-        alvoX = ((e.clientX - b.left) / b.width - .5) * -1;
-        requestAnimationFrame(aplicar);
-      });
-      rolar();
+    function angulo(x, y){
+      var e = .0019, t = tempo*.00012 + rolagem*.0009;
+      var a = ruido(x*e + t, y*e - t*.6)*Math.PI*2.4 + ruido(x*e*3.1, y*e*3.1 + t)*.7;
+      // faixa de rio que atravessa o quadro em diagonal suave
+      var rio = y - (H*.62 + Math.sin(x*.004 + t*3)*H*.08);
+      a += Math.exp(-rio*rio/(2*70*70))*1.3;
+      if (mouse.on){
+        var dx = x - mouse.x, dy = y - mouse.y, d2 = dx*dx + dy*dy, R = 150;
+        if (d2 < R*R*4){ var f = Math.exp(-d2/(2*R*R)); a += f*2.2; }
+      }
+      return a;
     }
+    function passo(semRastro){
+      if (!semRastro){
+        cx.globalCompositeOperation = 'source-over';
+        cx.fillStyle = 'rgba(20,17,15,0.03)'; cx.fillRect(0, 0, W, H);
+      }
+      cx.globalCompositeOperation = 'lighter';
+      for (var i = 0; i < fios.length; i++){
+        var f = fios[i];
+        f.px = f.x; f.py = f.y;
+        var a = angulo(f.x, f.y);
+        f.x += Math.cos(a)*f.vel; f.y += Math.sin(a)*f.vel;
+        f.idade++;
+        var vida = f.idade/f.vida, alfa = Math.sin(Math.min(1, vida)*Math.PI)*.42;
+        cx.strokeStyle = 'rgba(' + f.cor[0] + ',' + f.cor[1] + ',' + f.cor[2] + ',' + alfa.toFixed(3) + ')';
+        cx.lineWidth = f.larg;
+        cx.beginPath(); cx.moveTo(f.px, f.py); cx.lineTo(f.x, f.y); cx.stroke();
+        if (f.idade > f.vida || f.x < -20 || f.x > W+20 || f.y < -20 || f.y > H+20){
+          fios[i] = novoFio();
+        }
+      }
+      // sementes plantadas: losangos escalonados que se abrem
+      cx.globalCompositeOperation = 'source-over';
+      for (var s = sementes.length - 1; s >= 0; s--){
+        var sm = sementes[s]; sm.t++;
+        var p = Math.min(1, sm.t/70), ease = 1 - Math.pow(1-p, 3);
+        if (sm.t % 3 === 0) desenharLosango(sm.x, sm.y, 14 + ease*sm.r, sm.cor, ((1-p)*.8 + .1)*.5);
+        if (sm.t > 140) sementes.splice(s, 1);
+      }
+      tempo += 16;
+    }
+    function desenharLosango(x, y, r, cor, alfa){
+      cx.save(); cx.translate(x, y);
+      cx.strokeStyle = 'rgba(' + cor.join(',') + ',' + alfa.toFixed(3) + ')';
+      for (var anel = 0; anel < 3; anel++){
+        var rr2 = r*(1 - anel*.28);
+        cx.lineWidth = anel === 0 ? 2 : 1.2;
+        // losango de contorno escalonado, em degraus iguais nos quatro lados
+        cx.beginPath();
+        var st = 6, i;
+        cx.moveTo(0, -rr2);
+        for (i = 1; i <= st; i++){ cx.lineTo((i)*rr2/st, -rr2 + (i-1)*rr2/st); cx.lineTo(i*rr2/st, -rr2 + i*rr2/st); }
+        for (i = 1; i <= st; i++){ cx.lineTo(rr2 - (i-1)*rr2/st, i*rr2/st); cx.lineTo(rr2 - i*rr2/st, i*rr2/st); }
+        for (i = 1; i <= st; i++){ cx.lineTo(-(i-1)*rr2/st, rr2 - i*rr2/st); cx.lineTo(-i*rr2/st, rr2 - i*rr2/st); }
+        for (i = 1; i <= st; i++){ cx.lineTo(-rr2 + (i-1)*rr2/st, -i*rr2/st); cx.lineTo(-rr2 + i*rr2/st, -i*rr2/st); }
+        cx.stroke();
+      }
+      cx.fillStyle = 'rgba(' + cor.join(',') + ',' + Math.min(1, alfa + .2).toFixed(3) + ')';
+      cx.beginPath(); cx.arc(0, 0, 3.2, 0, Math.PI*2); cx.fill();
+      cx.restore();
+    }
+    var vivo = true, raf = 0;
+    function laco(){ if (vivo) passo(false); raf = requestAnimationFrame(laco); }
 
     function semear(e){
-      var m = plantios.getScreenCTM(); if (!m) return;
-      var p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
-      var q = p.matrixTransform(m.inverse());
-      if (q.y < 712) return;
-      var k = Math.max(.25, Math.min(1, (q.y - 680) / 220));
-      var tipo = Math.floor(rr()*4);
-      var g = document.createElementNS(NS, 'g');
-      g.setAttribute('transform', 'translate(' + q.x.toFixed(1) + ',' + q.y.toFixed(1) + ') scale(' + k.toFixed(2) + ')');
-      g.innerHTML = '<g class="broto"><g class="balanco" style="animation-delay:-' + (rr()*5).toFixed(2) + 's">' + PLANTAS[tipo](rr, true) + '</g></g>';
-      for (var i = 0; i < 7; i++){
-        var c = document.createElementNS(NS, 'circle');
-        c.setAttribute('r', (2.5 + rr()*2.5).toFixed(1));
-        c.setAttribute('fill', ['#E8B53A','#E07A1F','#7CAE4A','#5A2E1E'][i % 4]);
-        c.setAttribute('class', 'faisca');
-        c.style.setProperty('--dx', ((rr()*2-1)*60).toFixed(0) + 'px');
-        c.style.setProperty('--dy', (-20 - rr()*60).toFixed(0) + 'px');
-        g.appendChild(c);
+      var b = cv.getBoundingClientRect(), x = e.clientX - b.left, y = e.clientY - b.top;
+      var cor = PALETA[Math.floor(rr()*PALETA.length)];
+      sementes.push({x:x, y:y, r:60 + rr()*70, cor:cor, t:0});
+      for (var i = 0; i < 160; i++){
+        var a = i/160*Math.PI*2, d = rr()*18;
+        var f = novoFio(x + Math.cos(a)*d, y + Math.sin(a)*d, rr() < .6 ? cor : null);
+        f.vida = 120 + rr()*200; f.larg = .8 + rr()*1.4;
+        fios[Math.floor(rr()*fios.length)] = f;
       }
-      plantios.appendChild(g);
+      if (reduz) for (var k = 0; k < 90; k++) passo(false);
       total++;
-      if (plantios.childNodes.length > 60) plantios.removeChild(plantios.firstChild);
       if (cont){ cont.textContent = total === 1 ? t('contador1') : t('contador', total); cont.classList.add('on'); }
     }
-    svg.addEventListener('click', semear);
+
+    medir();
+    var tm = 0;
+    window.addEventListener('resize', function(){ clearTimeout(tm); tm = setTimeout(medir, 220); });
+    cv.addEventListener('pointermove', function(e){ var b = cv.getBoundingClientRect(); mouse.x = e.clientX - b.left; mouse.y = e.clientY - b.top; mouse.on = true; });
+    cv.addEventListener('pointerleave', function(){ mouse.on = false; });
+    cv.addEventListener('click', semear);
+    window.addEventListener('scroll', function(){
+      var b = sec.getBoundingClientRect(); rolagem = -b.top;
+    }, {passive:true});
+    if (!reduz){
+      raf = requestAnimationFrame(laco);
+      if ('IntersectionObserver' in window){
+        new IntersectionObserver(function(es){ vivo = es[0].isIntersecting; }, {rootMargin:'80px'}).observe(sec);
+      }
+      document.addEventListener('visibilitychange', function(){ vivo = !document.hidden; });
+    }
     sec.__rerender = function(){ if (cont && total) cont.textContent = total === 1 ? t('contador1') : t('contador', total); };
   }
 
@@ -474,34 +337,37 @@
         s += '<ellipse rx="7" ry="5" fill="' + c + '" stroke="#3D2616" stroke-width="1"><animateMotion dur="16s" repeatCount="indefinite" rotate="auto" begin="-' + (k*4) + 's"><mpath href="#arte-trilha"/></animateMotion></ellipse>';
       });
     }
-    // ciranda de pessoas
-    var cores = ['#B3402A','#1E1A17','#E8B53A','#2F6F9E','#2F6B2A','#C9A27E','#8E3B6B'];
+    // ciranda: 14 presenças abstratas (estelas com faixa de grafismo) ligadas por arcos de mãos dadas
+    var cores = ['#B3402A','#E8B53A','#EFE4CF','#7CAE4A','#D9B26A','#E07A1F','#C9A27E'];
     s += '<g class="roda-gente">';
-    var n = 14, R = 172, meia = Math.sin(Math.PI/n)*R;
+    var n = 14, R = 172;
+    s += '<circle cx="400" cy="400" r="' + R + '" fill="none" stroke="#EFE4CF" stroke-opacity=".28" stroke-width="1"/>';
+    for (i = 0; i < n; i++){
+      var a1 = (i + .5)/n*Math.PI*2 - Math.PI/2, a2 = (i + 1.5)/n*Math.PI*2 - Math.PI/2;
+      var x1 = 400 + Math.cos(a1)*(R-6), y1 = 400 + Math.sin(a1)*(R-6), x2 = 400 + Math.cos(a2)*(R-6), y2 = 400 + Math.sin(a2)*(R-6);
+      s += '<path class="maos" d="M' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' Q 400 400 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) + '" fill="none" stroke="' + cores[i % cores.length] + '" stroke-opacity=".35" stroke-width="1.2"/>';
+    }
     for (i = 0; i < n; i++){
       var ang = i/n*360, c = cores[i % cores.length];
-      s += '<g transform="rotate(' + ang + ' 400 400) translate(400,' + (400 - R) + ')">' +
-        '<path d="M-9 -10 L-' + meia.toFixed(1) + ' 2 M9 -10 L' + meia.toFixed(1) + ' 2" stroke="#8A5636" stroke-width="5" stroke-linecap="round"/>' +
-        '<path d="M-10 -14 L-13 22 L13 22 L10 -14 Z" fill="' + c + '"/>' +
-        '<path d="M-12 6 l4 -4 l4 4 l4 -4 l4 4 l4 -4" stroke="' + (c === '#1E1A17' ? '#F7F2E8' : '#1E1A17') + '" stroke-width="1.6" fill="none"/>' +
-        '<circle cy="-25" r="10" fill="#8A5636"/><path d="M-10 -27 C -10 -40 10 -40 10 -27 C 6 -33 -6 -33 -10 -27 Z" fill="#1A1412"/>' +
-        '<path d="M-7 22 L-7 34 M7 22 L7 34" stroke="#8A5636" stroke-width="5" stroke-linecap="round"/>' +
-      '</g>';
+      s += '<g transform="rotate(' + ang + ' 400 400) translate(400,' + (400 - R) + ')"><g class="estela" style="animation-delay:-' + (i*.35).toFixed(2) + 's">' +
+        '<rect x="-9" y="-34" width="18" height="58" rx="9" fill="' + c + '"/>' +
+        '<path d="M-9 -6 h4 v-4 h4 v4 h2 v-4 h4 v4 h4" stroke="#14110F" stroke-width="1.6" fill="none"/>' +
+        '<path d="M-9 4 h18" stroke="#14110F" stroke-width="1.2"/>' +
+        '<circle cy="-44" r="7" fill="none" stroke="' + c + '" stroke-width="2"/>' +
+      '</g></g>';
     }
     s += '</g>';
-    // cesto central com sementes
-    s += '<g transform="translate(400,420)">' +
-      '<ellipse cx="0" cy="70" rx="96" ry="14" fill="#000" opacity=".12"/>' +
-      '<path d="M-86 -20 L86 -20 L70 62 C 40 76 -40 76 -70 62 Z" fill="url(#arte-p-trama)" stroke="#6B4A1F" stroke-width="3"/>' +
-      '<path d="M-80 10 L80 10" stroke="#B3402A" stroke-width="12"/>' +
-      '<text x="0" y="15" text-anchor="middle" font-family="Petrona,Georgia,serif" font-weight="800" font-size="15" fill="#FFF3D6" letter-spacing="3">COOPIMS</text>' +
-      '<ellipse cx="0" cy="-20" rx="86" ry="18" fill="#A8772F" stroke="#6B4A1F" stroke-width="3"/>';
-    var r2 = rng(77);
-    for (i = 0; i < 70; i++){
-      var sx = (r2()*2-1)*72, sy = -26 - r2()*22 + Math.abs(sx)*.18, cor = ['#E8B53A','#F2D16B','#E07A1F','#5A2E1E','#7A1F1A','#EFE4CF','#7CAE4A'][Math.floor(r2()*7)];
-      s += '<ellipse cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" rx="' + (3 + r2()*2.5).toFixed(1) + '" ry="' + (2 + r2()*1.6).toFixed(1) + '" fill="' + cor + '" transform="rotate(' + (r2()*180).toFixed(0) + ' ' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ')"/>';
+    // centro: emblema de sete pétalas escalonadas (uma por princípio)
+    s += '<g class="emblema" transform="translate(400,400)">' +
+      '<circle r="118" fill="#14110F"/><circle r="118" fill="none" stroke="#E8B53A" stroke-opacity=".5" stroke-width="1"/>' +
+      '<circle r="104" fill="none" stroke="#EFE4CF" stroke-opacity=".18" stroke-width="1" stroke-dasharray="2 6"/>';
+    for (i = 0; i < 7; i++){
+      s += '<g transform="rotate(' + (i/7*360) + ')"><path class="petala" d="M0 -22 h6 v-12 h6 v-14 h6 v-16 h-6 v-10 h-6 v-8 h-12 v8 h-6 v10 h-6 v16 h6 v14 h6 v12 Z" fill="' + ['#B3402A','#E8B53A','#7CAE4A','#E07A1F','#D9B26A','#EFE4CF','#C9A27E'][i] + '" opacity=".92"/></g>';
     }
-    s += '</g>';
+    s += '<circle r="20" fill="#14110F" stroke="#E8B53A" stroke-width="1.5"/>' +
+      '<circle r="5" fill="#E8B53A"/>' +
+      '<text y="104" text-anchor="middle" font-family="Petrona,Georgia,serif" font-weight="700" font-size="13" fill="#EFE4CF" letter-spacing="6">COOPIMS</text>' +
+    '</g>';
     // sementes-botão dos 7 princípios
     for (i = 0; i < 7; i++){
       var aa = -90 + i/7*360, rad = aa*Math.PI/180, x = 400 + Math.cos(rad)*250, y = 400 + Math.sin(rad)*250;
@@ -522,7 +388,7 @@
     svg.setAttribute('class', 'arte-roda');
     svg.setAttribute('viewBox', '0 0 800 800');
     svg.setAttribute('role', 'group');
-    svg.setAttribute('aria-label', 'Ilustração: ciranda de pessoas indígenas de mãos dadas em volta de um cesto de sementes, cercada por anéis de grafismo. Sete sementes numeradas representam os sete princípios do cooperativismo.');
+    svg.setAttribute('aria-label', 'Ilustração: catorze presenças abstratas de mãos dadas em roda, em volta de um emblema de sete pétalas escalonadas, cercadas por anéis de grafismo. Sete sementes numeradas representam os sete princípios do cooperativismo.');
     svg.innerHTML = cenaRoda();
     alvo.appendChild(svg);
     var painel = sec.querySelector('.arte-painel');

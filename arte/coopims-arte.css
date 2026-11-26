@@ -21,57 +21,35 @@
 .arte-credito-ia{font-family:var(--mono);font-size:11px;letter-spacing:.3px;opacity:.75}
 
 /* =====================================================================
-   1. PANORAMA DA ROÇA
+   1. TERRITÓRIO VIVO (arte generativa em canvas)
    ===================================================================== */
-.arte-roca{position:relative;overflow:hidden;background:#10233d;color:#fff;isolation:isolate;min-height:min(92vh,880px)}
-.arte-roca svg.arte-cena{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:manipulation}
-.arte-roca .arte-camada{will-change:transform;transition:transform .25s linear}
-.arte-roca .arte-texto{position:relative;z-index:3;pointer-events:none;padding:clamp(28px,6vw,88px) 0 0}
-.arte-roca .arte-cartao{pointer-events:auto;max-width:520px;background:rgba(16,30,26,.46);backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:26px 28px 22px;box-shadow:0 18px 50px rgba(0,0,0,.28)}
-.arte-roca .arte-eyb{font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--ouro);display:flex;align-items:center;gap:10px}
-.arte-roca .arte-eyb::before{content:"";width:30px;height:3px;background:linear-gradient(90deg,var(--urucum-cl) 33%,var(--ouro) 33% 66%,var(--verde) 66%)}
-.arte-roca h2,.arte-roca .arte-cartao h2{color:#fff;font-family:var(--disp);font-size:clamp(28px,4vw,50px);line-height:1.05;margin:12px 0 14px;font-weight:800;text-wrap:balance}
-.arte-roca h2 em{font-style:italic;color:var(--ouro)}
-.arte-roca p{font-size:clamp(15px,1.5vw,17px);line-height:1.6;color:#F1F6F2}
-.arte-roca .arte-dica{margin-top:16px;display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12.5px;color:#FFE9A8;background:rgba(0,0,0,.25);border:1px dashed rgba(255,233,168,.55);padding:7px 12px;border-radius:999px}
-.arte-roca .arte-dica i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--milho);box-shadow:0 0 0 0 rgba(232,181,58,.8);animation:arte-pulso 1.8s infinite}
-.arte-roca .arte-contador{position:absolute;right:18px;bottom:62px;z-index:3;font-family:var(--mono);font-size:12px;color:#fff;background:rgba(0,0,0,.35);padding:6px 12px;border-radius:999px;opacity:0;transform:translateY(8px);transition:all .4s}
+.arte-roca{position:relative;overflow:hidden;background:#14110F;color:#F3EDE2;isolation:isolate;min-height:min(96vh,940px);display:flex;flex-direction:column;justify-content:space-between}
+.arte-roca canvas.arte-tela{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:manipulation;z-index:0}
+.arte-roca::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:
+  radial-gradient(ellipse at 12% 40%,rgba(20,17,15,.92) 0%,rgba(20,17,15,.55) 34%,transparent 62%),
+  linear-gradient(180deg,rgba(20,17,15,.55) 0%,transparent 18%,transparent 80%,rgba(20,17,15,.9) 100%)}
+.arte-roca .arte-texto{position:relative;z-index:3;pointer-events:none;padding:clamp(48px,9vw,130px) 0 30px}
+.arte-roca .arte-cartao{pointer-events:auto;max-width:640px}
+.arte-roca .arte-eyb{font-family:var(--mono);font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--milho);display:flex;align-items:center;gap:14px}
+.arte-roca .arte-eyb::before{content:"";width:46px;height:9px;background:
+  linear-gradient(90deg,var(--urucum) 0 33%,var(--milho) 33% 66%,#7CAE4A 66%);clip-path:polygon(0 100%,0 50%,25% 50%,25% 0,75% 0,75% 50%,100% 50%,100% 100%)}
+.arte-roca h2{color:#fff;font-family:var(--disp);font-size:clamp(40px,7.4vw,104px);line-height:.94;letter-spacing:-.02em;margin:20px 0 22px;font-weight:800}
+.arte-roca h2 em{font-style:italic;font-weight:500;color:transparent;-webkit-text-stroke:1.5px var(--milho);paint-order:stroke}
+.arte-roca p{font-size:clamp(15.5px,1.4vw,18px);line-height:1.7;color:#D9D0C1;max-width:54ch}
+.arte-roca .arte-dica{margin-top:22px;display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#F3EDE2;border:1px solid rgba(243,237,226,.28);padding:9px 16px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.arte-roca .arte-dica i{display:inline-block;width:9px;height:9px;transform:rotate(45deg);background:var(--milho);animation:arte-pulsa 2s ease-in-out infinite}
+@keyframes arte-pulsa{0%,100%{box-shadow:0 0 0 0 rgba(232,181,58,.7)}60%{box-shadow:0 0 0 10px rgba(232,181,58,0)}}
+.arte-roca .arte-contador{position:absolute;right:22px;top:22px;z-index:3;font-family:var(--mono);font-size:11.5px;letter-spacing:1px;color:#F3EDE2;border:1px solid rgba(243,237,226,.25);padding:6px 12px;border-radius:999px;opacity:0;transform:translateY(-6px);transition:all .4s}
 .arte-roca .arte-contador.on{opacity:1;transform:none}
-.arte-roca .arte-legenda{position:absolute;left:18px;bottom:62px;z-index:3;max-width:60ch}
-.arte-roca .arte-legenda .arte-credito-ia{color:#fff;background:rgba(0,0,0,.3);padding:4px 10px;border-radius:6px;display:inline-block}
-@keyframes arte-pulso{0%{box-shadow:0 0 0 0 rgba(232,181,58,.75)}80%,100%{box-shadow:0 0 0 12px rgba(232,181,58,0)}}
-
-/* movimento dos elementos da cena */
-.arte-cena .balanco{transform-box:fill-box;transform-origin:50% 100%;animation:arte-balanco 5.5s ease-in-out infinite}
-@keyframes arte-balanco{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.4deg)}}
-.arte-cena .sol-raios{transform-box:fill-box;transform-origin:50% 50%;animation:arte-gira 90s linear infinite}
-.arte-cena .sol-nasce{animation:arte-nasce 7s cubic-bezier(.2,.7,.2,1) both}
-@keyframes arte-nasce{from{transform:translateY(120px);opacity:.2}to{transform:none;opacity:1}}
-@keyframes arte-gira{to{transform:rotate(360deg)}}
-.arte-cena .estrela-ceu{animation:arte-apaga 6s ease-in forwards}
-@keyframes arte-apaga{0%{opacity:.9}100%{opacity:0}}
-.arte-cena .canoa{animation:arte-canoa 46s linear infinite}
-@keyframes arte-canoa{from{transform:translateX(-260px)}to{transform:translateX(1860px)}}
-.arte-cena .remo{transform-box:fill-box;transform-origin:50% 10%;animation:arte-remo 2.4s ease-in-out infinite}
-@keyframes arte-remo{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-14deg)}}
-.arte-cena .bando{animation:arte-voo 38s linear infinite}
-@keyframes arte-voo{from{transform:translate(-300px,40px)}to{transform:translate(1900px,-60px)}}
-.arte-cena .asa{transform-box:fill-box;transform-origin:50% 50%;animation:arte-asa .9s ease-in-out infinite alternate}
-@keyframes arte-asa{from{transform:scaleY(1)}to{transform:scaleY(.35)}}
-.arte-cena .fumaca{animation:arte-fumaca 7s ease-out infinite;transform-box:fill-box;transform-origin:50% 100%}
-@keyframes arte-fumaca{0%{opacity:0;transform:translateY(10px) scale(.6)}25%{opacity:.55}100%{opacity:0;transform:translateY(-70px) scale(1.6)}}
-.arte-cena .bruma{animation:arte-bruma 26s ease-in-out infinite alternate}
-@keyframes arte-bruma{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
-.arte-cena .brilho-rio{animation:arte-brilho 3.2s ease-in-out infinite}
-@keyframes arte-brilho{0%,100%{opacity:.15}50%{opacity:.7}}
-.arte-cena .broto{transform-box:fill-box;transform-origin:50% 100%;animation:arte-broto 1.4s cubic-bezier(.2,1.5,.4,1) both}
-@keyframes arte-broto{0%{transform:scale(0)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
-.arte-cena .faisca{animation:arte-faisca .9s ease-out forwards}
-@keyframes arte-faisca{0%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
-.arte-cena .pessoa-respira{transform-box:fill-box;transform-origin:50% 100%;animation:arte-respira 4.5s ease-in-out infinite}
-@keyframes arte-respira{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.012)}}
-.arte-cena .enxada{transform-box:fill-box;transform-origin:90% 10%;animation:arte-enxada 2.6s ease-in-out infinite}
-@keyframes arte-enxada{0%,100%{transform:rotate(0)}45%{transform:rotate(-16deg)}60%{transform:rotate(4deg)}}
+/* fita com os nomes dos oito povos */
+.arte-povos{position:relative;z-index:3;overflow:hidden;border-top:1px solid rgba(243,237,226,.14);border-bottom:1px solid rgba(243,237,226,.14);padding:14px 0;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.arte-povos .trilho{display:flex;width:max-content;animation:arte-fita 48s linear infinite}
+.arte-povos span{font-family:var(--disp);font-weight:800;font-size:clamp(26px,4.2vw,54px);letter-spacing:-.01em;white-space:nowrap;padding:0 .45em;color:transparent;-webkit-text-stroke:1px rgba(243,237,226,.55)}
+.arte-povos span:nth-child(3n+1){color:var(--milho);-webkit-text-stroke:0}
+.arte-povos b{display:inline-block;width:.42em;height:.42em;transform:rotate(45deg);background:var(--urucum);align-self:center;flex:none}
+@keyframes arte-fita{to{transform:translateX(-50%)}}
+.arte-roca .arte-legenda{position:relative;z-index:3;padding:12px 0 16px}
+.arte-roca .arte-legenda .arte-credito-ia{color:#BDB3A3}
 
 /* =====================================================================
    2. FAIXAS DE GRAFISMO (divisores)
@@ -142,7 +120,16 @@
 /* =====================================================================
    4. CIRANDA DA COOPERAÇÃO
    ===================================================================== */
-.arte-ciranda{background:radial-gradient(ellipse at 30% 40%,#FBF6EC 0%,var(--areia) 55%,#EFE6D4 100%);position:relative;overflow:hidden}
+.arte-ciranda{background:radial-gradient(ellipse at 28% 45%,#2A221C 0%,#14110F 62%);color:#F3EDE2;position:relative;overflow:hidden}
+.arte-ciranda .rotulo{color:var(--milho)}
+.arte-ciranda h2.titulo{color:#fff}
+.arte-ciranda h2.titulo em{color:var(--milho);font-style:italic}
+.arte-ciranda .prosa{color:#D9D0C1}
+.arte-roda .estela{transform-box:fill-box;transform-origin:50% 100%;animation:arte-estela 3.2s ease-in-out infinite}
+@keyframes arte-estela{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.arte-roda .emblema .petala{transform-box:fill-box;transform-origin:50% 100%;animation:arte-petala 7s ease-in-out infinite}
+@keyframes arte-petala{0%,100%{opacity:.92}50%{opacity:.55}}
+.arte-roda .anel{opacity:.85}
 .arte-ciranda .arte-grade{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(20px,4vw,60px);align-items:center}
 .arte-ciranda svg.arte-roda{width:100%;height:auto;display:block;max-width:640px;margin:0 auto;overflow:visible}
 .arte-roda .anel{transform-box:view-box;transform-origin:400px 400px}
@@ -152,23 +139,24 @@
 .arte-roda .roda-gente{transform-box:view-box;transform-origin:400px 400px;animation:arte-gira 60s linear infinite}
 .arte-roda .no{cursor:pointer}
 .arte-roda .no circle.fundo{transition:all .35s}
-.arte-roda .no:hover circle.fundo,.arte-roda .no:focus circle.fundo,.arte-roda .no.ativo circle.fundo{fill:var(--ouro);stroke:var(--jenipapo);stroke-width:3}
+.arte-roda .no:hover circle.fundo,.arte-roda .no:focus circle.fundo,.arte-roda .no.ativo circle.fundo{fill:var(--milho);stroke:#14110F;stroke-width:3}
 .arte-roda .no.ativo .num{fill:var(--jenipapo)}
 .arte-roda .no:focus{outline:none}
 .arte-roda .no:focus-visible circle.fundo{stroke:#1565A6;stroke-width:4}
 .arte-roda .trilha{stroke-dasharray:4 10;animation:arte-trilha 12s linear infinite}
 @keyframes arte-trilha{to{stroke-dashoffset:-280}}
-.arte-painel{background:#fff;border-radius:16px;padding:26px 28px;box-shadow:0 20px 60px rgba(22,48,43,.12);border-top:6px solid var(--verde);position:relative;min-height:290px}
-.arte-painel .arte-n{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--urucum);text-transform:uppercase}
-.arte-painel h3{font-family:var(--disp);font-size:clamp(22px,2.4vw,30px);margin:8px 0 12px;color:var(--pinho);line-height:1.15}
-.arte-painel p{font-size:16px;line-height:1.65;color:#2C3A36}
-.arte-painel .arte-pratica{margin-top:14px;padding:12px 14px;background:var(--areia);border-radius:10px;font-size:14.5px;color:#36453F;border-left:4px solid var(--ouro)}
-.arte-painel .arte-pratica b{color:var(--verde-esc)}
+.arte-painel{background:rgba(243,237,226,.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(243,237,226,.14);border-radius:4px;padding:30px 30px;position:relative;min-height:300px}
+.arte-painel::before{content:"";position:absolute;left:-1px;top:-1px;width:64px;height:10px;background:linear-gradient(90deg,var(--urucum) 0 33%,var(--milho) 33% 66%,#7CAE4A 66%);clip-path:polygon(0 0,100% 0,100% 50%,75% 50%,75% 100%,25% 100%,25% 50%,0 50%)}
+.arte-painel .arte-n{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--urucum-cl);text-transform:uppercase}
+.arte-painel h3{font-family:var(--disp);font-size:clamp(24px,2.8vw,36px);margin:10px 0 14px;color:#fff;line-height:1.08;letter-spacing:-.01em}
+.arte-painel p{font-size:16px;line-height:1.7;color:#D9D0C1}
+.arte-painel .arte-pratica{margin-top:16px;padding:14px 16px;background:rgba(232,181,58,.08);font-size:14.5px;color:#EDE4D3;border-left:3px solid var(--milho)}
+.arte-painel .arte-pratica b{color:var(--milho)}
 .arte-painel .arte-troca{animation:arte-troca .55s ease}
 @keyframes arte-troca{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .arte-pontos{display:flex;gap:7px;margin-top:18px}
-.arte-pontos button{width:28px;height:6px;border-radius:3px;border:0;background:#D8D2C4;cursor:pointer;padding:0}
-.arte-pontos button[aria-current="true"]{background:var(--verde);width:44px}
+.arte-pontos button{width:12px;height:12px;transform:rotate(45deg);border:1px solid rgba(243,237,226,.45);background:transparent;cursor:pointer;padding:0;margin:0 4px;transition:all .3s}
+.arte-pontos button[aria-current="true"]{background:var(--milho);border-color:var(--milho);transform:rotate(45deg) scale(1.25)}
 
 /* ---------- responsivo ---------- */
 @media (max-width:900px){
@@ -180,13 +168,10 @@
   .arte-ilustras{grid-template-columns:1fr}
 }
 @media (max-width:560px){
-  .arte-roca{min-height:auto}
-  .arte-roca .arte-texto{padding-top:22px;padding-bottom:300px}
-  .arte-roca .arte-cartao{padding:20px}
-  .arte-roca .arte-legenda{bottom:10px;left:10px;right:10px}
+  .arte-roca{min-height:92vh}
+  .arte-roca .arte-texto{padding-top:56px}
   .arte-roca .arte-legenda .arte-credito-ia{font-size:9.5px}
-  .arte-roca .arte-texto{padding-bottom:360px}
-  .arte-roca .arte-contador{bottom:46px;right:10px}
+  .arte-roca .arte-contador{top:12px;right:10px}
   .arte-mosaico{grid-template-columns:1fr 1fr;grid-auto-rows:64px;gap:8px}
   .arte-foto,.arte-foto.g-quad,.arte-foto.g-media,.arte-foto.g-alta{grid-column:span 1;grid-row:span 4}
   .arte-foto.g-larga{grid-column:span 2;grid-row:span 4}
@@ -196,7 +181,7 @@
 
 /* ---------- movimento reduzido ---------- */
 @media (prefers-reduced-motion:reduce){
-  .arte-cena *,.arte-roda *,.arte-faixa,.arte-foto img,.arte-foto::before,.arte-foto figcaption{animation:none!important;transition:none!important}
+  .arte-povos .trilho,.arte-roda *,.arte-faixa,.arte-foto img,.arte-foto::before,.arte-foto figcaption{animation:none!important;transition:none!important}
   .arte-faixa{clip-path:none}
   .arte-foto::before{opacity:0}
   .arte-foto img{transform:none}
@@ -206,3 +191,58 @@
 /* pausa animações quando a seção sai da tela */
 .arte-pausa *,.arte-pausa *::before,.arte-pausa *::after{animation-play-state:paused!important}
 .arte-mosaico{grid-auto-flow:dense}
+
+/* =====================================================================
+   5. ICONOGRAFIA PRÓPRIA (arte/coopims-icones.js)
+   ===================================================================== */
+svg.ci{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;display:inline-block}
+nav.main a.com-ci{display:inline-flex;align-items:center;gap:7px}
+nav.main a.com-ci svg.ci-menu{width:15px;height:15px;opacity:.78;transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .3s}
+nav.main a.com-ci:hover svg.ci-menu{opacity:1;transform:rotate(-12deg) scale(1.18);color:var(--ouro)}
+.btn.com-ci,.si-btn.com-ci{display:inline-flex;align-items:center;justify-content:center;gap:9px}
+.btn.com-ci svg.ci-btn{width:18px;height:18px;transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.btn.com-ci:hover svg.ci-btn{transform:translateX(2px) rotate(-8deg) scale(1.12)}
+a.com-ci{display:inline-flex;align-items:center;gap:7px}
+a.com-ci svg.ci-doc{width:17px;height:17px}
+
+/* =====================================================================
+   6. EFEITOS DO SITE (arte/coopims-efeitos.js)
+   ===================================================================== */
+.ce-barra{position:fixed;left:0;top:0;right:0;height:4px;z-index:9500;transform-origin:0 50%;transform:scaleX(0);pointer-events:none;
+  background:linear-gradient(90deg,#B3402A 0 25%,#E8B53A 25% 50%,#7CAE4A 50% 75%,#EFE4CF 75%);background-size:96px 4px;
+  -webkit-mask-image:linear-gradient(90deg,#000,#000);box-shadow:0 0 12px rgba(232,181,58,.45)}
+
+/* títulos: cortina que sobe */
+html.ce h2.ce-titulo{clip-path:inset(-12% -6% 100% -60px);transform:translateY(.35em);transition:clip-path 1.1s cubic-bezier(.77,0,.18,1),transform 1.1s cubic-bezier(.16,1,.3,1)}
+html.ce h2.ce-titulo.ce-visto{clip-path:inset(-12% -6% -25% -60px);transform:none}
+
+/* fotos entram por máscara diagonal */
+html.ce .ce-mascara{clip-path:polygon(0 0,0 0,0 100%,0 100%);transition:clip-path 1.2s cubic-bezier(.77,0,.18,1)}
+html.ce .ce-mascara.ce-visto{clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+
+/* cursor-losango */
+html.ce-com-cursor .ce-cursor,html.ce-com-cursor .ce-ponto{opacity:1}
+.ce-cursor,.ce-ponto{position:fixed;left:0;top:0;pointer-events:none;z-index:9600;opacity:0;transition:opacity .3s}
+.ce-cursor::before{content:"";position:absolute;left:-15px;top:-15px;width:30px;height:30px;border:1.5px solid #E8B53A;transform:rotate(45deg) scale(.72);transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .3s,border-color .3s;mix-blend-mode:difference}
+.ce-cursor.ce-sobre::before{transform:rotate(45deg) scale(1.35);background:rgba(232,181,58,.16);border-color:#fff}
+.ce-cursor.ce-tela::before{transform:rotate(135deg) scale(1.6);border-color:#B3402A;background:transparent}
+.ce-ponto::before{content:"";position:absolute;left:-3px;top:-3px;width:6px;height:6px;background:#E8B53A;transform:rotate(45deg)}
+
+/* botões magnéticos */
+.ce-mag{translate:var(--mx,0px) var(--my,0px);transition:translate .35s cubic-bezier(.16,1,.3,1),transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s ease,background .28s ease,border-color .28s ease}
+
+/* sementes que saltam do clique */
+.ce-semente{position:fixed;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;z-index:9700;pointer-events:none;transform:rotate(45deg);animation:ce-salto .8s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes ce-salto{to{transform:translate(var(--dx),var(--dy)) rotate(225deg) scale(.2);opacity:0}}
+
+/* grão de filme muito sutil sobre tudo */
+.ce-grao{position:fixed;inset:-50%;z-index:9400;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:ce-grao 1.2s steps(5) infinite}
+@keyframes ce-grao{0%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}40%{transform:translate(3%,-2%)}60%{transform:translate(-2%,-4%)}80%{transform:translate(4%,2%)}100%{transform:translate(0,0)}}
+
+@media (prefers-reduced-motion:reduce){
+  .ce-grao{animation:none}
+  html.ce h2.ce-titulo,html.ce .ce-mascara{clip-path:none!important;transform:none!important}
+}
+@media print{.ce-barra,.ce-cursor,.ce-ponto,.ce-grao{display:none!important}}
