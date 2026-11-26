@@ -5207,7 +5207,7 @@ function gerarRelatorioPDF(){
       alternateRowStyles:{ fillColor:[247,245,239] }
     });
     rodape();
-    doc.save('livro_matricula_coopeimasul_' + hoje() + '.pdf');
+    doc.save('livro_matricula_coopims_' + hoje() + '.pdf');
   } else {
     var y2 = cabecalho('Relatório do quadro social');
     var ativos = db.cooperados.filter(function(c){ return c.status === 'ativo'; });
@@ -5246,7 +5246,7 @@ function gerarRelatorioPDF(){
     if (yy > 650){ doc.addPage(); yy = cabecalho('Relatório do quadro social (continuação)'); }
     tabelaContagem('Por atividade', 'atividade', yy);
     rodape();
-    doc.save('relatorio_coopeimasul_' + hoje() + '.pdf');
+    doc.save('relatorio_coopims_' + hoje() + '.pdf');
   }
   msg('msgPDF','PDF gerado e baixado.', true);
 }
@@ -5960,7 +5960,7 @@ function exportarCSV(){
   var blob = new Blob(['\uFEFF' + linhas.join('\r\n')], { type:'text/csv;charset=utf-8' });
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'livro_matricula_coopeimasul_' + hoje() + '.csv';
+  a.download = 'livro_matricula_coopims_' + hoje() + '.csv';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
@@ -6881,7 +6881,7 @@ function recarregar(){
     .catch(function(e){ msg('msgPub','Erro ao recarregar: ' + e.message, false); });
 }
 function carregarPublicoInicial(){
-  var repoPub = ($('gRepoPub') && $('gRepoPub').value.trim()) || 'coopeimasul/coopeimasul.github.io';
+  var repoPub = ($('gRepoPub') && $('gRepoPub').value.trim()) || 'germanocoelho/coopeimasul.github.io';
   fetch('https://raw.githubusercontent.com/' + repoPub + '/main/' + ARQ_PUB)
     .then(function(r){ if (!r.ok) throw new Error('sem dados publicados'); return r.json(); })
     .then(function(pj){
